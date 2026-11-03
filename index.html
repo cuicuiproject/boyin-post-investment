@@ -3483,7 +3483,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
  'use strict';
  /* ================= 口径与字典（按评审会：总资产规模 2500 亿，三类投资模式 5:10:10） ================= */
  var TOTAL=2500, BUCKET_TOTAL={direct:500,channel:1000,outsource:1000};
- var BUCKET_LABEL={direct:'直投',channel:'通道投资',outsource:'委外投资'};
+ var BUCKET_LABEL={direct:'直投',channel:'通道',outsource:'委外'};
  var BUCKET_SHORT={direct:'直投',channel:'通道',outsource:'委外'};
  var BUCKET_COLOR={direct:'#3fa8a0',channel:'#d4a72c',outsource:'#1d5fbf'};
  var BUCKET_ORDER=['outsource','channel','direct'];
@@ -3509,7 +3509,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
    }
   }
   addCarrier('direct','','直投专户',1);
-  addCarrier('channel','','通道投资计划',10);
+  addCarrier('channel','','通道计划',10);
   addCarrier('outsource','','委外组合',45);
   /* 外部管理人分配到委外组合 */
   carriers.filter(function(c){return c.bucket==='outsource'}).forEach(function(c,i){c.ext=EXTERNAL[i%EXTERNAL.length]});
@@ -3765,7 +3765,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       '<section class="po-ledger-panel"><div class="po-panel-head"><h3>全部载体台账</h3></div>'+
       '<div class="po-ledger-filters">'+
         '<input id="po-q" placeholder="搜索载体 / 策略 / 管理人">'+
-        '<select id="po-bucket-filter"><option value="">全部投资模式</option><option value="outsource">委外投资</option><option value="channel">通道投资</option><option value="direct">直投</option></select>'+
+        '<select id="po-bucket-filter"><option value="">全部投资模式</option><option value="outsource">委外</option><option value="channel">通道</option><option value="direct">直投</option></select>'+
         '<select id="po-dept-filter"></select>'+
         '<select id="po-manager-filter"></select>'+
         '<select id="po-strategy-filter"></select>'+
@@ -4301,7 +4301,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   exRows.forEach(function(a){m[a.owner]=(m[a.owner]||0)+a.scale});
   var sz=Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return b-a});
   var top5e=sz.slice(0,5).reduce(function(t,x){return t+x},0),exTot=sum(exRows,'scale');
-  return '总资产规模 <b>'+fmt(tot,1)+' 亿元</b>；'+perf+'；规模结构上委外投资 <b>'+share(bs[0].scale)+'</b>、通道投资 <b>'+share(bs[1].scale)+'</b>、直投 <b>'+share(bs[2].scale)+'</b>；委外前五家管理人集中度 <b>'+fmt(exTot?top5e/exTot*100:0,1)+'%</b>。';
+  return '总资产规模 <b>'+fmt(tot,1)+' 亿元</b>；'+perf+'；规模结构上委外 <b>'+share(bs[0].scale)+'</b>、通道 <b>'+share(bs[1].scale)+'</b>、直投 <b>'+share(bs[2].scale)+'</b>；委外前五家管理人集中度 <b>'+fmt(exTot?top5e/exTot*100:0,1)+'%</b>。';
 }
 
 /* ---- KPI（顶部一行 7 张） ---- */
@@ -4342,19 +4342,19 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     var allSel=selCount===extCount;
     var shareFoot=allSel?('占全公司 '+fmt(tot/2500*100,1)+'%'):('占委外 '+fmt(extTot?tot/extTot*100:0,1)+'% · 占全公司 '+fmt(tot/2500*100,1)+'%');
     items=[
-      ['委外投资规模',fmt(tot,1),'亿元',shareFoot,''],
+      ['委外规模',fmt(tot,1),'亿元',shareFoot,''],
       ['外部管理人',selCount,'家','委外共 '+extCount+' 家',''],
       retItem,exItem,winItem,ddItem
     ];
   }else{
     var bs=buckets(rows);
     var second=first==='内部负责规模'
-      ?['投资经理',uniq(rows.filter(function(a){return a.manager!=='—'}).map(function(a){return a.manager})).length,'位','负责直投与通道投资','']
-      :['委外投资',fmt(bs[0].scale,1),'亿元',spvCount(rows,'outsource')+' 只 · 外部管理人负责',''];
+      ?['投资经理',uniq(rows.filter(function(a){return a.manager!=='—'}).map(function(a){return a.manager})).length,'位','负责直投与通道','']
+      :['委外',fmt(bs[0].scale,1),'亿元',spvCount(rows,'outsource')+' 只 · 外部管理人负责',''];
     items=[
       [first,fmt(tot,1),'亿元',first==='总资产规模'?'全部理财产品底层组合':'当前筛选范围',''],
       second,
-      ['通道投资',fmt(bs[1].scale,1),'亿元',spvCount(rows,'channel')+' 只 · 内部经理负责',''],
+      ['通道',fmt(bs[1].scale,1),'亿元',spvCount(rows,'channel')+' 只 · 内部经理负责',''],
       ['直投',fmt(bs[2].scale,1),'亿元','股票 / 基金 / 债券等',''],
       retItem,exItem,winItem
     ];
@@ -4442,8 +4442,8 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
    var intTot=sum(mgr,'scale');
    var bodyM=mgr.map(function(x){return [x.m,x.dept,x.count,fmt(x.scale,1),fmt(intTot?x.scale/intTot*100:0,1)+'%',pct(x.ret),pct(x.ex),fmt(x.win,1)+'%']});
    document.getElementById('po-tables').innerHTML=
-    panel('投资部门表现','按投资部门汇总；通道投资与直投由内部投资经理负责',table(['投资部门','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率'],body3,['合计',rows.length,fmt(tot3,1),'100.0%',pct(weighted(rows,key())),pct(weighted(rows,ekey()))]))+
-    panel('投资经理表现','仅内部负责资产（直投 + 通道投资），共 '+mgr.length+' 位',table(['投资经理','所属投资部门','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准产品数量占比'],bodyM,['合计','—',sum(mgr,'count'),fmt(intTot,1),'100.0%',pct(weighted(rows.filter(function(a){return a.manager!=='—'}),key())),pct(weighted(rows.filter(function(a){return a.manager!=='—'}),ekey())),'—']));
+    panel('投资部门表现','按投资部门汇总；通道与直投由内部投资经理负责',table(['投资部门','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率'],body3,['合计',rows.length,fmt(tot3,1),'100.0%',pct(weighted(rows,key())),pct(weighted(rows,ekey()))]))+
+    panel('投资经理表现','仅内部负责资产（直投 + 通道），共 '+mgr.length+' 位',table(['投资经理','所属投资部门','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准产品数量占比'],bodyM,['合计','—',sum(mgr,'count'),fmt(intTot,1),'100.0%',pct(weighted(rows.filter(function(a){return a.manager!=='—'}),key())),pct(weighted(rows.filter(function(a){return a.manager!=='—'}),ekey())),'—']));
    return;
   }
   if(dim==='ext'||dim==='manager'){
@@ -4815,7 +4815,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     '<td>'+fmt(a.scale,2)+'</td><td>'+pct(a[key()])+'</td><td>'+pct(a[ekey()])+'</td><td>'+fmt(a.dd,2)+'%</td></tr>';
   }).join('');
   var sc=sum(rows,'scale');
-  document.getElementById('po-ledger-summary').innerHTML='共 '+total+' 笔资产 · 规模 '+fmt(sc,2)+' 亿元 · 委外投资 '+fmt(sum(rows.filter(function(a){return a.bucket==='outsource'}),'scale'),2)+' / 通道投资 '+fmt(sum(rows.filter(function(a){return a.bucket==='channel'}),'scale'),2)+' / 直投 '+fmt(sum(rows.filter(function(a){return a.bucket==='direct'}),'scale'),2);
+  document.getElementById('po-ledger-summary').innerHTML='共 '+total+' 笔资产 · 规模 '+fmt(sc,2)+' 亿元 · 委外 '+fmt(sum(rows.filter(function(a){return a.bucket==='outsource'}),'scale'),2)+' / 通道 '+fmt(sum(rows.filter(function(a){return a.bucket==='channel'}),'scale'),2)+' / 直投 '+fmt(sum(rows.filter(function(a){return a.bucket==='direct'}),'scale'),2);
   var pager='<span>每页 '+size+' 条 · 第 '+page+' / '+pages+' 页</span><button data-p="'+(page-1)+'" '+(page<=1?'disabled':'')+'>上一页</button>';
   var from=Math.max(1,page-2),to=Math.min(pages,from+4);from=Math.max(1,to-4);
   for(var i=from;i<=to;i++)pager+='<button data-p="'+i+'" class="'+(i===page?'active':'')+'">'+i+'</button>';
