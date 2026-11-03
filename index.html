@@ -4803,8 +4803,8 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     {key:'direct',name:'直投',color:'#5c5aa8',entity:'资产类别'}
   ];
   var V2_DAYS={'1':30,'3':90,'6':180,'12':360,'36':1080};
-  var V2_CAT_COLOR={'债券':'#3f3d78','股票':'#5c5aa8','基金':'#a3a1cf'};
-  var V2_RATING_COLOR={'AAA':'#3f3d78','AA+':'#5c5aa8','AA':'#a3a1cf','AA以下':'#dad9ea'};
+  var V2_CAT_COLOR={'债券':'#1d5fbf','股票':'#8a5fbf','基金':'#e07856'};
+  var V2_RATING_COLOR={'AAA':'#1d5fbf','AA+':'#5b8fd0','AA':'#9dbfe6','AA以下':'#cbd8e5'};
   var V2_LIQ={'利率债':1,'信用债':0.65,'可转债':0.9};
   var V2_DMAP={
     '中长期纯债策略':['债券','利率债'],'短期纯债策略':['债券','信用债'],'信用精选策略':['债券','信用债'],
@@ -4989,7 +4989,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     items.forEach(function(d,i){
       var y=12+i*rowH,w=Math.max(2,Math.abs(d.value/span*barW)),x=d.value>=0?zeroX:zeroX-w;
       s+='<text x="0" y="'+(y+18)+'" font-size="13" fill="#3d5872">'+esc(d.label)+'</text>';
-      s+='<rect x="'+x+'" y="'+(y+6)+'" width="'+w+'" height="16" rx="3" fill="'+(d.value>=0?'#5c5aa8':'#b23b30')+'" opacity=".9"/>';
+      s+='<rect x="'+x+'" y="'+(y+6)+'" width="'+w+'" height="16" rx="3" fill="'+(d.value>=0?'#1d5fbf':'#c0392b')+'" opacity=".9"/>';
       s+='<text x="'+(x+w+9)+'" y="'+(y+19)+'" font-size="12.5" fill="#5b748c">'+(d.value>0?'+':'')+v2f(d.value,2)+unit+(d.share!=null?'<tspan fill="#9fb1c2"> · </tspan><tspan fill="#8aa0b3">'+v2f(d.share*100,1)+'%</tspan>':'')+'</text>';
     });
     return s+'</svg>';
@@ -5089,13 +5089,13 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
         ? '；CR5 <b>'+v2f(cr5,1)+'%</b>，最大管理人 '+esc(topE.name)+'（'+v2f(topE.scale/a.scale*100,1)+'%）。'
         : '；人均管理 <b>'+v2f(a.scale/ea.length,1)+' 亿元</b>，最大经理 '+esc(topE.name)+'（'+v2f(topE.scale/a.scale*100,1)+'%）。');
 
-    var stratChart=sa.slice(0,8).map(function(x){return {label:x.name.replace('策略',''),value:x.scale,share:x.scale/a.scale,ret:x.ret,color:M.color}});
+    var stratChart=sa.slice(0,8).map(function(x){return {label:x.name.replace('策略',''),value:x.scale,share:x.scale/a.scale,ret:x.ret,color:v2cat(x.name)}});
     var stratHead=['投资策略','笔数',mode==='outsource'?'管理人数':'经理数','区间收益率','超额收益率','跑赢占比','规模（亿元）','规模占比','累计占比'];
     var stratAlign=['l','r','r','r','r','r','r','r','r'];
     var scum=0;
     var stratBody=sa.map(function(x){
       scum+=x.scale;
-      return [v2dot(M.color)+x.name,x.count,x.ents,v2p(x.ret),v2pp(x.ex),v2f(x.win,1)+'%',v2f(x.scale,1),v2f(x.scale/a.scale*100,1)+'%',v2f(scum/a.scale*100,1)+'%'];
+      return [v2dot(v2cat(x.name))+x.name,x.count,x.ents,v2p(x.ret),v2pp(x.ex),v2f(x.win,1)+'%',v2f(x.scale,1),v2f(x.scale/a.scale*100,1)+'%',v2f(scum/a.scale*100,1)+'%'];
     });
     var stratTotal=['<b>合计</b>','—','—',v2p(a.ret),v2pp(a.ex),v2f(a.win,1)+'%',v2f(a.scale,1),'100.0%','100.0%'];
 
@@ -5104,13 +5104,13 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       entHead=['外部管理人','笔数','策略数','区间收益率','超额收益率','跑赢占比','最大回撤','规模（亿元）','规模占比','累计占比'];
       entAlign=['l','r','r','r','r','r','r','r','r','r'];
       var cum=0;
-      entBody=ea.map(function(x){cum+=x.scale;return [v2dot(M.color)+x.name,x.count,x.strats,v2p(x.ret),v2pp(x.ex),v2f(x.win,1)+'%',v2f(x.dd,2)+'%',v2f(x.scale,1),v2f(x.scale/a.scale*100,1)+'%',v2f(cum/a.scale*100,1)+'%']});
+      entBody=ea.map(function(x){cum+=x.scale;return [v2dot('#17497e')+x.name,x.count,x.strats,v2p(x.ret),v2pp(x.ex),v2f(x.win,1)+'%',v2f(x.dd,2)+'%',v2f(x.scale,1),v2f(x.scale/a.scale*100,1)+'%',v2f(cum/a.scale*100,1)+'%']});
       entTotal=['<b>合计</b>',a.count,sa.length,v2p(a.ret),v2pp(a.ex),v2f(a.win,1)+'%',v2f(a.dd,2)+'%',v2f(a.scale,1),'100.0%','100.0%'];
     }else{
       entHead=['投资经理','所属部门','笔数','区间收益率','超额收益率','跑赢占比','最大回撤','规模（亿元）','规模占比','累计占比'];
       entAlign=['l','l','r','r','r','r','r','r','r','r'];
       var cum2=0;
-      entBody=ea.map(function(x){cum2+=x.scale;return [v2dot(M.color)+x.name,x.dept,x.count,v2p(x.ret),v2pp(x.ex),v2f(x.win,1)+'%',v2f(x.dd,2)+'%',v2f(x.scale,1),v2f(x.scale/a.scale*100,1)+'%',v2f(cum2/a.scale*100,1)+'%']});
+      entBody=ea.map(function(x){cum2+=x.scale;return [v2dot('#17497e')+x.name,x.dept,x.count,v2p(x.ret),v2pp(x.ex),v2f(x.win,1)+'%',v2f(x.dd,2)+'%',v2f(x.scale,1),v2f(x.scale/a.scale*100,1)+'%',v2f(cum2/a.scale*100,1)+'%']});
       entTotal=['<b>合计</b>','—',a.count,v2p(a.ret),v2pp(a.ex),v2f(a.win,1)+'%',v2f(a.dd,2)+'%',v2f(a.scale,1),'100.0%','100.0%'];
     }
     var insRows;
@@ -5129,7 +5129,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     var ins='<div class="sub2">集中度与分布</div>'+insRows.map(function(r){
       return '<div class="pv2-irow"><span>'+r[0]+'</span>'+(r[3]!=null&&r[3]!==''?'<span class="pv2-itrack" title="'+v2f(r[3],1)+'%"><i style="width:'+Math.min(100,Math.max(0,r[3]))+'%"></i></span>':'')+'<b>'+r[1]+(r[2]?'<small>'+r[2]+'</small>':'')+'</b></div>';
     }).join('');
-    var entColor=M.color;
+    var entColor='#17497e';
     var entChart=ea.slice(0,10).map(function(x){return {label:x.name,value:x.scale,share:x.scale/a.scale,ret:x.ret,color:entColor}});
 
     return '<div class="pv2-conclusion" style="--accent:'+M.color+'"><span class="tag">结论</span><p>'+sum+'</p></div>'+
@@ -5137,7 +5137,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       '<section class="pv2-card"><div class="hd"><h3>策略分析</h3><span class="sub">'+M.name+' · '+sa.length+' 类策略</span></div>'+
         '<div class="sub2">每一类模式下都按策略拆解，用于判断规模与超额来自哪类策略</div>'+
         '<div class="pv2-grid2">'+
-          '<div><div class="sub2">策略规模结构（亿元）</div><div class="pv2-chartbox">'+v2bar(stratChart)+'</div></div>'+
+          '<div><div class="sub2">策略规模结构（亿元）<span class="pv2-legend" style="margin-left:8px;font-size:11px;color:#7c8fa4"><i style="display:inline-block;width:8px;height:8px;border-radius:2px;margin:0 4px 0 10px;background:'+V2_CAT_COLOR['债券']+'"></i>债券类<i style="display:inline-block;width:8px;height:8px;border-radius:2px;margin:0 4px 0 10px;background:'+V2_CAT_COLOR['股票']+'"></i>股票类<i style="display:inline-block;width:8px;height:8px;border-radius:2px;margin:0 4px 0 10px;background:'+V2_CAT_COLOR['基金']+'"></i>基金类</span></div><div class="pv2-chartbox">'+v2bar(stratChart)+'</div></div>'+
           '<div><div class="sub2">策略收益与超额（'+periodLabel(S.period)+'）</div><div class="pv2-chartbox">'+v2gbar(sa.slice(0,8).map(function(x){return {label:x.name.replace('策略',''),scale:x.scale,ret:x.ret,ex:x.ex}}),M.color)+'</div></div>'+
         '</div>'+v2tbl(stratHead,stratAlign,stratBody,stratTotal)+'</section>'+
       '<section class="pv2-card"><div class="hd"><h3>'+(mode==='outsource'?'外部管理人分析':'投资经理分析')+'</h3><span class="sub">'+M.entity+' · 按规模排序</span></div>'+
