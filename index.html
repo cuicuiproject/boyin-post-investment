@@ -4132,6 +4132,58 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   return s+'</svg>';
  }
 
+ function deptReturnSvg(rows){
+  if(window.poRegister)window.poRegister('po-chart-b',null);
+  var groups=dimGroups(rows,'dept');
+  if(!groups.length)return '';
+  var axisLabels=periodDates(S.period),stepCount=({'1':30,'3':45,'6':60,'12':90,'36':120})[S.period]||30,n=stepCount;
+  var W=chartW('po-chart-b'),H=330,L=64,R=30,B=46,T=50;
+  function ymd(d){var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day}
+  var d0=new Date(axisLabels[0]+'T00:00:00'),d1=new Date(axisLabels[axisLabels.length-1]+'T00:00:00'),genDates=[];
+  for(var di=0;di<n;di++){genDates.push(ymd(new Date(d0.getTime()+(d1.getTime()-d0.getTime())*di/(n-1||1))))}
+  var axisIdx=axisLabels.map(function(_,k){return Math.round(k*(n-1)/(axisLabels.length-1||1))});
+  function crAt(anchors,t){
+   var k=0;for(var z=0;z<anchors.length-1;z++){if(t<=anchors[z+1].t){k=z;break}}
+   var p0=anchors[Math.max(0,k-1)],p1=anchors[k],p2=anchors[k+1],p3=anchors[Math.min(anchors.length-1,k+2)];
+   var span=p2.t-p1.t||1,s=(t-p1.t)/span,s2=s*s,s3=s2*s;
+   return .5*((2*p1.v)+(-p0.v+p2.v)*s+(2*p0.v-5*p1.v+4*p2.v-p3.v)*s2+(-p0.v+3*p1.v-3*p2.v+p3.v)*s3);
+  }
+  var series=groups.map(function(g,j){
+   var set=rows.filter(function(a){return a.deptL1===g.key});
+   var ret=weighted(set,key()),ex=weighted(set,ekey()),scale=sum(set,'scale');
+   var f=j===0?[.58,.64]:[.64,.58];
+   var t1=.26+j*.04,t2=.62+j*.03;
+   var anchors=[{t:0,v:0},{t:t1,v:ret*f[0]},{t:t2,v:ret*f[1]},{t:1,v:ret}];
+   var path=[];
+   for(var i=0;i<n;i++){path.push(crAt(anchors,i/(n-1||1)))}
+   path[0]=0;path[n-1]=ret;
+   return {label:g.label,color:g.color,scale:scale,ret:ret,ex:ex,path:path};
+  });
+  var all=[0];series.forEach(function(s){all=all.concat(s.path)});
+  var min=Math.min.apply(null,all),max=Math.max.apply(null,all),pad=Math.max(.06,(max-min)*.10);min-=pad;max+=pad;
+  var y=function(v){return T+(max-v)/(max-min||1)*(H-T-B)},x=function(i){return L+i*(W-L-R)/(n-1||1)};
+  function smooth(pts){
+   if(pts.length<2)return '';
+   var d='M'+pts[0][0]+','+pts[0][1];
+   for(var i=0;i<pts.length-1;i++){
+    var p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;
+    var c1x=p1[0]+(p2[0]-p0[0])/6,c1y=p1[1]+(p2[1]-p0[1])/6;
+    var c2x=p2[0]-(p3[0]-p1[0])/6,c2y=p2[1]-(p3[1]-p1[1])/6;
+    d+=' C'+c1x+','+c1y+' '+c2x+','+c2y+' '+p2[0]+','+p2[1];
+   }
+   return d;
+  }
+  var s='<svg viewBox="0 0 '+W+' '+H+'">';
+  s+='<text class="po-axis-label" x="12" y="18" style="font-weight:600">累计收益率</text>';
+  var legSp=160,legStart=(W-groups.length*legSp)/2;s+='<g>'+series.map(function(se,j){var lx=legStart+j*legSp,ly=18;return '<line x1="'+lx+'" y1="'+(ly-3)+'" x2="'+(lx+14)+'" y2="'+(ly-3)+'" stroke="'+se.color+'" stroke-width="2.8"/><circle cx="'+(lx+7)+'" cy="'+(ly-3)+'" r="3" fill="#fff" stroke="'+se.color+'" stroke-width="2"/><text class="po-legend" x="'+(lx+19)+'" y="'+ly+'">'+esc(se.label)+'</text>'}).join('')+'</g>';
+  for(var g=0;g<5;g++){var gy=T+g*(H-T-B)/4,val=max-g*(max-min)/4;s+='<line class="po-gridline" x1="'+L+'" y1="'+gy+'" x2="'+(W-R)+'" y2="'+gy+'"/><text class="po-axis-label" x="'+(L-9)+'" y="'+(gy+3)+'" text-anchor="end">'+val.toFixed(1)+'%</text>'}
+  if(min<0&&max>0){s+='<line x1="'+L+'" y1="'+y(0)+'" x2="'+(W-R)+'" y2="'+y(0)+'" stroke="#dbe4ec"/>'}
+  series.forEach(function(se){var pts=se.path.map(function(v,i){return [x(i),y(v)]});s+='<path d="'+smooth(pts)+'" fill="none" stroke="'+se.color+'" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round"/>'});
+  axisLabels.forEach(function(d,k){var i=axisIdx[k];s+='<text class="po-axis-label" x="'+x(i)+'" y="'+(H-14)+'" text-anchor="'+(k===0?'start':(k===axisLabels.length-1?'end':'middle'))+'" font-size="9" font-weight="600">'+d+'</text>'});
+  poRegister('po-chart-b',{mode:'x',x1:L,x2:W-R,y1:T,y2:H-B,points:genDates.map(function(d,i){return{x:x(i),y:y(series[0].path[i]),label:d,rows:series.map(function(se){return [se.label,ptxt(se.path[i])+' · '+fmt(se.scale,0)+'亿',(se.path[i]>=0?'up':'down'),se.color]}),dots:series.map(function(se){return{x:x(i),y:y(se.path[i]),c:se.color}})}})});
+  return s+'</svg>';
+ }
+
  function returnSvg(rows){
   var W=chartW('po-chart-b'),H=220,L=58,R=24,T=34,B=38,dates=periodDates(S.period),n=dates.length;
   var ret=weighted(rows,key()),ex=weighted(rows,ekey()),bench=ret-ex;
@@ -4326,8 +4378,8 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   var chartATitle=document.getElementById('po-chart-a-title');if(chartATitle)chartATitle.innerHTML=(S.view==='bank'&&S.dim==='strategy')?'资产规模走势<span class="po-chart-b-sub">（全部策略）</span>':((S.view==='bank'&&S.dim==='ext')?'资产规模走势<span class="po-chart-b-sub">（全部管理人）</span>':'资产规模走势');
   var chartADim=(S.view==='bank')?((S.dim==='all')?'form':S.dim):(S.view==='department'?'dept':'manager');
   document.getElementById('po-chart-a').innerHTML=stackSvg(rows,dimGroups(rows,chartADim,S.view==='bank'&&S.dim==='ext'));
-  var chartBTitle=document.getElementById('po-chart-b-title');var isExtChart=(S.view==='bank'&&S.dim==='ext');var isModeChart=(S.view==='bank'&&(S.dim==='form'||S.dim==='all'));if(chartBTitle)chartBTitle.innerHTML=(S.view==='bank'&&S.dim==='strategy')?'分策略组合收益率走势<span class="po-chart-b-sub">（规模加权）</span>':(isExtChart?'组合收益率走势<span class="po-chart-b-sub">（前8大管理人 · 规模加权）</span>':(isModeChart?'组合收益率走势<span class="po-chart-b-sub">（三类投资模式 · 规模加权）</span>':'组合收益率走势'));
-  var chartB=document.getElementById('po-chart-b');var isStrategyChart=(S.view==='bank'&&S.dim==='strategy');chartB.classList.toggle('strategy-chart',isStrategyChart||isExtChart||isModeChart);chartB.innerHTML=isStrategyChart?strategyReturnSvg(viewRows):(isExtChart?extReturnSvg(rows):(isModeChart?modeReturnSvg(rows):returnSvg(viewRows)));
+  var chartBTitle=document.getElementById('po-chart-b-title');var isExtChart=(S.view==='bank'&&S.dim==='ext');var isModeChart=(S.view==='bank'&&(S.dim==='form'||S.dim==='all'));var isDeptChart=(S.view==='department');if(chartBTitle)chartBTitle.innerHTML=(S.view==='bank'&&S.dim==='strategy')?'分策略组合收益率走势<span class="po-chart-b-sub">（规模加权）</span>':(isExtChart?'组合收益率走势<span class="po-chart-b-sub">（前8大管理人 · 规模加权）</span>':(isModeChart?'组合收益率走势<span class="po-chart-b-sub">（三类投资模式 · 规模加权）</span>':(isDeptChart?'组合收益率走势<span class="po-chart-b-sub">（投资部门 · 规模加权）</span>':'组合收益率走势')));
+  var chartB=document.getElementById('po-chart-b');var isStrategyChart=(S.view==='bank'&&S.dim==='strategy');chartB.classList.toggle('strategy-chart',isStrategyChart||isExtChart||isModeChart||isDeptChart);chartB.innerHTML=isStrategyChart?strategyReturnSvg(viewRows):(isExtChart?extReturnSvg(rows):(isModeChart?modeReturnSvg(rows):(isDeptChart?deptReturnSvg(rows):returnSvg(viewRows))));
 }
 
 /* ---- 归因区：随维度变化 ---- */
