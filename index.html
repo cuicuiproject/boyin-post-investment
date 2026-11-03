@@ -4236,17 +4236,28 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
  }
  function panel(title,note,inner){return '<section class="po-table-panel"><div class="po-panel-head"><h3>'+title+'</h3></div>'+inner+'</section>'}
  function buckets(rows){
-  return BUCKET_ORDER.map(function(b){var set=rows.filter(function(a){return a.bucket===b});return {key:b,label:BUCKET_LABEL[b],color:BUCKET_COLOR[b],scale:sum(set,'scale'),ret:weighted(set,key()),ex:weighted(set,ekey()),count:set.length,win:set.length?set.filter(function(a){return a[ekey()]>0}).length/set.length*100:0}});
+  return BUCKET_ORDER.map(function(b){var set=rows.filter(function(a){return a.bucket===b});return {key:b,label:BUCKET_LABEL[b],color:BUCKET_COLOR[b],scale:sum(set,'scale'),ret:weighted(set,key()),ex:weighted(set,ekey()),count:set.length,win:productWin(set).pct}});
  }
  function spvCount(rows,bucket){var seen={};rows.forEach(function(a){if(a.bucket===bucket)seen[a.carrier.id]=1});return Object.keys(seen).length}
 
+ function productWin(scopeRows){
+  var ids={};scopeRows.forEach(function(a){ids[a.id]=1});
+  var total=0,beat=0;
+  PP.products.forEach(function(p){
+   var sub=p.positions.filter(function(x){return ids[x.asset.id]});
+   if(!sub.length)return;
+   total++;
+   if(p.ex>0)beat++;
+  });
+  return {beat:beat,total:total,pct:total?beat/total*100:0};
+ }
  /* ---- 结论句 ---- */
  function summaryHtml(rows){
   var tot=sum(rows,'scale'),ret=weighted(rows,key()),ex=weighted(rows,ekey()),dd=weighted(rows,'dd');
-  var win=rows.length?rows.filter(function(a){return a[ekey()]>0}).length/rows.length*100:0;
+  var win=productWin(rows).pct;
   var dim=(S.view==='bank')?S.dim:'form';
   var p=periodLabel(S.period);
-  var perf=p+'组合收益率 <b class="'+cls(ret)+'">'+ptxt(ret)+'</b>、超额收益率 <b class="'+cls(ex)+'">'+((ex>0?'+':'')+fmt(ex,2)+'pp')+'</b>，跑赢基准占比 <b>'+fmt(win,1)+'%</b>';
+  var perf=p+'组合收益率 <b class="'+cls(ret)+'">'+ptxt(ret)+'</b>、超额收益率 <b class="'+cls(ex)+'">'+((ex>0?'+':'')+fmt(ex,2)+'pp')+'</b>，跑赢基准产品数量占比 <b>'+fmt(win,1)+'%</b>';
 
   if(dim==='strategy'){
     var items=pickerItems(rows,'strategy'),sel=curSel('strategy',items);
@@ -4299,10 +4310,10 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
  function kpisTop(rows,label){
   var tot=sum(rows,'scale'),first=label||'总资产规模';
   var ret=weighted(rows,key()),ex=weighted(rows,ekey()),dd=weighted(rows,'dd');
-  var win=rows.length?rows.filter(function(a){return a[ekey()]>0}).length/rows.length*100:0;
+  var pw=productWin(rows),win=pw.pct;
   var retItem=['组合收益率',fmt(ret,2),'%','按规模加权',cls(ret)];
   var exItem=['超额收益率',(ex>0?'+':'')+fmt(ex,2),'pp','相对业绩基准',cls(ex)];
-  var winItem=['跑赢基准占比',fmt(win,1),'%','按资产笔数',''];
+  var winItem=['跑赢基准产品数量占比',fmt(win,1),'%','按产品数量 · '+pw.beat+'/'+pw.total,''];
   var ddItem=['最大回撤',fmt(dd,2),'%','按规模加权',''];
   var dim=(S.view==='bank')?S.dim:'form';
   var items;
@@ -4402,12 +4413,12 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
    var items=pickerItems(rows,'strategy'),sel=curSel('strategy',items);
    var chosen=items.filter(function(g){return sel.indexOf(g.key)>=0}).map(function(g){
     var set=rows.filter(function(a){return a.strategy===g.key});
-    return {key:g.key,label:g.label,scale:g.scale,count:g.count,ret:weighted(set,key()),ex:weighted(set,ekey()),win:set.filter(function(a){return a[ekey()]>0}).length/set.length*100};
+    return {key:g.key,label:g.label,scale:g.scale,count:g.count,ret:weighted(set,key()),ex:weighted(set,ekey()),win:productWin(set).pct};
    });
    document.getElementById('po-chart-d').innerHTML=compareSvg(chosen.map(function(g){return {label:g.label.replace('策略',''),scale:g.scale,ret:g.ret,ex:g.ex}}));
    var allItems=items.map(function(g){
     var set=rows.filter(function(a){return a.strategy===g.key});
-    return {label:g.label,count:g.count,scale:g.scale,ret:weighted(set,key()),ex:weighted(set,ekey()),win:set.filter(function(a){return a[ekey()]>0}).length/set.length*100};
+    return {label:g.label,count:g.count,scale:g.scale,ret:weighted(set,key()),ex:weighted(set,ekey()),win:productWin(set).pct};
    });
    var pageSize=10,pages=Math.max(1,Math.ceil(allItems.length/pageSize));
    S.strategyPage=Math.min(Math.max(1,S.strategyPage||1),pages);
@@ -4418,7 +4429,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     '<button data-sp="'+(page-1)+'" '+(page<=1?'disabled':'')+'>上一页</button>'+
     Array.from({length:pages},function(_,i){return '<button data-sp="'+(i+1)+'" class="'+(i+1===page?'active':'')+'">'+(i+1)+'</button>'}).join('')+
     '<button data-sp="'+(page+1)+'" '+(page>=pages?'disabled':'')+'>下一页</button></div>';
-   document.getElementById('po-tables').innerHTML=panel('策略经营表现','全部策略 · 按规模排序',table(['投资策略','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准占比'],b2,totalRow)+pager);
+   document.getElementById('po-tables').innerHTML=panel('策略经营表现','全部策略 · 按规模排序',table(['投资策略','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准产品数量占比'],b2,totalRow)+pager);
    document.querySelectorAll('[data-sp]').forEach(function(b){b.onclick=function(){var n=+b.getAttribute('data-sp');if(n<1||n>pages)return;S.strategyPage=n;renderAll()}});
    return;
   }
@@ -4433,13 +4444,13 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
    });
    var mgr=uniq(rows.filter(function(a){return a.manager!=='—'}).map(function(a){return a.manager})).map(function(m){
     var set=rows.filter(function(a){return a.manager===m});
-    return {m:m,dept:set[0].deptL1,scale:sum(set,'scale'),ret:weighted(set,key()),ex:weighted(set,ekey()),count:set.length,win:set.filter(function(a){return a[ekey()]>0}).length/set.length*100};
+    return {m:m,dept:set[0].deptL1,scale:sum(set,'scale'),ret:weighted(set,key()),ex:weighted(set,ekey()),count:set.length,win:productWin(set).pct};
    }).sort(function(a,b){return b.scale-a.scale});
    var intTot=sum(mgr,'scale');
    var bodyM=mgr.map(function(x){return [x.m,x.dept,x.count,fmt(x.scale,1),fmt(intTot?x.scale/intTot*100:0,1)+'%',pct(x.ret),pct(x.ex),fmt(x.win,1)+'%']});
    document.getElementById('po-tables').innerHTML=
     panel('投资部门表现','按投资部门汇总；通道投资与自主投资由内部投资经理负责',table(['投资部门','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率'],body3,['合计',rows.length,fmt(tot3,1),'100.0%',pct(weighted(rows,key())),pct(weighted(rows,ekey()))]))+
-    panel('投资经理表现','仅内部负责资产（自主投资 + 通道投资），共 '+mgr.length+' 位',table(['投资经理','所属投资部门','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准占比'],bodyM,['合计','—',sum(mgr,'count'),fmt(intTot,1),'100.0%',pct(weighted(rows.filter(function(a){return a.manager!=='—'}),key())),pct(weighted(rows.filter(function(a){return a.manager!=='—'}),ekey())),'—']));
+    panel('投资经理表现','仅内部负责资产（自主投资 + 通道投资），共 '+mgr.length+' 位',table(['投资经理','所属投资部门','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准产品数量占比'],bodyM,['合计','—',sum(mgr,'count'),fmt(intTot,1),'100.0%',pct(weighted(rows.filter(function(a){return a.manager!=='—'}),key())),pct(weighted(rows.filter(function(a){return a.manager!=='—'}),ekey())),'—']));
    return;
   }
   if(dim==='ext'||dim==='manager'){
@@ -4454,7 +4465,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
    var sel3=(dim==='ext')?curSel('ext',items3):items3.map(function(g){return g.key});
    var chosen3=items3.filter(function(g){return sel3.indexOf(g.key)>=0}).map(function(g){
     var set=srcRows.filter(function(a){return ((dim==='ext')?a.owner:a.manager)===g.key});
-    return {key:g.key,label:g.label,scale:g.scale,count:uniq(set.map(function(a){return a.carrier.id})).length,ret:weighted(set,key()),ex:weighted(set,ekey()),win:set.filter(function(a){return a[ekey()]>0}).length/set.length*100};
+    return {key:g.key,label:g.label,scale:g.scale,count:uniq(set.map(function(a){return a.carrier.id})).length,ret:weighted(set,key()),ex:weighted(set,ekey()),win:productWin(set).pct};
    });
    var rest2=srcRows.filter(function(a){return sel3.indexOf((dim==='ext')?a.owner:a.manager)<0});
    var chartChosen=chosen3.slice(0,8);
@@ -4469,7 +4480,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
    var tableItems=pickerItems(tableRows,(dim==='ext')?'ext':'manager');
    var tableData=tableItems.map(function(g){
     var set=tableRows.filter(function(a){return ((dim==='ext')?a.owner:a.manager)===g.key});
-    return {label:g.label,count:uniq(set.map(function(a){return a.carrier.id})).length,scale:g.scale,ret:weighted(set,key()),ex:weighted(set,ekey()),win:set.filter(function(a){return a[ekey()]>0}).length/set.length*100};
+    return {label:g.label,count:uniq(set.map(function(a){return a.carrier.id})).length,scale:g.scale,ret:weighted(set,key()),ex:weighted(set,ekey()),win:productWin(set).pct};
    });
    var totTable=sum(tableRows,'scale');
    var body4=tableData.map(function(g){return [g.label,g.count,fmt(g.scale,1),fmt(totTable?g.scale/totTable*100:0,1)+'%',pct(g.ret),pct(g.ex),fmt(g.win,1)+'%']});
@@ -4486,7 +4497,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
    }
    var cnt4=tableData.reduce(function(t,r){return t+(+r.count||0)},0);
    document.getElementById('po-tables').innerHTML=panel((dim==='ext')?'外部管理人表现':'投资经理表现',(dim==='ext')?'全部外部管理人 · 按规模排序':'',
-    table([(dim==='ext')?'外部管理人':'投资经理','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准占比'],pageRows,
+    table([(dim==='ext')?'外部管理人':'投资经理','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准产品数量占比'],pageRows,
     ['合计',cnt4,fmt(totTable,1),'100.0%',pct(weighted(tableRows,key())),pct(weighted(tableRows,ekey())),fmt(tableRows.filter(function(a){return a[ekey()]>0}).length/tableRows.length*100,1)+'%'])+pager);
    return;
   }
