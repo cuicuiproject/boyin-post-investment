@@ -3707,7 +3707,6 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
    '<div class="po-shell">'+
     '<div class="po-view-tabs">'+
       '<button class="po-view-tab active" data-view="bank">公司总览</button>'+
-      '<button class="po-view-tab" data-view="department">投资部门总览</button>'+
       '<button class="po-view-tab" data-view="manager">投资经理工作台</button>'+
       '<button class="po-view-tab" data-view="product">理财产品穿透</button>'+
       '<button class="po-view-tab" data-view="all">全部专户</button>'+
@@ -4896,7 +4895,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   document.querySelectorAll('.menu [data-page="portfolio-operations"]').forEach(function(item){if(!item.classList.contains('po-nav-view'))item.remove()});
   if(!document.querySelector('.po-nav-group')){
    var group=document.createElement('div');group.className='po-nav-group';group.innerHTML='<div class="group-title">经营分析</div><nav class="menu po-nav-menu"></nav>';
-   var menu=group.querySelector('.po-nav-menu'),labels=[['bank','公司总览'],['department','投资部门总览'],['manager','投资经理工作台'],['product','理财产品穿透'],['all','全部专户']];
+   var menu=group.querySelector('.po-nav-menu'),labels=[['bank','公司总览'],['manager','投资经理工作台'],['product','理财产品穿透'],['all','全部专户']];
    labels.forEach(function(item){var button=document.createElement('button');button.className='po-nav-view';button.dataset.poView=item[0];button.textContent=item[1];button.onclick=function(){if(typeof infos!=='undefined')infos['portfolio-operations']=['经营分析',item[1]];if(typeof state!=='undefined'){state.workspacePageLabels=state.workspacePageLabels||{};state.workspacePageLabels['portfolio-operations']=item[1]}if(typeof page==='function')page('portfolio-operations');if(tabMap[item[0]])tabMap[item[0]].click();document.querySelectorAll('.po-nav-view').forEach(function(x){x.classList.toggle('active',x===button)});companyWording();window.scrollTo(0,0)};menu.appendChild(button)});
    var side=document.querySelector('aside.side'),logo=side&&side.querySelector('.logo');if(logo)logo.insertAdjacentElement('afterend',group);
   }
