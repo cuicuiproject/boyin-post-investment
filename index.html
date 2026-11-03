@@ -3707,7 +3707,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   el.innerHTML=
    '<div class="po-shell">'+
     '<div class="po-view-tabs">'+
-      '<button class="po-view-tab active" data-view="bank">公司总览</button>'+
+      '<button class="po-view-tab active" data-view="bank">资产总览</button>'+
       '<button class="po-view-tab" data-view="manager">投资经理工作台</button>'+
       '<button class="po-view-tab" data-view="product">理财产品穿透</button>'+
       '<button class="po-view-tab" data-view="all">全部专户</button>'+
@@ -4271,7 +4271,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       var r=set.length?weighted(set,key()):0;
       if(!best||r>best.ret)best={label:g.label,ret:r};
     });
-    return '<b>总结：</b>总资产规模 <b>'+fmt(tot,1)+' 亿元</b>；策略维度：<b>'+items.length+'</b> 个策略，已选 <b>'+sel.length+'</b> 个（其他策略 '+fmt(rest,1)+' 亿元）；前三大策略规模占比 <b>'+fmt(tot?top3/tot*100:0,1)+'%</b>，收益最高的是 <b>'+esc(best?best.label:'—')+'</b>（'+pct(best?best.ret:0)+'）；'+perf+'；最大回撤 <b>'+dd.toFixed(2)+'%</b>。';
+    return '总资产规模 <b>'+fmt(tot,1)+' 亿元</b>；策略维度：<b>'+items.length+'</b> 个策略，已选 <b>'+sel.length+'</b> 个（其他策略 '+fmt(rest,1)+' 亿元）；前三大策略规模占比 <b>'+fmt(tot?top3/tot*100:0,1)+'%</b>，收益最高的是 <b>'+esc(best?best.label:'—')+'</b>（'+pct(best?best.ret:0)+'）；'+perf+'；最大回撤 <b>'+dd.toFixed(2)+'%</b>。';
   }
 
   if(dim==='dept'){
@@ -4279,7 +4279,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     rows.forEach(function(a){if(a.deptL1)map[a.deptL1]=(map[a.deptL1]||0)+a.scale});
     var ds=Object.keys(map).map(function(k){return {label:k,scale:map[k]}}).sort(function(a,b){return b.scale-a.scale});
     var parts=ds.map(function(d){return esc(d.label)+' <b>'+fmt(d.scale,1)+' 亿元</b>（'+fmt(tot?d.scale/tot*100:0,1)+'%）'}).join('、');
-    return '<b>总结：</b>总资产规模 <b>'+fmt(tot,1)+' 亿元</b>；部门维度：'+parts+'；'+perf+'；最大回撤 <b>'+dd.toFixed(2)+'%</b>。';
+    return '总资产规模 <b>'+fmt(tot,1)+' 亿元</b>；部门维度：'+parts+'；'+perf+'；最大回撤 <b>'+dd.toFixed(2)+'%</b>。';
   }
 
   if(dim==='ext'){
@@ -4292,7 +4292,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     var scopeTxt=allSel?('委外专项 '+extCount+' 家'):('委外专项（已选 '+selCount+' 家）');
     var shareTxt=allSel?('占全公司 '+fmt(tot/2500*100,1)+'%'):('占委外 '+fmt(extTot?tot/extTot*100:0,1)+'% · 占全公司 '+fmt(tot/2500*100,1)+'%');
     var ctx=allSel?'':'；委外共 '+extCount+' 家、'+fmt(extTot,1)+' 亿元';
-    return '<b>总结：</b>'+scopeTxt+'，规模 <b>'+fmt(tot,1)+' 亿元</b>（'+shareTxt+'）'+ctx+'；'+perf+'；最大回撤 <b>'+dd.toFixed(2)+'%</b>。';
+    return ''+scopeTxt+'，规模 <b>'+fmt(tot,1)+' 亿元</b>（'+shareTxt+'）'+ctx+'；'+perf+'；最大回撤 <b>'+dd.toFixed(2)+'%</b>。';
   }
 
   var bs=buckets(rows);
@@ -4301,7 +4301,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   exRows.forEach(function(a){m[a.owner]=(m[a.owner]||0)+a.scale});
   var sz=Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return b-a});
   var top5e=sz.slice(0,5).reduce(function(t,x){return t+x},0),exTot=sum(exRows,'scale');
-  return '<b>总结：</b>总资产规模 <b>'+fmt(tot,1)+' 亿元</b>；'+perf+'；规模结构上委外投资 <b>'+share(bs[0].scale)+'</b>、通道投资 <b>'+share(bs[1].scale)+'</b>、自主投资 <b>'+share(bs[2].scale)+'</b>；委外前五家管理人集中度 <b>'+fmt(exTot?top5e/exTot*100:0,1)+'%</b>。';
+  return '总资产规模 <b>'+fmt(tot,1)+' 亿元</b>；'+perf+'；规模结构上委外投资 <b>'+share(bs[0].scale)+'</b>、通道投资 <b>'+share(bs[1].scale)+'</b>、自主投资 <b>'+share(bs[2].scale)+'</b>；委外前五家管理人集中度 <b>'+fmt(exTot?top5e/exTot*100:0,1)+'%</b>。';
 }
 
 /* ---- KPI（顶部一行 7 张） ---- */
@@ -4899,11 +4899,11 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   document.querySelectorAll('.menu [data-page="portfolio-operations"]').forEach(function(item){if(!item.classList.contains('po-nav-view'))item.remove()});
   if(!document.querySelector('.po-nav-group')){
    var group=document.createElement('div');group.className='po-nav-group';group.innerHTML='<div class="group-title">经营分析</div><nav class="menu po-nav-menu"></nav>';
-   var menu=group.querySelector('.po-nav-menu'),labels=[['bank','公司总览'],['manager','投资经理工作台'],['product','理财产品穿透'],['all','全部专户']];
+   var menu=group.querySelector('.po-nav-menu'),labels=[['bank','资产总览'],['manager','投资经理工作台'],['product','理财产品穿透'],['all','全部专户']];
    labels.forEach(function(item){var button=document.createElement('button');button.className='po-nav-view';button.dataset.poView=item[0];button.textContent=item[1];button.onclick=function(){if(typeof infos!=='undefined')infos['portfolio-operations']=['经营分析',item[1]];if(typeof state!=='undefined'){state.workspacePageLabels=state.workspacePageLabels||{};state.workspacePageLabels['portfolio-operations']=item[1]}if(typeof page==='function')page('portfolio-operations');if(tabMap[item[0]])tabMap[item[0]].click();document.querySelectorAll('.po-nav-view').forEach(function(x){x.classList.toggle('active',x===button)});companyWording();window.scrollTo(0,0)};menu.appendChild(button)});
    var side=document.querySelector('aside.side'),logo=side&&side.querySelector('.logo');if(logo)logo.insertAdjacentElement('afterend',group);
   }
-  if(typeof infos!=='undefined')infos['portfolio-operations']=['经营分析','公司总览'];if(typeof state!=='undefined'){state.workspacePageLabels=state.workspacePageLabels||{};state.workspacePageLabels['portfolio-operations']='公司总览'}
+  if(typeof infos!=='undefined')infos['portfolio-operations']=['经营分析','资产总览'];if(typeof state!=='undefined'){state.workspacePageLabels=state.workspacePageLabels||{};state.workspacePageLabels['portfolio-operations']='资产总览'}
   companyWording();
   var title=document.getElementById('po-overview-title'),ledger=document.getElementById('po-ledger');
   if(title)new MutationObserver(companyWording).observe(title,{childList:true,characterData:true,subtree:true});
@@ -6947,7 +6947,7 @@ if(document.getElementById('post')&&document.getElementById('post').classList.co
     if(!po)return false;
     document.querySelectorAll('.page').forEach(function(p){p.classList.toggle('active',p===po)});
     var crumb=document.getElementById('crumb');
-    if(crumb)crumb.innerHTML='经营分析 <span>/</span> 公司总览';
+    if(crumb)crumb.innerHTML='经营分析 <span>/</span> 资产总览';
     var exp=document.getElementById('export');
     if(exp)exp.style.display='none';
     return true;
@@ -6959,7 +6959,7 @@ if(document.getElementById('post')&&document.getElementById('post').classList.co
     var btn=document.querySelector('.po-nav-view[data-po-view="bank"]');
     if(btn)btn.click();                       /* 走导航：面包屑/高亮/标签一次到位 */
     if(typeof state!=='undefined'){
-      state.workspacePageLabels=state.workspacePageLabels||{};state.workspacePageLabels['portfolio-operations']='公司总览';
+      state.workspacePageLabels=state.workspacePageLabels||{};state.workspacePageLabels['portfolio-operations']='资产总览';
       if(state.workspaceTabs&&state.workspaceTabs.length>1){
         state.workspaceTabs=state.workspaceTabs.filter(function(t){return t.id!=='overview'});
         state.activeWorkspaceTab='portfolio-operations';
