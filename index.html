@@ -3762,9 +3762,9 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     '<div class="po-product" id="po-product"></div>'+
     '<div class="po-manager" id="po-manager"></div>'+
     '<div class="po-ledger" id="po-ledger">'+
-      '<section class="po-ledger-panel"><div class="po-panel-head"><h3>全部载体台账</h3></div>'+
+      '<section class="po-ledger-panel"><div class="po-panel-head"><h3>投资台账</h3></div>'+
       '<div class="po-ledger-filters">'+
-        '<input id="po-q" placeholder="搜索载体 / 策略 / 管理人">'+
+        '<input id="po-q" placeholder="搜索组合 / 策略 / 管理人">'+
         '<select id="po-bucket-filter"><option value="">全部投资模式</option><option value="outsource">委外</option><option value="channel">通道</option><option value="direct">直投</option></select>'+
         '<select id="po-dept-filter"></select>'+
         '<select id="po-manager-filter"></select>'+
@@ -3773,7 +3773,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       '</div>'+
       '<div class="po-ledger-summary" id="po-ledger-summary"></div>'+
       '<div class="po-table-wrap"><table class="po-table po-vehicle-table"><thead><tr>'+
-        '<th data-sort="carrier">载体名称</th><th data-sort="bucket">投资模式</th><th data-sort="strategy">投资策略</th>'+
+        '<th data-sort="carrier">组合 / 计划名称</th><th data-sort="bucket">投资模式</th><th data-sort="strategy">投资策略</th>'+
         '<th data-sort="deptL1">投资部门</th><th data-sort="owner">管理人/投资经理</th>'+
         '<th data-sort="scale">资产规模（亿元）</th><th data-sort="ret">区间收益率</th><th data-sort="ex">超额收益率</th><th data-sort="dd">最大回撤</th>'+
       '</tr></thead><tbody id="po-ledger-body"></tbody></table></div>'+
@@ -5363,7 +5363,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   document.querySelectorAll('.menu [data-page="portfolio-operations"]').forEach(function(item){if(!item.classList.contains('po-nav-view'))item.remove()});
   if(!document.querySelector('.po-nav-group')){
    var group=document.createElement('div');group.className='po-nav-group';group.innerHTML='<div class="group-title">经营分析</div><nav class="menu po-nav-menu"></nav>';
-   var menu=group.querySelector('.po-nav-menu'),labels=[['bank','资产总览'],['manager','投资经理视图'],['product','产品穿透'],['all','载体台账']];
+   var menu=group.querySelector('.po-nav-menu'),labels=[['bank','资产总览'],['manager','投资经理视图'],['product','产品穿透'],['all','投资台账']];
    labels.forEach(function(item){var button=document.createElement('button');button.className='po-nav-view';button.dataset.poView=item[0];button.textContent=item[1];button.onclick=function(){if(typeof infos!=='undefined')infos['portfolio-operations']=['经营分析',item[1]];if(typeof state!=='undefined'){state.workspacePageLabels=state.workspacePageLabels||{};state.workspacePageLabels['portfolio-operations']=item[1]}if(typeof page==='function')page('portfolio-operations');if(tabMap[item[0]])tabMap[item[0]].click();document.querySelectorAll('.po-nav-view').forEach(function(x){x.classList.toggle('active',x===button)});companyWording();window.scrollTo(0,0)};menu.appendChild(button)});
    var side=document.querySelector('aside.side'),logo=side&&side.querySelector('.logo');if(logo)logo.insertAdjacentElement('afterend',group);
   }
@@ -7509,7 +7509,7 @@ if(document.getElementById('post')&&document.getElementById('post').classList.co
     {t:'经营分析',s:'公司口径 · 2,500 亿（演示）',items:[
       {q:'[data-po-view="bank"]',label:'资产总览'},
       {q:'[data-po-view="product"]',label:'产品穿透',title:'24 只产品的持仓与投资模式暴露'},
-      {q:'[data-po-view="all"]',label:'载体台账',title:'272 笔资产 / 56 个载体'},
+      {q:'[data-po-view="all"]',label:'投资台账',title:'272 笔资产 · 56 个组合与计划'},
       {q:'[data-po-view="manager"]',label:'投资经理视图',title:'按投资经理横向对比'}
     ]},
     {t:'专户投后',s:'专户口径 · 实盘',items:[
