@@ -294,11 +294,6 @@ table thead th{background:linear-gradient(180deg,#eaf3fc,#dde9f6);color:#0f3a6e;
 .pv2 .pv2-entcol{display:flex;flex-direction:column;min-width:0}
 .pv2 .pv2-entbody{flex:1;display:flex;flex-direction:column;justify-content:flex-start;min-height:0}
 .pv2 .pv2-entbody>.pv2-conc{height:auto;width:100%}
-.pv2 .pv2-multi{table-layout:fixed;width:100%}
-.pv2 .pv2-multi th:nth-child(1){width:20%}
-.pv2 .pv2-multi th:nth-child(2){width:28%}
-.pv2 .pv2-multi th:nth-child(3){width:28%}
-.pv2 .pv2-multi th:nth-child(4){width:24%}
 #v2-chart-tip{position:fixed;z-index:9999;max-width:300px;padding:7px 10px;border-radius:7px;background:#102d49f2;color:#fff;font:11.5px/1.65 "Microsoft YaHei";box-shadow:0 10px 26px #0b274452;pointer-events:none;opacity:0;transform:translateY(3px);transition:opacity .12s}
 #v2-chart-tip.show{opacity:1;transform:none}
 #v2-chart-tip b{color:#9fd8ff;font-weight:600}
@@ -5186,14 +5181,6 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     if(y+h>window.innerHeight-8)y=e.clientY-h-14;
     v2TipEl.style.left=x+'px';v2TipEl.style.top=y+'px';
   });
-  function v2periodRows(rows){
-    var tot=rows.reduce(function(t,r){return t+(+r.scale||0)},0)||1;
-    return [['1','近1月'],['3','近3月'],['6','近6月'],['12','近1年'],['36','近3年']].map(function(p){
-      var k='r'+p[0],e='e'+p[0],ret=0,ex=0,win=0;
-      rows.forEach(function(r){var w=(+r.scale||0)/tot;ret+=w*(+r[k]||0);ex+=w*(+r[e]||0);if((+r[e]||0)>0)win+=w});
-      return [p[1],ret,ex,win*100];
-    });
-  }
   function v2brinson(rows,total){
     var n=rows.length;if(!n)return {alloc:0,sel:0,inter:0};
     var k=key(),e=ekey(),bench=[],rb=0,alloc=0,sel=0,inter=0,i;
@@ -5420,7 +5407,6 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     var calmar=a.dd?Math.abs(a.ret/a.dd):0;
     var eqRet=rows.reduce(function(t,r){return t+(+r[key()]||0)},0)/(rows.length||1);
     var posShare=rows.filter(function(r){return (+r[key()]||0)>0}).length/(rows.length||1)*100;
-    var perRows=v2periodRows(rows);
     var br=v2brinson(rows,a.scale);
     var cArr=sa.map(function(x){return {name:x.name,ret:x.ret,contrib:(x.scale/a.scale)*x.ret}});
     var cTop=cArr.slice().sort(function(p,q){return q.contrib-p.contrib}).slice(0,5);
@@ -5444,10 +5430,6 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
         '<div class="pv2-qgrid">'+qhtml+'</div>'+
         '<div class="pv2-qdd"><div class="sub2">回撤曲线（模拟，'+periodLabel(S.period)+'）</div>'+v2ddChart(perf.dds)+'</div>'+
         '<div class="pv2-note">波动率、夏普、信息比率与回撤曲线基于模拟日净值；Calmar＝区间收益 ÷ |给定最大回撤|；等权收益用于对比规模加权 '+v2p(a.ret)+'。</div></section>'+
-      '<section class="pv2-card"><div class="hd"><h3>多区间收益</h3><span class="sub">规模加权 · 各区间跑赢占比</span></div>'+
-        '<div class="pv2-tblwrap"><table class="pv2-tbl pv2-multi"><thead><tr><th>区间</th><th class="num">区间收益率</th><th class="num">超额收益率</th><th class="num">跑赢占比</th></tr></thead><tbody>'+
-        perRows.map(function(p){return '<tr><td>'+p[0]+'</td><td class="num">'+v2p(p[1])+'</td><td class="num">'+v2pp(p[2])+'</td><td class="num">'+v2f(p[3],1)+'%</td></tr>'}).join('')+
-        '</tbody></table></div></section>'+
       '<section class="pv2-card"><div class="hd"><h3>配置与选择归因</h3><span class="sub">简化 Brinson · 等权基准（演示）</span></div>'+
         '<div class="pv2-chartbox">'+v2var([{label:'配置效应',value:br.alloc},{label:'选择效应',value:br.sel},{label:'交互效应',value:br.inter}],'pp')+'</div>'+
         '<div class="pv2-note">超额 '+v2pp(a.ex)+' ≈ 配置 '+v2pp(br.alloc)+' + 选择 '+v2pp(br.sel)+' + 交互 '+v2pp(br.inter)+'；基准权重为等权模拟，接入真实基准后替换。</div></section>'+
@@ -5609,7 +5591,6 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     var dcalmar=a.dd?Math.abs(a.ret/a.dd):0;
     var deq=hs.reduce(function(t,h){return t+(+h[key()]||0)},0)/(hs.length||1);
     var dpos=hs.filter(function(h){return (+h[key()]||0)>0}).length/(hs.length||1)*100;
-    var dperRows=v2periodRows(hs);
     var dArr=hs.map(function(h){return {name:h.name,ret:h.ret,contrib:(h.scale/total)*h.ret}});
     var dTop=dArr.slice().sort(function(p,q){return q.contrib-p.contrib}).slice(0,5);
     var dBot=dArr.slice().sort(function(p,q){return p.contrib-q.contrib}).slice(0,5);
@@ -5633,10 +5614,6 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
         '<div class="pv2-qgrid">'+dqhtml+'</div>'+
         '<div class="pv2-qdd"><div class="sub2">回撤曲线（模拟，'+periodLabel(S.period)+'）</div>'+v2ddChart(dperf.dds)+'</div>'+
         '<div class="pv2-note">波动率、夏普、信息比率与回撤曲线基于模拟日净值；Calmar＝区间收益 ÷ |给定最大回撤|；等权收益用于对比规模加权 '+v2p(a.ret)+'。</div></section>'+
-      '<section class="pv2-card"><div class="hd"><h3>多区间收益</h3><span class="sub">规模加权 · 各区间跑赢占比</span></div>'+
-        '<div class="pv2-tblwrap"><table class="pv2-tbl pv2-multi"><thead><tr><th>区间</th><th class="num">区间收益率</th><th class="num">超额收益率</th><th class="num">跑赢占比</th></tr></thead><tbody>'+
-        dperRows.map(function(p){return '<tr><td>'+p[0]+'</td><td class="num">'+v2p(p[1])+'</td><td class="num">'+v2pp(p[2])+'</td><td class="num">'+v2f(p[3],1)+'%</td></tr>'}).join('')+
-        '</tbody></table></div></section>'+
       '<section class="pv2-card"><div class="hd"><h3>收益贡献榜</h3><span class="sub">按持仓贡献 pp 排序</span></div>'+
         '<div class="pv2-grid2">'+
           '<div><div class="sub2">贡献 TOP5</div>'+v2tbl(['持仓','收益率','贡献（pp）'],['l','r','r'],dTop.map(function(x){return [x.name,v2p(x.ret),v2pp(x.contrib)]}),null)+'</div>'+
