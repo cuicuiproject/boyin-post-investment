@@ -4978,7 +4978,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       '.pv2 .pv2-kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--tick,#cbd8e5)}',
       '.pv2 .pv2-kpi span{display:block;font-size:12.5px;color:#5f7891;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.pv2 .pv2-kpi strong{display:block;font-size:22px;font-weight:700;margin-top:5px;letter-spacing:-.3px;font-variant-numeric:tabular-nums}',
-      '.pv2 .pv2-kpi strong small{font-size:11.5px;color:#7c8fa4;font-weight:500;margin-left:2px}',
+      '.pv2 .pv2-kpi strong small{font-size:11px;color:#8ea3b7;font-weight:500;letter-spacing:0;margin-left:1px}',
       '.pv2 .pv2-kpi em{display:block;font-style:normal;font-size:11.5px;color:#8ea3b7;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.pv2 .pv2-sbar{display:flex;height:9px;border-radius:5px;overflow:hidden;margin-top:8px}',
       '.pv2 .pv2-sbar i{display:block;height:100%}',
@@ -5308,17 +5308,19 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   function v2top(){
     var a=v2agg(ASSETS),total=a.scale;
     var by=V2_MODES.map(function(m){return {m:m,a:v2agg(ASSETS.filter(function(x){return x.bucket===m.key}))}});
+    var retTick=a.ret>=0?'#c0392b':'#2e8b57',exTick=a.ex>=0?'#c0392b':'#2e8b57';
     var cards=[
       ['总资产规模',v2f(a.scale,1),'亿元','全部底层组合','#0e2a4a'],
       ['委外',v2f(by[0].a.scale,1),'亿元',by[0].a.count+' 个 · 外部管理','#1d5fbf'],
       ['通道',v2f(by[1].a.scale,1),'亿元',by[1].a.count+' 个 · 内部管理','#d4a72c'],
       ['直投',v2f(by[2].a.scale,1),'亿元',by[2].a.count+' 只 · 股票/债券/基金','#5c5aa8'],
-      [periodLabel(S.period)+'组合收益率',v2p(a.ret),'','按规模加权','',v2cls(a.ret)],
-      ['超额收益率',v2pp(a.ex),'','相对业绩基准','',v2cls(a.ex)],
-      ['跑赢基准组合占比',v2f(a.win,1),'%','按组合数 · '+Math.round(a.win*a.count/100)+'/'+a.count]
+      [periodLabel(S.period)+'组合收益率',v2p(a.ret),'','按规模加权',retTick,v2cls(a.ret)],
+      ['超额收益率',v2pp(a.ex),'','相对业绩基准',exTick,v2cls(a.ex)],
+      ['跑赢基准组合占比',v2f(a.win,1),'%','按组合数 · '+Math.round(a.win*a.count/100)+'/'+a.count,'#8ea3b7']
     ];
     return '<div class="pv2-kpis">'+cards.map(function(it){
-        return '<div class="pv2-kpi" '+(it[4]?'style="--tick:'+it[4]+'"':'')+'><span>'+it[0]+'</span><strong class="'+(it[5]||'')+'">'+it[1]+(it[2]?'<small>'+it[2]+'</small>':'')+'</strong><em>'+it[3]+'</em></div>';
+        var p=v2split(it[1],it[2]);
+        return '<div class="pv2-kpi" style="--tick:'+(it[4]||'#cbd8e5')+'"><span>'+it[0]+'</span><strong class="'+(it[5]||'')+'">'+p[0]+(p[1]?'<small>'+p[1]+'</small>':'')+'</strong><em>'+it[3]+'</em></div>';
       }).join('')+'</div>';
   }
 
