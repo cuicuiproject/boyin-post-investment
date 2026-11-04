@@ -5762,6 +5762,47 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
 })();
 </script>
 <!-- PORTFOLIO_OPERATIONS_END -->
+<script>
+/* 经营分析：收益率统一红涨绿跌（涨 #c0392b / 跌 #2e8b57） */
+(function(){
+ var SEL='#portfolio-operations',pending=false;
+ function paint(){
+  pending=false;
+  var root=document.querySelector(SEL);if(!root)return;
+  var walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false);
+  var nodes=[],n;
+  while((n=walker.nextNode()))nodes.push(n);
+  for(var i=0;i<nodes.length;i++){
+   var node=nodes[i],p=node.parentElement;
+   if(!p)continue;
+   if(p.closest('[data-fc],button,svg,.po-view-tabs,.pv2-tabs,.pv2-subtabs,.pv2-modelegend,.pp-modelegend,.pv2-period'))continue;
+   var t=node.nodeValue;
+   if(!/[+\-]\d[\d,]*(?:\.\d+)?(?:pp|%)/.test(t))continue;
+   var re=/[+\-]\d[\d,]*(?:\.\d+)?(?:pp|%)/g,frag=document.createDocumentFragment(),last=0,hit=false,m;
+   while((m=re.exec(t))!==null){
+    if(/[0-9A-Za-z]/.test(t.charAt(m.index-1)))continue;
+    frag.appendChild(document.createTextNode(t.slice(last,m.index)));
+    var s=document.createElement('span');
+    s.setAttribute('data-fc','1');
+    s.style.color=m[0].charAt(0)==='-'?'#2e8b57':'#c0392b';
+    s.textContent=m[0];
+    frag.appendChild(s);last=m.index+m[0].length;hit=true;
+   }
+   if(!hit)continue;
+   frag.appendChild(document.createTextNode(t.slice(last)));
+   node.parentNode.replaceChild(frag,node);
+  }
+ }
+ function schedule(){if(pending)return;pending=true;setTimeout(paint,20)}
+ function boot(){
+  var root=document.querySelector(SEL);
+  if(!root){setTimeout(boot,300);return}
+  new MutationObserver(schedule).observe(root,{childList:true,subtree:true,characterData:true});
+  schedule();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
 <!-- PORTFOLIO_NAVIGATION_START -->
 <style id="portfolio-navigation-style">
 .po-nav-group{padding-top:2px}.po-nav-group>.group-title{margin-top:0}.po-nav-menu .po-nav-view{padding-left:34px;font-size:13px}.po-nav-menu .po-nav-view:before{width:5px;height:5px;border:0;border-radius:50%;background:#5c829f;transform:none}.po-nav-menu .po-nav-view.active:before{background:#8feaff;box-shadow:0 0 7px #49dbea}.po-strategy-tabs{display:flex;gap:3px;padding:3px;border:1px solid #ead6aa;border-radius:7px;background:#fff8e8;overflow-x:auto}.po-strategy-tab{height:27px;padding:0 9px;border:0;border-radius:5px;background:transparent;color:#765d2d;font:600 10px "Microsoft YaHei";white-space:nowrap;cursor:pointer}.po-strategy-tab:hover{background:#f4e8c8;color:#9a6410}.po-strategy-tab[aria-selected="true"]{background:#c88719;color:#fff;box-shadow:0 2px 6px #c8871938}
