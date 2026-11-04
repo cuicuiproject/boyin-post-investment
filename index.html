@@ -269,11 +269,11 @@ table thead th{background:linear-gradient(180deg,#eaf3fc,#dde9f6);color:#0f3a6e;
 .pv2 .pv2-tbl th.sortable:focus-visible{outline:2px solid #69b7ee;outline-offset:-2px}
 .pv2 .pv2-doverview .hd{margin-bottom:9px}
 .pv2 .pv2-dov-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:1px solid #e8eff6;border-radius:8px;background:#f8fbfe;overflow:hidden;margin-bottom:10px}
-.pv2 .pv2-dov-kpi{padding:7px 11px;border-right:1px dashed #e3ecf5;min-width:0}
+.pv2 .pv2-dov-kpi{padding:10px 12px 11px;border-right:1px dashed #e3ecf5;min-width:0}
 .pv2 .pv2-dov-kpi:last-child{border-right:0}
-.pv2 .pv2-dov-kpi span{display:block;font-size:10px;color:#7c8fa4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pv2 .pv2-dov-kpi b{display:block;margin-top:2px;font:700 15px Arial,"Microsoft YaHei";color:#173f61;font-variant-numeric:tabular-nums;white-space:nowrap}
-.pv2 .pv2-dov-kpi b small{margin-left:2px;font:400 9.5px "Microsoft YaHei";color:#8ea3b7}
+.pv2 .pv2-dov-kpi span{display:block;font-size:11px;line-height:15px;color:#7c8fa4;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv2 .pv2-dov-kpi b{display:block;margin-top:3px;font:700 16px/20px Arial,"Microsoft YaHei";color:#1b2b3c;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pv2 .pv2-dov-kpi b small{margin-left:2px;font:500 10.5px/15px "Microsoft YaHei";color:#8ea3b7}
 @media(max-width:980px){.pv2 .pv2-dov-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.pv2 .pv2-dov-kpi:nth-child(3){border-right:0}.pv2 .pv2-dov-kpi:nth-child(-n+3){border-bottom:1px dashed #e3ecf5}}
 .pv2 .pv2-alloc .pv2-sbar{height:7px;border-radius:4px;margin-top:8px}.pv2 .pv2-alloc-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:9px}
 .pv2 .pv2-alloc-item{padding:7px 10px 8px;border:1px solid #e8eff6;border-radius:8px;background:linear-gradient(180deg,#f9fbfe,#f4f8fc);min-width:0}
@@ -4997,13 +4997,13 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       '.pv2 .pv2-tab.active em{color:#c6d6e6}',
       '.pv2 .pv2-tab:focus-visible{outline:2px solid #2b6cb5;outline-offset:2px}',
       '@media(prefers-reduced-motion:reduce){.pv2 .pv2-tab{transition:none}}',
-      '.pv2 .pv2-strip{display:flex;flex-wrap:wrap;background:#fff;border:1px solid #e3eaf2;border-radius:10px;padding:9px 2px;box-shadow:0 1px 2px rgba(16,42,74,.05);margin-bottom:10px}',
-      '.pv2 .pv2-sitem{flex:1 1 0;min-width:120px;padding:1px 14px;border-right:1px dashed #e9eff6}',
+      '.pv2 .pv2-strip{display:flex;flex-wrap:wrap;background:#fff;border:1px solid #e3eaf2;border-radius:10px;box-shadow:0 1px 2px rgba(16,42,74,.05);margin-bottom:10px;overflow:hidden}',
+      '.pv2 .pv2-sitem{flex:1 1 0;min-width:150px;padding:10px 14px 11px;border-right:1px dashed #e9eff6}',
       '.pv2 .pv2-sitem:last-child{border-right:0}',
-      '.pv2 .pv2-sitem span{display:block;font-size:11.5px;color:#7c8fa4;white-space:nowrap}',
-      '.pv2 .pv2-sitem b{display:block;font-size:17px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap}',
-      '.pv2 .pv2-sitem b small{font-size:11px;color:#93a6b8;font-weight:500;margin-left:2px}',
-      '.pv2 .pv2-sitem em{display:block;font-style:normal;font-size:11px;color:#93a6b8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.pv2 .pv2-sitem span{display:block;font-size:11px;line-height:15px;color:#7c8fa4;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.pv2 .pv2-sitem b{display:block;font-size:16px;font-weight:700;line-height:20px;margin-top:3px;font-variant-numeric:tabular-nums;white-space:nowrap}',
+      '.pv2 .pv2-sitem b small{font-size:10.5px;font-weight:500;color:#8ea3b7;letter-spacing:0;margin-left:1px}',
+      '.pv2 .pv2-sitem em{display:block;font-style:normal;font-size:10.5px;line-height:15px;color:#93a6b8;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.pv2 .pv2-summary{background:#f8fafc;border:1px solid #e6edf4;border-left:3px solid #17497e;border-radius:8px;padding:8px 13px;font-size:12px;line-height:1.65;color:#54697f;margin-bottom:12px}',
       '.pv2 .pv2-summary b{color:#17497e;font-weight:600}',
       '.pv2 .pv2-conclusion{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid #e3eaf2;border-left:4px solid var(--accent,#17497e);border-radius:10px;padding:12px 16px;margin:0 0 10px;box-shadow:0 1px 3px rgba(16,42,74,.06)}',
@@ -5460,9 +5460,15 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       '<div class="pv2-subtabs pv2-subtabs-dims" role="tablist" aria-label="分析维度">'+mtabs+'</div>'+
       (mtab==='entity'?entityCard:(mtab==='return'?returnCard:strategyCard));
   }
+  function v2split(v,u){
+    v=String(v);u=u||'';
+    if(!u){var m=v.match(/^(.*?)(pp|%|亿元|亿|万元|万|元|只|个|位|类|家|年|天)$/);if(m){v=m[1];u=m[2]}}
+    return [v,u];
+  }
   function v2strip(items){
     return '<div class="pv2-strip">'+items.map(function(it){
-      return '<div class="pv2-sitem"><span>'+it[0]+'</span><b class="'+(it[4]||'')+'">'+it[1]+(it[2]?'<small>'+it[2]+'</small>':'')+'</b><em>'+it[3]+'</em></div>';
+      var p=v2split(it[1],it[2]);
+      return '<div class="pv2-sitem"><span>'+it[0]+'</span><b class="'+(it[4]||'')+'">'+p[0]+(p[1]?'<small>'+p[1]+'</small>':'')+'</b><em>'+it[3]+'</em></div>';
     }).join('')+'</div>';
   }
 
@@ -5492,7 +5498,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       ['超额收益率',v2pp(a.ex),'',v2cls(a.ex)],
       ['跑赢基准持仓占比',v2f(a.win,1),'%','']
     ];
-    var dovKpis='<div class="pv2-dov-kpis">'+dovItems.map(function(t){return '<div class="pv2-dov-kpi"><span>'+t[0]+'</span><b class="'+(t[3]||'')+'">'+t[1]+(t[2]?'<small>'+t[2]+'</small>':'')+'</b></div>'}).join('')+'</div>';
+    var dovKpis='<div class="pv2-dov-kpis">'+dovItems.map(function(t){var p=v2split(t[1],t[2]);return '<div class="pv2-dov-kpi"><span>'+t[0]+'</span><b class="'+(t[3]||'')+'">'+p[0]+(p[1]?'<small>'+p[1]+'</small>':'')+'</b></div>'}).join('')+'</div>';
     function card(title,sub,body){return '<section class="pv2-card"><div class="hd"><h3>'+title+'</h3><span class="sub">'+sub+'</span></div>'+body+'</section>'}
     function irow(items){return items.map(function(it){return '<div class="pv2-irow"><span>'+it[0]+'</span>'+(it[2]!=null&&it[2]!==''?'<span class="pv2-itrack" title="'+v2f(it[2],1)+'%"><i style="width:'+Math.min(100,Math.max(0,it[2]))+'%"></i></span>':'')+'<b>'+it[1]+'</b></div>'}).join('')}
     function classStrip(g,extra){
