@@ -275,14 +275,14 @@ table thead th{background:linear-gradient(180deg,#eaf3fc,#dde9f6);color:#0f3a6e;
 .pv2 .pv2-dov-kpi b{display:block;margin-top:3px;font:700 16px/20px Arial,"Microsoft YaHei";color:#1b2b3c;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pv2 .pv2-dov-kpi b small{margin-left:2px;font:500 10.5px/15px "Microsoft YaHei";color:#8ea3b7}
 @media(max-width:980px){.pv2 .pv2-dov-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.pv2 .pv2-dov-kpi:nth-child(3){border-right:0}.pv2 .pv2-dov-kpi:nth-child(-n+3){border-bottom:1px dashed #e3ecf5}}
-.pv2 .pv2-alloc .pv2-sbar{height:7px;border-radius:4px;margin-top:8px}.pv2 .pv2-alloc-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:9px}
-.pv2 .pv2-alloc-item{padding:7px 10px 8px;border:1px solid #e8eff6;border-radius:8px;background:linear-gradient(180deg,#f9fbfe,#f4f8fc);min-width:0}
+.pv2 .pv2-alloc .pv2-sbar{height:7px;border-radius:4px;margin-top:8px}.pv2 .pv2-alloc-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
+.pv2 .pv2-alloc-item{padding:9px 12px 10px;border:1px solid #e8eff6;border-radius:8px;background:var(--catbg,#f8fbfe);min-width:0;transition:border-color .15s,box-shadow .15s}
 .pv2 .pv2-alloc-top{display:flex;align-items:center;gap:6px}
-.pv2 .pv2-alloc-top i{width:7px;height:7px;border-radius:2px;flex:none}
-.pv2 .pv2-alloc-top span{font-size:11px;color:#6b8299;font-weight:600;white-space:nowrap}
-.pv2 .pv2-alloc-top b{margin-left:auto;font:700 13.5px Arial,"Microsoft YaHei";color:#173f61;white-space:nowrap}
-.pv2 .pv2-alloc-top b small{margin-left:1px;font:400 9.5px "Microsoft YaHei";color:#8ea3b7}
-.pv2 .pv2-alloc-sub{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:3px;font-size:10.5px;color:#93a6b8;white-space:nowrap}
+.pv2 .pv2-alloc-item:hover{border-color:#d6e2ef;box-shadow:0 2px 6px rgba(16,42,74,.07)}
+.pv2 .pv2-alloc-top span{font-size:11px;color:#7c8fa4;font-weight:500;letter-spacing:.02em;white-space:nowrap}
+.pv2 .pv2-alloc-top b{margin-left:auto;font:700 16px/20px Arial,"Microsoft YaHei";color:#1b2b3c;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pv2 .pv2-alloc-top b small{margin-left:1px;font:500 10.5px "Microsoft YaHei";color:#8ea3b7}
+.pv2 .pv2-alloc-sub{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:4px;font-size:10.5px;line-height:15px;color:#93a6b8;white-space:nowrap;font-variant-numeric:tabular-nums;overflow:hidden}
 .pv2 .pv2-alloc-sub .pv2-up,.pv2 .pv2-alloc-sub .pv2-down{font-weight:600}
 .pv2 .pv2-qgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .pv2 .pv2-qtile{padding:7px 10px;border:1px solid #e8eff6;border-radius:8px;background:#f8fbfe;min-width:0}
@@ -5444,6 +5444,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       '<div class="pv2-subtabs pv2-subtabs-dims" role="tablist" aria-label="分析维度">'+mtabs+'</div>'+
       (mtab==='entity'?entityCard:(mtab==='return'?returnCard:strategyCard));
   }
+  function v2rgba(hex,a){var h=String(hex||"").replace("#","");if(h.length===3)h=h.split("").map(function(c){return c+c}).join("");var n=parseInt(h,16);if(!isFinite(n))n=0;return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")"}
   function v2split(v,u){
     v=String(v);u=u||'';
     if(!u){var m=v.match(/^(.*?)(pp|%|亿元|亿|万元|万|元|只|个|位|类|家|年|天)$/);if(m){v=m[1];u=m[2]}}
@@ -5606,7 +5607,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
         conTable+'</section>';
     return '<section class="pv2-card pv2-doverview"><div class="hd"><h3>直投总览</h3><span class="sub">四类资产 · 合计 '+v2f(total,1)+' 亿元</span></div>'+
         dovKpis+
-        '<div class="pv2-alloc-row">'+CLS.map(function(c){var gg=G[c.key];return '<div class="pv2-alloc-item"><div class="pv2-alloc-top"><i style="background:'+c.color+'"></i><span>'+c.name+'</span><b>'+v2f(gg.scale,1)+'<small>亿</small></b></div><div class="pv2-alloc-sub"><span>占比 '+v2f(gg.scale/total*100,1)+'%</span><span class="'+(gg.ret>=0?'pv2-up':'pv2-down')+'">'+v2p(gg.ret)+' / '+v2pp(gg.ex)+'</span></div></div>'}).join('')+'</div></section>'+
+        '<div class="pv2-alloc-row">'+CLS.map(function(c){var gg=G[c.key];return '<div class="pv2-alloc-item" style="--cat:'+c.color+';--catbg:'+v2rgba(c.color,.055)+'"><div class="pv2-alloc-top"><i style="background:'+c.color+'"></i><span>'+c.name+'</span><b>'+v2f(gg.scale,1)+'<small>亿</small></b></div><div class="pv2-alloc-sub"><span>占比 '+v2f(gg.scale/total*100,1)+'%</span><span class="pv2-alloc-ret">收益 '+v2p(gg.ret)+' · 超额 '+v2pp(gg.ex)+'</span></div></div>'}).join('')+'</div></section>'+
       incomeCard+
       '<div class="pv2-subtabs" role="tablist" aria-label="直投资产类别">'+tabs+'</div>'+
       tabBody+
