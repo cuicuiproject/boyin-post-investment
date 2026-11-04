@@ -5614,8 +5614,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       '<tr class="total">'+conTotal.map(function(x,i){return '<td class="'+(i?'num':'')+'">'+x+'</td>'}).join('')+'</tr>'+
       '</tbody></table></div>';
     var incomeCard='<section class="pv2-card"><div class="hd"><h3>收益分析</h3><span class="sub">分类别贡献 · 规模占比 × 区间收益率</span></div>'+
-        conTable+
-        '<div class="pv2-note">贡献 = 规模占比 × 区间收益率；类别收益率为类内规模加权，合计贡献等于直投区间收益率；现金类别含货币基金。</div></section>';
+        conTable+'</section>';
     return '<section class="pv2-card pv2-doverview"><div class="hd"><h3>直投总览</h3><span class="sub">四类资产 · 合计 '+v2f(total,1)+' 亿元</span></div>'+
         dovKpis+
         '<div class="pv2-alloc-row">'+CLS.map(function(c){var gg=G[c.key];return '<div class="pv2-alloc-item"><div class="pv2-alloc-top"><i style="background:'+c.color+'"></i><span>'+c.name+'</span><b>'+v2f(gg.scale,1)+'<small>亿</small></b></div><div class="pv2-alloc-sub"><span>占比 '+v2f(gg.scale/total*100,1)+'%</span><span class="'+(gg.ret>=0?'pv2-up':'pv2-down')+'">'+v2p(gg.ret)+' / '+v2pp(gg.ex)+'</span></div></div>'}).join('')+'</div></section>'+
