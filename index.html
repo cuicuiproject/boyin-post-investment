@@ -5619,7 +5619,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       conBody.map(function(r){return '<tr>'+r.map(function(x,i){return '<td class="'+(i?'num':'')+'">'+x+'</td>'}).join('')+'</tr>'}).join('')+
       '<tr class="total">'+conTotal.map(function(x,i){return '<td class="'+(i?'num':'')+'">'+x+'</td>'}).join('')+'</tr>'+
       '</tbody></table></div>';
-    var incomeCard='<section class="pv2-card"><div class="hd"><h3>收益分析</h3><span class="sub">分类别贡献 · 规模占比 × 区间收益率</span></div>'+
+    var incomeCard='<section class="pv2-card"><div class="hd"><h3>收益分析</h3></div>'+
         conTable+'</section>';
     return '<section class="pv2-card pv2-doverview"><div class="hd"><h3>直投总览</h3><span class="sub">四类资产 · 合计 '+v2f(total,1)+' 亿元</span></div>'+
         dovKpis+
