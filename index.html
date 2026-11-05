@@ -5564,8 +5564,10 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       var seg='<div class="pv2-seg pv2-seg-sm" role="group" aria-label="Wind 分类层级"><button type="button" data-v2flevel="l1" class="'+(lvl==='l1'?'active':'')+'" aria-pressed="'+(lvl==='l1')+'">Wind 一级</button><button type="button" data-v2flevel="l2" class="'+(lvl==='l2'?'active':'')+'" aria-pressed="'+(lvl==='l2')+'">Wind 二级</button></div>';
       return classStrip(g)+
         '<section class="pv2-card"><div class="hd"><h3>类型分布</h3><div style="display:flex;align-items:center;gap:10px">'+seg+'<span class="sub">'+v2f(tot,1)+' 亿元 · '+(lvl==='l2'?'Wind 二级':'Wind 一级')+' · '+ftypes.length+' 类</span></div></div>'+
-          '<div class="pv2-chartbox">'+v2bar(chart)+'</div>'+
-          v2tbl(['分类','只数','规模（亿元）','规模占比','区间收益率','超额收益率'],['l','r','r','r','r','r'],v2sortRows(tblBody,'dFundType'),null,'dFundType',['name','count','scale','share','ret','ex'])+
+          '<div class="pv2-grid2">'+
+            '<div><div class="sub2">类型规模（亿元）</div><div class="pv2-chartbox">'+v2bar(chart)+'</div></div>'+
+            '<div>'+v2tbl(['分类','只数','规模（亿元）','占比','收益率','超额'],['l','r','r','r','r','r'],v2sortRows(tblBody,'dFundType'),null,'dFundType',['name','count','scale','share','ret','ex'])+'</div>'+
+          '</div>'+
         '</section>'+
         card('前十大基金','按规模排序 · 共 '+g.count+' 只',
           v2tbl(['基金','Wind 二级分类','规模（亿元）','规模占比','区间收益率','超额收益率','最大回撤'],['l','l','r','r','r','r','r'],v2sortRows(topBody,'dFund'),null,'dFund',['name','type','scale','share','ret','ex','dd']));
