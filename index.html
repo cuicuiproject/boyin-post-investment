@@ -5426,7 +5426,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
         '</div>'+
         v2tbl(entHead,entAlign,entBody,entTotal,'ent',entKeys)+v2pager('entity',entRows.length,eSize)+
         '</section>';
-    var returnCard='<section class="pv2-card"><div class="hd"><h3>收益质量</h3><span class="sub">模拟日净值 · 年化口径</span></div>'+
+    var returnCard='<section class="pv2-card"><div class="hd"><h3>风险收益特征</h3><span class="sub">模拟日净值 · 年化口径</span></div>'+
         '<div class="pv2-qgrid">'+qhtml+'</div>'+
         '<div class="pv2-qdd"><div class="sub2">回撤曲线（模拟，'+periodLabel(S.period)+'）</div>'+v2ddChart(perf.dds)+'</div>'+
         '<div class="pv2-note">波动率、夏普、信息比率与回撤曲线基于模拟日净值；Calmar＝区间收益 ÷ |给定最大回撤|；等权收益用于对比规模加权 '+v2p(a.ret)+'。</div></section>'+
@@ -5611,7 +5611,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
       incomeCard+
       '<div class="pv2-subtabs" role="tablist" aria-label="直投资产类别">'+tabs+'</div>'+
       tabBody+
-      '<section class="pv2-card"><div class="hd"><h3>收益质量</h3><span class="sub">模拟日净值 · 年化口径</span></div>'+
+      '<section class="pv2-card"><div class="hd"><h3>风险收益特征</h3><span class="sub">模拟日净值 · 年化口径</span></div>'+
         '<div class="pv2-qgrid">'+dqhtml+'</div>'+
         '<div class="pv2-qdd"><div class="sub2">回撤曲线（模拟，'+periodLabel(S.period)+'）</div>'+v2ddChart(dperf.dds)+'</div>'+
         '<div class="pv2-note">波动率、夏普、信息比率与回撤曲线基于模拟日净值；Calmar＝区间收益 ÷ |给定最大回撤|；等权收益用于对比规模加权 '+v2p(a.ret)+'。</div></section>'+
