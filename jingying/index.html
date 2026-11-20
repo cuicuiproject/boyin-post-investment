@@ -314,15 +314,12 @@ table thead th{background:linear-gradient(180deg,#eaf3fc,#dde9f6);color:#0f3a6e;
 .pp-filterbar select:focus,.pp-filterbar input:focus{border-color:#c99a3d;box-shadow:0 0 0 2px #d9ac4b22}
 .pp-query{height:31px;padding:0 16px;border:1px solid #17497e;border-radius:6px;background:#17497e;color:#fff;font:700 11px "Microsoft YaHei";cursor:pointer}
 .pp-query:hover{background:#123c68}
-#portfolio-operations .po-product .po-kpis{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px;margin-bottom:10px}
+#portfolio-operations .po-product .po-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:10px}
 #portfolio-operations .po-product .po-kpi{min-width:0;min-height:88px;padding:12px 13px;border:1px solid #dce6ef;border-radius:9px;background:linear-gradient(135deg,#f8fbff,#fff 60%);box-shadow:0 1px 2px #1739580a}
 #portfolio-operations .po-product .po-kpi span{display:block;min-height:24px;color:#72869a;font-size:10px;line-height:1.35}
 #portfolio-operations .po-product .po-kpi strong{display:block;margin-top:2px;color:#173f61;font:700 21px Arial,"Microsoft YaHei";font-variant-numeric:tabular-nums}
 #portfolio-operations .po-product .po-kpi small{margin-left:2px;color:#7c90a2;font:400 9px "Microsoft YaHei"}
 #portfolio-operations .po-product .po-kpi em{display:block;margin-top:3px;color:#8a9cab;font:400 9.5px "Microsoft YaHei";font-style:normal;line-height:1.35}
-.pp-insight{display:flex;gap:9px;padding:10px 13px;margin-bottom:9px;border-left:3px solid #17497e;border-radius:0 8px 8px 0;background:linear-gradient(90deg,#f1f8ff,#fff);color:#2f4d65;font-size:11px;line-height:1.75}
-.pp-insight .ico{display:grid;place-items:center;width:8px;height:8px;margin-top:6px;border-radius:50%;background:#17497e;flex:0 0 auto}
-.pp-insight b{color:#123f63}
 .pp-mode-total{display:flex;align-items:center;gap:12px;padding:7px 12px 10px;margin:-3px 0 10px;border:1px solid #e1e9f1;border-top:0;border-radius:0 0 8px 8px;background:#fff}
 .pp-mode-bar{display:flex;flex:1;min-width:180px;height:9px;border-radius:5px;overflow:hidden;background:#eef3f7}
 .pp-mode-bar i{display:block;height:100%}
@@ -3396,12 +3393,13 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
 #portfolio-operations .po-ledger-panel,#portfolio-operations .po-overview{border:1px solid #e9eef4;border-radius:12px;background:#fff;box-shadow:var(--po-card-shadow)}
 #portfolio-operations .po-panel-head{min-height:52px;border-bottom:1px solid var(--po-line)}
 #portfolio-operations .po-panel-head h3{color:#1f2d3d;font-size:15px;font-weight:700}
-/* ===== KPI：卡片化 + 左侧色条强调 ===== */
+/* ===== KPI：2026-11-18 与投资策略/管理主体页统一（灰蓝顶条 + 渐变白 + 23px，去掉左侧色条） ===== */
 #portfolio-operations .po-kpis{gap:12px;padding:2px 0}
-#portfolio-operations .po-kpi{position:relative;border:1px solid #e9eef4!important;border-radius:12px;background:linear-gradient(135deg,#f6f9fe 0%,#fff 55%);box-shadow:var(--po-card-shadow);padding:15px 16px 15px 20px!important}
-#portfolio-operations .po-kpi::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:4px;border-radius:0 4px 4px 0;background:var(--po-primary)}
+#portfolio-operations .po-kpi{position:relative;border:1px solid #d7e3ed!important;border-top:3px solid #a8bccd!important;border-radius:10px;background:linear-gradient(155deg,#fff 0%,#f9fbfd 100%)!important;box-shadow:0 3px 10px rgba(33,70,104,.055)!important;padding:15px 16px!important;transition:box-shadow .16s,transform .16s}
+#portfolio-operations .po-kpi:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(33,70,104,.12)!important}
+#portfolio-operations .po-kpi::before{content:none}
 #portfolio-operations .po-kpi span{color:#7c8ba0;font-size:12px}
-#portfolio-operations .po-kpi strong{color:#17324d;font:700 22px/1.2 Arial,"Microsoft YaHei";font-variant-numeric:tabular-nums}
+#portfolio-operations .po-kpi strong{color:#17324d;font:700 23px/1.2 Arial,"Microsoft YaHei";font-variant-numeric:tabular-nums}
 #portfolio-operations .po-kpi .positive,#portfolio-operations .po-kpi .po-positive{color:var(--po-up)}
 #portfolio-operations .po-kpi .negative,#portfolio-operations .po-kpi .po-negative{color:var(--po-down)}
 /* ===== 表格：浅蓝表头 + 去竖线 ===== */
@@ -3752,6 +3750,17 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
    p.mode={direct:0,channel:0,outsource:0};
    p.positions.forEach(function(x){p.mode[x.asset.bucket]+=x.value});
   });
+  var rawProductAum=ppSum(products,function(p){return p.aum});
+  var aumFactor=rawProductAum?TOTAL/rawProductAum:1;
+  products.forEach(function(p){
+   p.positions.forEach(function(x){x.value*=aumFactor});
+   p.invested*=aumFactor;
+   p.cash*=aumFactor;
+   p.aum=p.invested+p.cash;
+   p.mode.direct*=aumFactor;
+   p.mode.channel*=aumFactor;
+   p.mode.outsource*=aumFactor;
+  });
   var counts={};
   products.forEach(function(p){p.positions.forEach(function(x){counts[x.asset.id]=(counts[x.asset.id]||0)+1})});
   products.forEach(function(p){p.overlapCount=p.positions.filter(function(x){return counts[x.asset.id]>1}).length});
@@ -3771,6 +3780,15 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   return {products:products,totalAum:totalAum,totalInvested:totalInvested,totalCash:totalCash,mode:mode,weightedRet:weightedRet,weightedEx:weightedEx,weightedDd:weightedDd,overlap:overlap,outsource50:outsource50,top5Product:top5Product,topProduct:products[0],status:status,ready:false};
  }
  var PP=ppBuild();window.PP=PP;
+
+ /* ===== 共享统计区间：收益字段基准缓存与缩放（全局区间联动） ===== */
+ window.__mgAssetsBase=ASSETS.map(function(a){return [a.r1,a.e1,a.dd]});
+ window.__mgScaleAssets=function(f,s){ASSETS.forEach(function(a,i){var b=window.__mgAssetsBase[i];a.r1=b[0]*f;a.e1=b[1]*f;a.dd=b[2]*s})};
+ window.__mgScalePP=function(f,s){
+  if(!PP.__mgBase)PP.__mgBase={r:PP.weightedRet,e:PP.weightedEx,d:PP.weightedDd,rows:PP.products.map(function(p){return [p.ret,p.ex,p.dd]})};
+  PP.weightedRet=PP.__mgBase.r*f;PP.weightedEx=PP.__mgBase.e*f;PP.weightedDd=PP.__mgBase.d*s;
+  PP.products.forEach(function(p,i){var b=PP.__mgBase.rows[i];p.ret=b[0]*f;p.ex=b[1]*f;p.dd=b[2]*s});
+ };
 
  /* ================= 状态与工具 ================= */
  var S={view:'bank',dim:'form',period:'1',strategy:'',scope:'',page:1,sort:'scale',dir:-1,extPage:1,currentManager:'投资经理A',strategyPage:1,sel:{strategy:null,ext:null},selInit:{},selEmpty:{}};
@@ -3891,10 +3909,10 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     '<div class="po-product" id="po-product"></div>'+
     '<div class="po-manager" id="po-manager"></div>'+
     '<div class="po-ledger" id="po-ledger">'+
-      '<section class="po-ledger-panel"><div class="po-panel-head"><h3>委外通道产品</h3></div>'+
+      '<section class="po-ledger-panel"><div class="po-panel-head"><h3>专户产品明细</h3></div>'+ 
       '<div class="po-ledger-filters">'+
         '<input id="po-q" placeholder="搜索产品 / 账户 / 策略 / 管理人">'+
-        '<select id="po-bucket-filter"><option value="">全部投资模式</option><option value="outsource">委外</option><option value="channel">通道</option></select>'+
+        '<select id="po-bucket-filter"><option value="">全部投资模式</option><option value="outsource">委外</option><option value="channel">通道</option><option value="direct">直投</option></select>'+ 
         '<select id="po-dept-filter"></select>'+
         '<select id="po-manager-filter"></select>'+
         '<select id="po-strategy-filter"></select>'+
@@ -4387,7 +4405,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   var win=productWin(rows).pct;
   var dim=(S.view==='bank')?S.dim:'form';
   var p=periodLabel(S.period);
-  var perf=p+'组合收益率 <b class="'+cls(ret)+'">'+ptxt(ret)+'</b>、超额收益率 <b class="'+cls(ex)+'">'+((ex>0?'+':'')+fmt(ex,2)+'pp')+'</b>，跑赢基准产品数量占比 <b>'+fmt(win,1)+'%</b>';
+  var perf=p+'组合收益率 <b class="'+cls(ret)+'">'+ptxt(ret)+'</b>、超额收益率 <b class="'+cls(ex)+'">'+((ex>0?'+':'')+fmt(ex,2)+'pp')+'</b>，跑赢基准产品占比 <b>'+fmt(win,1)+'%</b>';
 
   if(dim==='strategy'){
     var items=pickerItems(rows,'strategy'),sel=curSel('strategy',items);
@@ -4440,7 +4458,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   var pw=productWin(rows),win=pw.pct;
   var retItem=['组合收益率',fmt(ret,2),'%','按规模加权',cls(ret)];
   var exItem=['超额收益率',(ex>0?'+':'')+fmt(ex,2),'pp','相对业绩基准',cls(ex)];
-  var winItem=['跑赢基准产品数量占比',fmt(win,1),'%','按产品数量 · '+pw.beat+'/'+pw.total,''];
+  var winItem=['跑赢基准产品占比',fmt(win,1),'%','按产品数量 · '+pw.beat+'/'+pw.total,''];
   var ddItem=['最大回撤',fmt(dd,2),'%','按规模加权',''];
   var dim=(S.view==='bank')?S.dim:'form';
   var items;
@@ -4551,7 +4569,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     '<button data-sp="'+(page-1)+'" '+(page<=1?'disabled':'')+'>上一页</button>'+
     Array.from({length:pages},function(_,i){return '<button data-sp="'+(i+1)+'" class="'+(i+1===page?'active':'')+'">'+(i+1)+'</button>'}).join('')+
     '<button data-sp="'+(page+1)+'" '+(page>=pages?'disabled':'')+'>下一页</button></div>';
-   document.getElementById('po-tables').innerHTML=panel('策略经营表现','全部策略 · 按规模排序',table(['投资策略','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准产品数量占比'],b2,totalRow)+pager);
+   document.getElementById('po-tables').innerHTML=panel('策略经营表现','全部策略 · 按规模排序',table(['投资策略','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准产品占比'],b2,totalRow)+pager);
    document.querySelectorAll('[data-sp]').forEach(function(b){b.onclick=function(){var n=+b.getAttribute('data-sp');if(n<1||n>pages)return;S.strategyPage=n;renderAll()}});
    return;
   }
@@ -4572,7 +4590,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
    var bodyM=mgr.map(function(x){return [x.m,x.dept,x.count,fmt(x.scale,1),fmt(intTot?x.scale/intTot*100:0,1)+'%',pct(x.ret),pct(x.ex),fmt(x.win,1)+'%']});
    document.getElementById('po-tables').innerHTML=
     panel('投资部门表现','按投资部门汇总；通道与直投由内部投资经理负责',table(['投资部门','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率'],body3,['合计',rows.length,fmt(tot3,1),'100.0%',pct(weighted(rows,key())),pct(weighted(rows,ekey()))]))+
-    panel('投资经理表现','仅内部负责资产（直投 + 通道），共 '+mgr.length+' 位',table(['投资经理','所属投资部门','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准产品数量占比'],bodyM,['合计','—',sum(mgr,'count'),fmt(intTot,1),'100.0%',pct(weighted(rows.filter(function(a){return a.manager!=='—'}),key())),pct(weighted(rows.filter(function(a){return a.manager!=='—'}),ekey())),'—']));
+    panel('投资经理表现','仅内部负责资产（直投 + 通道），共 '+mgr.length+' 位',table(['投资经理','所属投资部门','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准产品占比'],bodyM,['合计','—',sum(mgr,'count'),fmt(intTot,1),'100.0%',pct(weighted(rows.filter(function(a){return a.manager!=='—'}),key())),pct(weighted(rows.filter(function(a){return a.manager!=='—'}),ekey())),'—']));
    return;
   }
   if(dim==='ext'||dim==='manager'){
@@ -4619,7 +4637,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
    }
    var cnt4=tableData.reduce(function(t,r){return t+(+r.count||0)},0);
    document.getElementById('po-tables').innerHTML=panel((dim==='ext')?'外部管理人表现':'投资经理表现',(dim==='ext')?'全部外部管理人 · 按规模排序':'',
-    table([(dim==='ext')?'外部管理人':'投资经理','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准产品数量占比'],pageRows,
+    table([(dim==='ext')?'外部管理人':'投资经理','产品数量','规模（亿元）','规模占比','区间收益率','超额收益率','跑赢基准产品占比'],pageRows,
     ['合计',cnt4,fmt(totTable,1),'100.0%',pct(weighted(tableRows,key())),pct(weighted(tableRows,ekey())),fmt(tableRows.filter(function(a){return a[ekey()]>0}).length/tableRows.length*100,1)+'%'])+pager);
    return;
   }
@@ -4646,7 +4664,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
  }
  
  /* ================= 理财产品穿透：页面渲染 ================= */
- function ppKpi(label,value,unit,foot,klass){return '<div class="po-kpi"><span>'+label+'</span><strong class="'+(klass||'')+'">'+value+'<small>'+unit+'</small></strong><em>'+foot+'</em></div>'}
+ function ppKpi(label,value,unit,foot,klass){return '<div class="po-kpi"><span>'+label+'</span><strong class="'+(klass||'')+'">'+value+'<small>'+unit+'</small></strong>'+(foot?'<em>'+foot+'</em>':'')+'</div>'}
  function ppModeBarColors(p){
   var total=p.aum||1;
   var parts=[['direct',p.mode?p.mode.direct:0,'#5c5aa8'],['channel',p.mode?p.mode.channel:0,'#d4a72c'],['outsource',p.mode?p.mode.outsource:0,'#1d5fbf'],['cash',p.cash||0,'#b7c7d6']];
@@ -4657,6 +4675,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   if(PP.ready)return;
   host.innerHTML=
    '<div class="pp-filterbar">'+
+    '<span class="pp-fpair"><span class="pp-flabel">统计区间</span><select id="pp-period"></select></span>'+
     '<span class="pp-fpair"><span class="pp-flabel">产品类型</span><select id="pp-type"></select></span>'+
     '<span class="pp-fpair"><span class="pp-flabel">风险</span><select id="pp-risk"></select></span>'+
     '<span class="pp-fpair"><span class="pp-flabel">状态</span><select id="pp-status"></select></span>'+
@@ -4666,10 +4685,9 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
     '<button class="pp-query" id="pp-query">查询</button>'+
    '</div>'+
    '<div class="po-kpis" id="pp-kpis"></div>'+
-   '<div class="pp-insight" id="pp-insight"></div>'+
    '<div class="pp-mode-total"><div class="pp-mode-bar" id="pp-mode-bar"></div><div class="pp-mode-legend" id="pp-mode-legend"></div></div>'+
    '<section class="po-table-panel"><div class="po-panel-head"><h3>理财产品列表</h3><span id="pp-list-sub"></span></div>'+
-    '<div class="po-table-wrap"><table class="po-table pp-table"><thead><tr><th>产品</th><th>类型 / 风险 / 状态</th><th class="num">产品规模（亿元）</th><th>投资模式结构</th><th class="num">收益 / 超额</th><th class="num">最大回撤</th><th class="num">前五集中度</th><th class="num">持仓 / 覆盖</th><th>操作</th></tr></thead><tbody id="pp-body"></tbody></table></div>'+
+    '<div class="po-table-wrap"><table class="po-table pp-table"><thead><tr><th>产品</th><th>类型 / 风险 / 状态</th><th class="num">产品规模（AUM，亿元）</th><th>投资模式结构</th><th class="num">收益 / 超额</th><th class="num">最大回撤</th><th class="num">前五集中度</th><th class="num">持仓 / 覆盖</th><th>操作</th></tr></thead><tbody id="pp-body"></tbody></table></div>'+
     '<div class="po-pagination" id="pp-pager"></div>'+
    '</section>'+
    '<div class="pp-overlay" id="pp-overlay"></div><aside class="pp-drawer" id="pp-drawer"></aside>';
@@ -4719,17 +4737,15 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   return list;
  }
  function ppRenderTop(){
+   var beatCount=PP.products.filter(function(p){return p.ex>0}).length;
+   var beatRatio=PP.products.length?beatCount/PP.products.length*100:0;
   document.getElementById('pp-kpis').innerHTML=
-   ppKpi('产品数量',PP.products.length,'只','存续 '+PP.status.存续+' · 到期 '+PP.status.到期+' · 清算 '+PP.status.清算,'')+
-   ppKpi('产品AUM',fmt(PP.totalAum,1),'亿元','产品口径 · 含现金及其他','')+
-   ppKpi('投资资产',fmt(PP.totalInvested,1),'亿元','占 AUM '+fmt(PP.totalAum?PP.totalInvested/PP.totalAum*100:0,1)+'%','')+
-   ppKpi('现金及其他',fmt(PP.totalCash,1),'亿元','占 AUM '+fmt(PP.totalAum?PP.totalCash/PP.totalAum*100:0,1)+'%','')+
-   ppKpi('穿透覆盖率','100.0','%','持仓—资产映射完整','')+
-   ppKpi('资产侧去重',fmt(2500,1),'亿元','与产品AUM差 '+fmt(PP.totalAum-2500,1)+' 亿（现金）','')+
-   ppKpi('产品加权收益',ptxt(PP.weightedRet),'', '超额 '+((PP.weightedEx>0?'+':'')+fmt(PP.weightedEx,2)+'pp')+' · 回撤 '+fmt(PP.weightedDd,2)+'%','');
+   ppKpi('产品数量',PP.products.length,'只','','')+
+   ppKpi('产品规模（AUM）',fmt(PP.totalAum,1),'亿元','','')+
+   ppKpi('产品加权收益',ptxt(PP.weightedRet),'','','')+
+   ppKpi('跑赢基准产品占比',fmt(beatRatio,1),'%','跑赢 '+beatCount+' / '+PP.products.length+'只产品','');
   var mt=PP.mode,ta=PP.totalAum||1;
   var pctm=function(v){return fmt(ta?v/ta*100:0,1)};
-  document.getElementById('pp-insight').innerHTML='<span class="ico"></span><div><b>'+PP.products.length+' 只产品、'+fmt(PP.totalAum,1)+' 亿 AUM</b>；委外 <b>'+fmt(mt.outsource,1)+' 亿（'+pctm(mt.outsource)+'%）</b>、通道 <b>'+fmt(mt.channel,1)+' 亿（'+pctm(mt.channel)+'%）</b>、直投 <b>'+fmt(mt.direct,1)+' 亿（'+pctm(mt.direct)+'%）</b>、现金 <b>'+fmt(PP.totalCash,1)+' 亿（'+pctm(PP.totalCash)+'%）</b>；规模最大的是 <b>'+esc(PP.topProduct?PP.topProduct.name:'—')+'</b>（'+(PP.topProduct?fmt(PP.topProduct.aum,1):'—')+' 亿）；前五大产品占 <b>'+fmt(PP.top5Product,1)+'%</b>；<b>'+PP.outsource50+'</b> 只产品委外占比超过 50%。</div>';
   var total={aum:PP.totalAum,mode:mt,cash:PP.totalCash};
   document.getElementById('pp-mode-bar').innerHTML=['direct','channel','outsource','cash'].map(function(k){
    var v=(k==='cash'?PP.totalCash:mt[k]),c=(k==='direct'?'#5c5aa8':k==='channel'?'#d4a72c':k==='outsource'?'#1d5fbf':'#b7c7d6');
@@ -4741,7 +4757,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   var list=ppFilter(),size=10,pages=Math.max(1,Math.ceil(list.length/size));
   PP.applied.page=Math.min(Math.max(1,PP.applied.page),pages);
   var page=list.slice((PP.applied.page-1)*size,PP.applied.page*size);
-  document.getElementById('pp-list-sub').textContent='筛选后 '+list.length+' 只 · AUM '+fmt(ppSum(list,function(p){return p.aum}),1)+' 亿 · 第 '+PP.applied.page+' / '+pages+' 页';
+  document.getElementById('pp-list-sub').textContent='第 '+PP.applied.page+' / '+pages+' 页';
   document.getElementById('pp-body').innerHTML=page.map(function(p){
    return '<tr data-pp-id="'+p.id+'"><td><div class="pp-prod">'+esc(p.name)+'</div><div class="pp-code">'+esc(p.code)+' · '+esc(p.typeLabel)+'</div></td>'+
     '<td><div class="pp-tags"><span class="pp-tag type">'+esc(p.typeLabel)+'</span><span class="pp-tag risk '+p.risk+'">'+p.risk+'</span><span class="pp-tag status '+p.status+'">'+p.status+'</span></div><div class="pp-pm">'+esc(p.pm)+'</div></td>'+
@@ -4761,6 +4777,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   document.getElementById('pp-body').querySelectorAll('[data-pp-open]').forEach(function(b){b.onclick=function(e){e.stopPropagation();ppOpen(b.getAttribute('data-pp-open'))}});
  }
  function ppRender(){ppEnsure();ppRenderTop();ppRenderList()}
+ window.__mgPPRefresh=ppRender;
  function ppGroup(p,key){
   var map={};
   p.positions.forEach(function(x){var k=key==='strategy'?x.asset.strategy:x.asset.owner;map[k]=(map[k]||0)+x.value});
@@ -4792,17 +4809,16 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   var mode=[['direct',p.mode.direct,'#5c5aa8'],['channel',p.mode.channel,'#d4a72c'],['outsource',p.mode.outsource,'#1d5fbf'],['cash',p.cash,'#b7c7d6']];
   document.getElementById('pp-drawer').innerHTML='<div class="pp-dhead"><div><div class="pp-eyebrow">理财产品 · '+esc(p.typeLabel)+'</div><h2>'+esc(p.name)+'</h2><div class="pp-dmeta">'+esc(p.code)+' · '+p.risk+' · '+p.status+' · 产品经理 '+esc(p.pm)+' · '+esc(p.benchmarkText)+'</div></div><button class="pp-dclose">×</button></div>'+
    '<div class="pp-dbody"><div class="pp-dkpis">'+
-    '<div class="pp-dkpi"><div class="lab">产品规模</div><div class="val">'+fmt(p.aum,1)+'<small>亿元</small></div></div>'+
+    '<div class="pp-dkpi"><div class="lab">产品规模（AUM）</div><div class="val">'+fmt(p.aum,1)+'<small>亿元</small></div></div>'+
     '<div class="pp-dkpi"><div class="lab">投资资产</div><div class="val">'+fmt(p.invested,1)+'<small>亿元</small></div></div>'+
     '<div class="pp-dkpi"><div class="lab">现金及其他</div><div class="val">'+fmt(p.cash,1)+'<small>亿元</small></div></div>'+
     '<div class="pp-dkpi"><div class="lab">收益率</div><div class="val '+cls(p.ret)+'">'+pct(p.ret)+'</div></div>'+
     '<div class="pp-dkpi"><div class="lab">超额收益率</div><div class="val '+cls(p.ex)+'">'+((p.ex>0?'+':'')+fmt(p.ex,2)+'pp')+'</div></div>'+
     '<div class="pp-dkpi"><div class="lab">最大回撤</div><div class="val">'+p.dd.toFixed(2)+'<small>%</small></div></div>'+
    '</div>'+
-   '<section class="pp-dsec"><div class="pp-dsec-head"><h3>投资模式结构</h3><div class="sub">金额 / 产品AUM</div></div><div class="pp-dsec-body">'+ppModeBarColors(p)+'<div class="pp-dmode">'+mode.map(function(x){return '<div class="pp-dmode-item"><div class="n">'+(x[0]==='cash'?'现金及其他':BUCKET_LABEL[x[0]])+'</div><div class="v">'+fmt(x[1],1)+' 亿</div><div class="p">'+fmt(p.aum?x[1]/p.aum*100:0,1)+'%</div></div>'}).join('')+'</div></div></section>'+
+   '<section class="pp-dsec"><div class="pp-dsec-head"><h3>投资模式结构</h3><div class="sub">金额 / 产品规模（AUM）</div></div><div class="pp-dsec-body">'+ppModeBarColors(p)+'<div class="pp-dmode">'+mode.map(function(x){return '<div class="pp-dmode-item"><div class="n">'+(x[0]==='cash'?'现金及其他':BUCKET_LABEL[x[0]])+'</div><div class="v">'+fmt(x[1],1)+' 亿</div><div class="p">'+fmt(p.aum?x[1]/p.aum*100:0,1)+'%</div></div>'}).join('')+'</div></div></section>'+
    '<div class="pp-dcols" style="margin-top:9px"><section class="pp-dsec" style="margin-top:0"><div class="pp-dsec-head"><h3>策略暴露 Top5</h3><div class="sub">占投资资产</div></div><div class="pp-dsec-body"><div class="pp-dbars">'+ppBars(strat,p.invested)+'</div></div></section><section class="pp-dsec" style="margin-top:0"><div class="pp-dsec-head"><h3>管理人暴露 Top5</h3><div class="sub">占投资资产</div></div><div class="pp-dsec-body"><div class="pp-dbars">'+ppBars(owners,p.invested)+'</div></div></section></div>'+
    '<section class="pp-dsec"><div class="pp-dsec-head"><h3>持仓明细</h3><div class="sub">共 '+p.positions.length+' 只 · 第 '+PP.dpage+' / '+pages+' 页</div></div><div class="po-table-wrap"><table class="pp-dtable"><thead><tr><th>持仓资产</th><th>模式</th><th>管理人 / 策略</th><th class="num">市值 / 占产品</th><th class="num">收益 / 超额</th><th class="num">回撤</th></tr></thead><tbody>'+rows.map(function(x){var a=x.asset;return '<tr><td><div class="pp-dasset">'+esc(a.id)+' · '+(a.carrier.bucket==='direct'?'<a href="javascript:void(0)" class="pp-spv-link" data-pp-spv="spv-a" title="查看专户详情">'+esc(a.carrier.name)+'</a>':'<span>'+esc(a.carrier.name)+'</span>')+'</div><div class="pp-dsub">'+esc(a.strategy)+'</div></td><td><span class="pp-tag type">'+BUCKET_SHORT[a.bucket]+'</span></td><td><div class="pp-dasset" style="font-weight:400">'+esc(a.owner)+'</div><div class="pp-dsub">'+(a.deptL1||'委外')+' · '+(a.manager==='—'?'外部':a.manager)+'</div></td><td class="num"><div class="pp-main">'+fmt(x.value,1)+' 亿</div><div class="pp-sub">'+fmt(x.value/p.aum*100,1)+'% · 占资产 '+fmt(x.value/a.scale*100,1)+'%</div></td><td class="num"><div>'+pct(a.r1)+'</div><div class="pp-sub">'+pct(a.e1)+'</div></td><td class="num">'+a.dd.toFixed(2)+'%</td></tr>'}).join('')+'</tbody></table></div><div class="pp-dpager">'+(pages>1?'<span>第 '+PP.dpage+' / '+pages+' 页</span><button data-pp-page="'+(PP.dpage-1)+'" '+(PP.dpage<=1?'disabled':'')+'>上一页</button>'+Array.from({length:pages},function(_,i){return '<button data-pp-page="'+(i+1)+'" class="'+(i+1===PP.dpage?'active':'')+'">'+(i+1)+'</button>'}).join('')+'<button data-pp-page="'+(PP.dpage+1)+'" '+(PP.dpage>=pages?'disabled':'')+'>下一页</button>':'')+'</div></section>'+
-   '<section class="pp-dsec"><div class="pp-dsec-head"><h3>数据质量</h3><div class="sub">2026-06-30</div></div><div class="pp-dsec-body"><div class="pp-dquality"><div>穿透覆盖率 <b>100.0%</b></div><div>前五集中度 <b>'+fmt(p.top5,1)+'%</b></div><div>跨产品重叠 <b>'+p.overlapCount+'</b> 笔</div><div>基准覆盖 <b>100%</b></div><div>现金占比 <b>'+fmt(p.aum?p.cash/p.aum*100:0,1)+'%</b></div><div style="color:#b7791f">模拟数据 · 仅供演示</div></div></div></section>'+
    '<div class="pp-dfoot"><button class="pp-dbtn" data-pp-close="1">关闭</button></div></div>';
   document.getElementById('pp-drawer').querySelectorAll('[data-pp-close]').forEach(function(b){b.onclick=ppClose});
   document.getElementById('pp-drawer').querySelectorAll('[data-pp-page]').forEach(function(b){b.onclick=function(){var n=+b.getAttribute('data-pp-page');if(n<1||n>pages)return;var top=document.getElementById('pp-drawer').scrollTop;PP.dpage=n;ppRenderDrawer();document.getElementById('pp-drawer').scrollTop=top}});
@@ -4831,7 +4847,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   if(host.getAttribute('data-ready')==='1')return;
   host.innerHTML='<div class="pm-top"><div class="pm-who"><span class="pm-kicker">当前登录人</span><select class="pm-user" id="pm-user">'+MANAGERS.map(function(m){return '<option value="'+esc(m)+'">'+esc(m)+'</option>'}).join('')+'</select><span class="pm-role">投资经理</span><span class="pm-hint">默认仅看本人负责的产品（演示可切换）</span></div><div class="pm-meta">数据日 2026-06-30 · 演示数据</div></div>'+
    '<div class="pm-kpis" id="pm-kpis"></div>'+
-   '<div class="pm-note"><span class="pm-role">口径</span><span>产品AUM = 我负责产品的全口径（含委外）；我的管理资产 = 我负责产品内由我管理的通道+直投资产，加上我负责配置的委外资产；委外由外部管理人执行。</span></div>'+
+   '<div class="pm-note"><span class="pm-role">口径</span><span>产品规模（AUM）= 我负责产品的全口径（含委外）；我的管理资产 = 我负责产品内由我管理的通道+直投资产，加上我负责配置的委外资产；委外由外部管理人执行。</span></div>'+
    '<section class="po-table-panel"><div class="po-panel-head"><h3>委外 / 通道 / 直投：规模与收益</h3><span>产品全口径 vs 我的管理责任</span></div><div class="po-table-wrap"><table class="po-table pm-mode-table"><thead><tr><th>投资模式</th><th class="num">产品规模（亿元）</th><th class="num">产品占比</th><th class="num">产品收益</th><th class="num">我的管理规模（亿元）</th><th class="num">我的占比</th><th class="num">我的收益</th><th>责任主体</th></tr></thead><tbody id="pm-mode-body"></tbody></table></div></section>'+
    '<section class="po-table-panel" style="margin-top:10px"><div class="po-panel-head"><h3>我负责的理财产品</h3><span id="pm-list-sub"></span></div><div class="po-table-wrap"><table class="po-table pm-product-table"><thead><tr><th>产品</th><th>类型 / 风险</th><th class="num">产品规模（亿元）</th><th>投资模式结构</th><th class="num">产品收益 / 超额</th><th class="num">我的管理 / 占比</th><th class="num">我的管理收益 / 超额</th><th>操作</th></tr></thead><tbody id="pm-product-body"></tbody></table></div></section>';
   host.setAttribute('data-ready','1');
@@ -4866,8 +4882,8 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   var mDd=mTot?ppSum(poss,function(x){return x.value*x.asset.dd})/mTot:0;
   var myAssetCount=new Set(poss.map(function(x){return x.asset.id})).size;
   document.getElementById('pm-kpis').innerHTML=
+   pmKpi('产品规模（AUM）',fmt(pAum,1),'亿元','产品全口径 · 含委外')+
    pmKpi('我的产品',products.length,'只','产品经理口径')+
-   pmKpi('产品AUM',fmt(pAum,1),'亿元','产品全口径 · 含委外')+
    pmKpi('我管理的资产',fmt(mTot,1),'亿元','我负责产品内 '+myAssetCount+' 个底层组合 · 含委外配置')+
    pmKpi('产品加权收益',ptxt(pRet),'','产品净值估算')+
    pmKpi('我的管理收益',ptxt(mRet),'','我的管理责任加权')+
@@ -4897,7 +4913,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
  function pmOpenProduct(id){ppEnsure();ppOpen(id)}
 
   /* ================= V2：顶部卡片 + 委外 / 通道 / 直投 ================= */
-  var V2={mode:'outsource',page:{strategy:1,entity:1},dtab:'stock',fundLevel:'l1',sort:{},mtab:'strategy'};
+  var V2={mode:'outsource',page:{strategy:1,entity:1},dtab:'stock',fundLevel:'l1',sort:{},mtab:'strategy',expand:'',quick:'product'};
   var V2_PAGE_SIZE=10;
   var V2_MODES=[
     {key:'outsource',name:'委外',color:'#1d5fbf',entity:'外部管理人'},
@@ -5627,20 +5643,56 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
         '<div class="pv2-note">超额 '+v2pp(a.ex)+' ≈ 配置 '+v2pp(dbr.alloc)+' + 选择 '+v2pp(dbr.sel)+' + 交互 '+v2pp(dbr.inter)+'；基准权重为等权模拟，接入真实基准后替换。</div></section>';
   }
 
+  function v2MgmtGroups(rows,kind){
+    var map={};rows.forEach(function(a){var name=kind==='strategy'?a.strategy:(a.bucket==='outsource'?a.owner:a.manager),keyName=name||'未分配';if(!map[keyName])map[keyName]=[];map[keyName].push(a)});
+    return Object.keys(map).map(function(name){var list=map[name],agg=v2agg(list);return {name:name,rows:list,scale:agg.scale,ret:agg.ret,ex:agg.ex,dd:agg.dd,count:list.length}}).sort(function(a,b){return b.scale-a.scale})
+  }
+  function v2MgmtData(mode){
+    var rows=ASSETS.filter(function(a){return a.bucket===mode}),agg=v2agg(rows),strategies=v2MgmtGroups(rows,'strategy'),entities=v2MgmtGroups(rows,'entity'),carriers={};rows.forEach(function(a){carriers[a.carrier.id]=1});
+    var win=strategies.filter(function(x){return x.ex>0}).length,top5=entities.slice(0,5).reduce(function(s,x){return s+x.scale},0),alerts=entities.filter(function(x){return x.ex<0}).length;
+    return {rows:rows,agg:agg,strategies:strategies,entities:entities,accounts:Object.keys(carriers).length,win:win,winRatio:strategies.length?win/strategies.length*100:0,top5:agg.scale?top5/agg.scale*100:0,alerts:alerts}
+  }
+  function v2MgmtConclusion(mode,d){
+    var name=BUCKET_LABEL[mode],lead=d.entities[0],risk=d.entities.slice().sort(function(a,b){return a.ex-b.ex})[0];
+    if(mode==='outsource')return name+'规模 '+v2f(d.agg.scale,0)+' 亿元，'+d.win+'/'+d.strategies.length+' 项策略跑赢基准；前五大管理人集中度 '+v2f(d.top5,1)+'%，'+d.alerts+' 家管理人超额为负。';
+    if(mode==='channel')return name+'规模 '+v2f(d.agg.scale,0)+' 亿元，涉及 '+d.accounts+' 个专户；'+d.win+'/'+d.strategies.length+' 项策略跑赢基准，需关注 '+(risk?risk.name:'—')+'。';
+    return name+'规模 '+v2f(d.agg.scale,0)+' 亿元，'+d.strategies.length+' 项策略、'+d.entities.length+' 名投资经理；当前收益领先主体为 '+(lead?lead.name:'—')+'。';
+  }
+  function v2MgmtCards(){
+    return '<div class="mg-mode-grid">'+V2_MODES.map(function(m){var d=v2MgmtData(m.key),active=V2.expand===m.key;return '<section class="mg-mode-card '+m.key+(active?' active':'')+'" style="--mg-accent:'+m.color+'"><div class="mg-mode-head"><div><h3>'+m.name+'</h3><span>'+v2f(d.agg.scale/TOTAL*100,1)+'% 的全量 AUM</span></div><strong>'+v2f(d.agg.scale,0)+'<small>亿元</small></strong></div><div class="mg-mode-kpis"><div><span>区间收益</span><b class="'+v2cls(d.agg.ret)+'">'+v2p(d.agg.ret)+'</b></div><div><span>超额收益</span><b class="'+v2cls(d.agg.ex)+'">'+v2pp(d.agg.ex)+'</b></div><div><span>最大回撤</span><b>'+v2f(d.agg.dd,2)+'%</b></div><div><span>跑赢策略</span><b>'+d.win+'/'+d.strategies.length+'</b></div><div><span>前五大集中度</span><b>'+v2f(d.top5,1)+'%</b></div><div><span>风险关注</span><b>'+(d.alerts?d.alerts+'项':'无')+'</b></div></div><p>'+v2MgmtConclusion(m.key,d)+'</p><button type="button" class="mg-expand" data-v2expand="'+m.key+'">'+(active?'收起':'展开经营分析')+'</button></section>'}).join('')+'</div>';
+  }
+  function v2MgmtQuick(){
+    if(!V2.expand)return '';
+    var mode=V2.expand,d=v2MgmtData(mode),modeName=BUCKET_LABEL[mode],view=V2.quick||'product',rows=[],headers=[];
+    if(view==='product'){
+      rows=PP.products.map(function(p){return {name:p.name,scale:p.mode[mode]||0,share:p.aum?(p.mode[mode]||0)/p.aum*100:0,ret:p.ret,ex:p.ex}}).filter(function(x){return x.scale>0}).sort(function(a,b){return b.scale-a.scale}).slice(0,5).map(function(x){return [x.name,v2f(x.scale,1),v2f(x.share,1)+'%',v2p(x.ret),v2pp(x.ex)]});headers=['理财产品','本模式规模（亿元）','占产品AUM','区间收益','超额收益'];
+    }else if(view==='strategy'){
+      rows=d.strategies.slice(0,5).map(function(x){return [x.name,v2f(x.scale,1),v2f(x.scale/d.agg.scale*100,1)+'%',v2p(x.ret),v2pp(x.ex),v2f(x.dd,2)+'%']});headers=['投资策略','规模（亿元）','占比','区间收益','超额收益','最大回撤'];
+    }else{
+      rows=d.entities.slice(0,5).map(function(x){return [x.name,v2f(x.scale,1),v2f(x.scale/d.agg.scale*100,1)+'%',v2p(x.ret),v2pp(x.ex),v2f(x.dd,2)+'%']});headers=[mode==='outsource'?'委外管理人':'投资经理','管理规模（亿元）','占比','区间收益','超额收益','最大回撤'];
+    }
+    var action=view==='product'?'查看全部理财产品':view==='strategy'?'查看全部投资策略':(mode==='outsource'?'查看委外管理人':'查看投资经理');
+    return '<section class="mg-expand-panel"><div class="mg-expand-head"><div><h3>'+modeName+'经营展开</h3><span>保留当前统计区间 · 只展示管理层 Top5</span></div><button type="button" data-v2close>收起</button></div><div class="mg-quick-tabs"><button class="'+(view==='product'?'active':'')+'" data-v2quick="product">产品表现</button><button class="'+(view==='strategy'?'active':'')+'" data-v2quick="strategy">策略表现</button><button class="'+(view==='entity'?'active':'')+'" data-v2quick="entity">'+(mode==='outsource'?'管理人表现':'投资经理表现')+'</button></div><div class="po-table-wrap">'+v2tbl(headers,headers.map(function(_,i){return i?'r':'l'}),rows,null)+'</div><div class="mg-actions"><span>当前口径：'+modeName+' · '+periodLabel(S.period)+'</span><button type="button" data-v2go="'+view+'">'+action+'</button></div></section>';
+  }
+  function v2MgmtGo(view){
+    var mode=V2.expand;
+    if(view==='product'){var p=document.querySelector('.side [data-po-view="product"]');if(p)p.click();return}
+    if(view==='strategy'){var s=document.querySelector('.side [data-page="strategy-analysis"]');if(s)s.click();setTimeout(function(){var b=document.querySelector('[data-sa-mode="'+mode+'"]');if(b)b.click();var period=document.getElementById('sa-period'),map={'1':'1m','3':'3m','6':'6m','12':'1y'};if(period&&map[S.period]){period.value=map[S.period];period.dispatchEvent(new Event('change',{bubbles:true}))}},30);return}
+    var a=document.querySelector('.side [data-po-view="all"]');if(a)a.click();setTimeout(function(){var tab=document.querySelector('[data-mr-tab="'+(mode==='outsource'?'external':'investment')+'"]');if(tab)tab.click()},30);
+  }
   function v2render(){
     v2style();
     var host=document.getElementById('po-dashboard');if(!host)return;
     var opts=[['1','近1月'],['3','近3月'],['6','近6月'],['12','近1年'],['36','近3年']];
-    var body=V2.mode==='direct'?v2directBlock():v2modeBlock(V2.mode);
     host.innerHTML='<div class="pv2">'+
       '<div class="pv2-period"><span class="lab">统计区间</span><div class="pv2-seg">'+
         opts.map(function(o){return '<button data-v2p="'+o[0]+'" class="'+(S.period===o[0]?'active':'')+'">'+o[1]+'</button>'}).join('')+
       '</div></div>'+
-      v2top()+
-      '<div class="pv2-tabs" role="tablist" aria-label="投资模式">'+V2_MODES.map(function(m){
-        return '<button class="pv2-tab'+(V2.mode===m.key?' active':'')+'" data-v2tab="'+m.key+'" role="tab" aria-selected="'+(V2.mode===m.key)+'"><i style="background:'+m.color+'"></i>'+m.name+'<em>'+v2f(BUCKET_TOTAL[m.key],0)+' 亿</em></button>';
-      }).join('')+'</div>'+body+'</div>';
-    host.querySelectorAll('[data-v2tab]').forEach(function(b){b.onclick=function(){V2.mode=b.getAttribute('data-v2tab');V2.page={strategy:1,entity:1};v2render()}});
+      v2top()+v2MgmtCards()+v2MgmtQuick()+'</div>';
+    host.querySelectorAll('[data-v2expand]').forEach(function(b){b.onclick=function(){var mode=b.getAttribute('data-v2expand');V2.expand=V2.expand===mode?'':mode;V2.mode=mode;V2.quick='product';v2render()}});
+    host.querySelectorAll('[data-v2quick]').forEach(function(b){b.onclick=function(){V2.quick=b.getAttribute('data-v2quick');v2render()}});
+    host.querySelectorAll('[data-v2close]').forEach(function(b){b.onclick=function(){V2.expand='';v2render()}});
+    host.querySelectorAll('[data-v2go]').forEach(function(b){b.onclick=function(){v2MgmtGo(b.getAttribute('data-v2go'))}});
     host.querySelectorAll('[data-v2p]').forEach(function(b){b.onclick=function(){S.period=b.getAttribute('data-v2p');V2.page={strategy:1,entity:1};v2render()}});
     host.querySelectorAll('[data-v2dtab]').forEach(function(b){b.onclick=function(){V2.dtab=b.getAttribute('data-v2dtab');v2render()}});
     host.querySelectorAll('[data-v2mtab]').forEach(function(b){b.onclick=function(){V2.mtab=b.getAttribute('data-v2mtab');v2render()}});
@@ -5700,7 +5752,6 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   var q=(el.querySelector('#po-q').value||'').trim().toLowerCase();
   var b=el.querySelector('#po-bucket-filter').value,d=el.querySelector('#po-dept-filter').value,m=el.querySelector('#po-manager-filter').value,st=el.querySelector('#po-strategy-filter').value;
   var rows=ASSETS.filter(function(a){
-   if(a.bucket==='direct')return false;
    if(b&&a.bucket!==b)return false;
    if(d&&a.deptL1!==d)return false;
    if(m&&a.owner!==m&&a.manager!==m)return false;
@@ -5735,6 +5786,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
  window.portfolioOperationsApi={
   getState:function(){return {view:S.view,period:S.period,strategy:S.strategy}},
   getStrategies:function(){return STRATEGIES.slice()},
+   getAssets:function(){return ASSETS.map(function(a){return {id:a.id,bucket:a.bucket,carrierId:a.carrier.id,carrierName:a.carrier.name,strategy:a.strategy,dept:a.deptL1,manager:a.manager,owner:a.owner,scale:a.scale,r1:a.r1,e1:a.e1,dd:a.dd}})},
   setStrategy:function(name){S.strategy=name||'';renderAll()},
   getClosure:function(){return {total:sum(ASSETS,'scale'),direct:sum(ASSETS.filter(function(a){return a.bucket==='direct'}),'scale'),channel:sum(ASSETS.filter(function(a){return a.bucket==='channel'}),'scale'),outsource:sum(ASSETS.filter(function(a){return a.bucket==='outsource'}),'scale'),ret:weighted(ASSETS,key())}}
  };
@@ -5848,7 +5900,7 @@ state.workspacePageLabels['fund-detail']='专户基金持仓';
   document.querySelectorAll('.menu [data-page="portfolio-operations"]').forEach(function(item){if(!item.classList.contains('po-nav-view'))item.remove()});
   if(!document.querySelector('.po-nav-group')){
    var group=document.createElement('div');group.className='po-nav-group';group.innerHTML='<div class="group-title">经营分析</div><nav class="menu po-nav-menu"></nav>';
-   var menu=group.querySelector('.po-nav-menu'),labels=[['bank','资产总览'],['manager','投资经理视图'],['product','理财产品穿透'],['all','委外通道产品']];
+   var menu=group.querySelector('.po-nav-menu'),labels=[['bank','经营总览'],['manager','投资策略分析'],['product','理财产品分析'],['all','管理主体分析']];
    labels.forEach(function(item){var button=document.createElement('button');button.className='po-nav-view';button.dataset.poView=item[0];button.textContent=item[1];button.onclick=function(){if(typeof infos!=='undefined')infos['portfolio-operations']=['经营分析',item[1]];if(typeof state!=='undefined'){state.workspacePageLabels=state.workspacePageLabels||{};state.workspacePageLabels['portfolio-operations']=item[1]}if(typeof page==='function')page('portfolio-operations');if(tabMap[item[0]])tabMap[item[0]].click();document.querySelectorAll('.po-nav-view').forEach(function(x){x.classList.toggle('active',x===button)});companyWording();window.scrollTo(0,0)};menu.appendChild(button)});
    var side=document.querySelector('aside.side'),logo=side&&side.querySelector('.logo');if(logo)logo.insertAdjacentElement('afterend',group);
   }
@@ -8064,7 +8116,7 @@ if(document.getElementById('post')&&document.getElementById('post').classList.co
 <style id="management-preview-style">
 #portfolio-operations{padding:18px 22px 32px;background:#f3f7fc;color:#17324d;font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif}
 .mp-shell{max-width:1480px;margin:0 auto}.mp-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px}.mp-head h1{font-size:22px;margin:0 0 5px;color:#12345b}.mp-head p{margin:0;color:#72859b;font-size:12px}.mp-period{background:#fff;border:1px solid #d8e3f0;border-radius:8px;padding:7px 11px;font-size:12px;color:#46627f}
-.mp-kpis{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:10px;margin-bottom:10px}.mp-kpi{background:#fff;border:1px solid #dce6f1;border-top:3px solid #1f63b6;border-radius:8px;padding:12px 14px;min-height:82px;box-sizing:border-box}.mp-kpi:nth-child(2){border-top-color:#cf3429}.mp-kpi:nth-child(3){border-top-color:#e28032}.mp-kpi:nth-child(4){border-top-color:#6a57b8}.mp-kpi:nth-child(5){border-top-color:#2f8b72}.mp-label{font-size:12px;color:#697f97}.mp-value{font-size:24px;font-weight:700;color:#12345b;margin-top:7px;line-height:1}.mp-value.red{color:#c93429}.mp-unit{font-size:12px;font-weight:400;margin-left:2px}.mp-note{font-size:11px;color:#8a9caf;margin-top:7px}
+.mp-kpis{display:grid;grid-template-columns:1.3fr repeat(3,1fr);gap:10px;margin-bottom:10px}.mp-kpi{background:#fff;border:1px solid #dce6f1;border-top:3px solid #1f63b6;border-radius:8px;padding:12px 14px;min-height:82px;box-sizing:border-box}.mp-kpi:nth-child(2){border-top-color:#cf3429}.mp-kpi:nth-child(3){border-top-color:#e28032}.mp-kpi:nth-child(4){border-top-color:#6a57b8}.mp-kpi:nth-child(5){border-top-color:#2f8b72}.mp-label{font-size:12px;color:#697f97}.mp-value{font-size:24px;font-weight:700;color:#12345b;margin-top:7px;line-height:1}.mp-value.red{color:#c93429}.mp-unit{font-size:12px;font-weight:400;margin-left:2px}.mp-note{font-size:11px;color:#8a9caf;margin-top:7px}
 .mp-section{background:#fff;border:1px solid #dce6f1;border-radius:10px;margin-top:10px;overflow:hidden}.mp-section-head{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;border-bottom:1px solid #e6edf5}.mp-section-head h2{font-size:15px;margin:0;color:#173b64}.mp-section-head span{font-size:11px;color:#7d8fa4}.mp-compare{display:grid;grid-template-columns:270px 1fr;padding:14px 15px;gap:18px}.mp-closure{display:flex;flex-direction:column;justify-content:center;border-right:1px solid #e5edf5;padding-right:18px}.mp-total{font-size:13px;color:#6f839a}.mp-total strong{display:block;font-size:27px;color:#173b64;margin:5px 0}.mp-stack{height:12px;border-radius:8px;overflow:hidden;display:flex;margin-top:8px}.mp-stack i{display:block;height:100%}.mp-stack .o{width:40%;background:#1f5d9c}.mp-stack .c{width:40%;background:#d2a41e}.mp-stack .d{width:20%;background:#6559a9}.mp-eq{font-size:11px;color:#7d8fa4;margin-top:7px}.mp-table{width:100%;border-collapse:collapse;font-size:12px}.mp-table th{text-align:right;color:#6c8097;font-weight:500;padding:5px 8px 9px;border-bottom:1px solid #e6edf5}.mp-table th:first-child,.mp-table td:first-child{text-align:left}.mp-table td{text-align:right;padding:10px 8px;border-bottom:1px solid #eef3f8;color:#29445f}.mp-table tr:last-child td{border-bottom:0}.mp-name{font-weight:700;color:#173b64}.mp-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:7px}.mp-pos{color:#ca3429!important}.mp-neg{color:#17805d!important}.mp-status{font-size:11px;padding:2px 7px;border-radius:10px;background:#e8f5ef;color:#25735c}.mp-contrib{display:inline-flex;align-items:center;gap:6px}.mp-mini{width:48px;height:5px;background:#edf2f7;border-radius:4px;overflow:hidden}.mp-mini i{display:block;height:100%;background:#d4574f;border-radius:4px}
 .mp-drill{padding-bottom:0}.mp-scope-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:13px 15px 0}.mp-scope{border:1px solid #d8e3ef;background:#f8fbfe;border-radius:8px;padding:11px 13px;cursor:pointer;text-align:left;color:#36516c}.mp-scope:hover{border-color:#8cb0d7}.mp-scope.active{background:#164f88;color:#fff;border-color:#164f88;box-shadow:0 3px 10px rgba(22,79,136,.18)}.mp-scope-top{display:flex;justify-content:space-between;align-items:center}.mp-scope strong{font-size:14px}.mp-scope b{font-size:18px}.mp-scope small{display:block;margin-top:5px;opacity:.75}.mp-detail-summary{display:grid;grid-template-columns:repeat(4,1fr);margin:12px 15px 0;border:1px solid #e0e8f1;border-radius:8px;overflow:hidden}.mp-detail-summary div{padding:9px 12px;border-right:1px solid #e0e8f1}.mp-detail-summary div:last-child{border-right:0}.mp-detail-summary b{display:block;font-size:17px;color:#173b64;margin-top:3px}.mp-detail-summary small{color:#7a8da1}.mp-view-tabs{display:flex;gap:7px;padding:11px 15px;border-bottom:1px solid #e5edf5}.mp-view-tabs button{border:1px solid #d3dfeb;background:#fff;color:#3f5c78;border-radius:6px;padding:7px 18px;cursor:pointer;font-size:12px}.mp-view-tabs button.active{background:#1768c4;border-color:#1768c4;color:#fff}.mp-view{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:14px 15px}.mp-panel h3{font-size:13px;margin:0 0 11px;color:#23476d}.mp-bars{display:flex;flex-direction:column;gap:10px}.mp-bar-row{display:grid;grid-template-columns:105px 1fr 110px;gap:8px;align-items:center;font-size:11px;color:#506a84}.mp-track{height:9px;background:#edf2f7;border-radius:5px;overflow:hidden}.mp-track i{height:100%;display:block;background:#2b6db5;border-radius:5px}.mp-bar-row:nth-child(2n) .mp-track i{background:#7088c9}.mp-metric-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mp-metric{border:1px solid #e2eaf2;background:#f9fbfd;border-radius:7px;padding:9px 11px}.mp-metric span{font-size:11px;color:#768ba1}.mp-metric b{display:block;margin-top:4px;font-size:16px;color:#173b64}.mp-footnote{padding:0 15px 12px;font-size:10px;color:#8a9caf}@media(max-width:1100px){.mp-kpis{grid-template-columns:repeat(3,1fr)}.mp-compare,.mp-view{grid-template-columns:1fr}.mp-closure{border-right:0;border-bottom:1px solid #e5edf5;padding:0 0 12px}.mp-detail-summary{grid-template-columns:repeat(2,1fr)}}
 </style>
@@ -8076,7 +8128,7 @@ if(document.getElementById('post')&&document.getElementById('post').classList.co
     direct:{name:'直投',amount:'500.0',count:'56项资产',owner:'18位内部投资经理',ret:'+0.44%',excess:'+0.10pp',draw:'-1.10%',view2:'投资经理分析',leftTitle:'资产结构与收益',rightTitle:'投资经理表现',rows:[['债券资产','285.0亿','+0.39%'],['权益资产','95.0亿','+0.71%'],['基金资产','70.0亿','+0.45%'],['现金及同业','35.0亿','+0.18%'],['其他资产','15.0亿','+0.31%']],entities:[['张伟','52.6亿','+0.49%'],['刘洋','48.3亿','+0.43%'],['孙悦','44.8亿','+0.58%'],['何涛','41.5亿','+0.38%'],['林佳','39.7亿','+0.46%']]}
   };
   function bars(rows){var max=Math.max.apply(null,rows.map(function(r){return parseFloat(r[1])}));return '<div class="mp-bars">'+rows.map(function(r,i){return '<div class="mp-bar-row"><span>'+r[0]+'</span><span class="mp-track"><i style="width:'+Math.max(12,parseFloat(r[1])/max*100)+'%"></i></span><span>'+r[1]+' · <em class="mp-pos">'+r[2]+'</em></span></div>'}).join('')+'</div>'}
-  function template(){return '<div class="mp-shell"><div class="mp-head"><div><h1>全量经营分析</h1><p>统一观察资产规模、收益表现与风险水平，并按投资方式下钻</p></div><div class="mp-period">统计区间　<strong>近1月</strong>　截至 2026-06-30</div></div><div class="mp-kpis"><div class="mp-kpi"><div class="mp-label">总资产规模</div><div class="mp-value">2,500.0<span class="mp-unit">亿元</span></div><div class="mp-note">委外、通道、直投全量资产</div></div><div class="mp-kpi"><div class="mp-label">区间收益金额</div><div class="mp-value red">+11.00<span class="mp-unit">亿元</span></div><div class="mp-note">按各类资产规模加权</div></div><div class="mp-kpi"><div class="mp-label">区间收益率</div><div class="mp-value red">+0.44<span class="mp-unit">%</span></div><div class="mp-note">全量资产综合收益</div></div><div class="mp-kpi"><div class="mp-label">超额收益率</div><div class="mp-value red">+0.14<span class="mp-unit">pp</span></div><div class="mp-note">相对综合业绩基准</div></div><div class="mp-kpi"><div class="mp-label">最大回撤</div><div class="mp-value">-1.08<span class="mp-unit">%</span></div><div class="mp-note">全量组合区间最大回撤</div></div></div><section class="mp-section"><div class="mp-section-head"><h2>三类资产经营对比</h2><span>规模、收益和风险采用同一统计区间</span></div><div class="mp-compare"><div class="mp-closure"><div class="mp-total">资产规模闭合<strong>2,500.0亿元</strong>100%覆盖全量资产</div><div class="mp-stack"><i class="o"></i><i class="c"></i><i class="d"></i></div><div class="mp-eq">委外 40%　＋　通道 40%　＋　直投 20%</div></div><table class="mp-table"><thead><tr><th>资产形态</th><th>规模</th><th>占比</th><th>收益率</th><th>收益金额</th><th>收益贡献</th><th>超额</th><th>最大回撤</th></tr></thead><tbody><tr><td class="mp-name"><i class="mp-dot" style="background:#1f5d9c"></i>委外</td><td>1,000.0亿</td><td>40.0%</td><td class="mp-pos">+0.37%</td><td class="mp-pos">+3.70亿</td><td><span class="mp-contrib">+0.15pp<span class="mp-mini"><i style="width:34%"></i></span></span></td><td class="mp-pos">+0.12pp</td><td>-1.29%</td></tr><tr><td class="mp-name"><i class="mp-dot" style="background:#d2a41e"></i>通道</td><td>1,000.0亿</td><td>40.0%</td><td class="mp-pos">+0.51%</td><td class="mp-pos">+5.10亿</td><td><span class="mp-contrib">+0.20pp<span class="mp-mini"><i style="width:46%"></i></span></span></td><td class="mp-pos">+0.18pp</td><td>-0.86%</td></tr><tr><td class="mp-name"><i class="mp-dot" style="background:#6559a9"></i>直投</td><td>500.0亿</td><td>20.0%</td><td class="mp-pos">+0.44%</td><td class="mp-pos">+2.20亿</td><td><span class="mp-contrib">+0.09pp<span class="mp-mini"><i style="width:20%"></i></span></span></td><td class="mp-pos">+0.10pp</td><td>-1.10%</td></tr></tbody></table></div></section><section class="mp-section mp-drill"><div class="mp-section-head"><h2>分类下钻分析</h2><span>选择资产形态，查看策略、责任主体与收益风险</span></div><div class="mp-scope-tabs"><button class="mp-scope active" data-mp-scope="outsource"><div class="mp-scope-top"><strong>委外</strong><b>1,000.0亿</b></div><small>40.0% · 108个组合 · 外部管理</small></button><button class="mp-scope" data-mp-scope="channel"><div class="mp-scope-top"><strong>通道</strong><b>1,000.0亿</b></div><small>40.0% · 108个组合 · 内部管理</small></button><button class="mp-scope" data-mp-scope="direct"><div class="mp-scope-top"><strong>直投</strong><b>500.0亿</b></div><small>20.0% · 56项资产 · 内部管理</small></button></div><div class="mp-detail-summary" id="mp-summary"></div><div class="mp-view-tabs"><button class="active" data-mp-view="strategy">策略分析</button><button data-mp-view="entity">管理人分析</button><button data-mp-view="return">收益风险</button></div><div class="mp-view"><div class="mp-panel"><h3 id="mp-left-title"></h3><div id="mp-left"></div></div><div class="mp-panel"><h3 id="mp-right-title"></h3><div id="mp-right"></div></div></div><div class="mp-footnote">演示数据仅用于说明页面结构；收益贡献＝资产规模权重 × 区间收益率。</div></section></div>'}
+  function template(){return '<div class="mp-shell"><div class="mp-head"><div><h1>全量经营分析</h1><p>统一观察资产规模、收益表现与风险水平，并按投资方式下钻</p></div><div class="mp-period">统计区间　<strong>近1月</strong>　截至 2026-06-30</div></div><div class="mp-kpis"><div class="mp-kpi"><div class="mp-label">总资产规模</div><div class="mp-value">2,500.0<span class="mp-unit">亿元</span></div><div class="mp-note">委外、通道、直投全量资产</div></div><div class="mp-kpi"><div class="mp-label">区间收益率</div><div class="mp-value red">+0.44<span class="mp-unit">%</span></div><div class="mp-note">全量资产综合收益</div></div><div class="mp-kpi"><div class="mp-label">超额收益率</div><div class="mp-value red">+0.14<span class="mp-unit">pp</span></div><div class="mp-note">相对综合业绩基准</div></div><div class="mp-kpi"><div class="mp-label">最大回撤</div><div class="mp-value">-1.08<span class="mp-unit">%</span></div><div class="mp-note">全量组合区间最大回撤</div></div></div><section class="mp-section"><div class="mp-section-head"><h2>三类资产经营对比</h2><span>规模、收益和风险采用同一统计区间</span></div><div class="mp-compare"><div class="mp-closure"><div class="mp-total">资产规模闭合<strong>2,500.0亿元</strong>100%覆盖全量资产</div><div class="mp-stack"><i class="o"></i><i class="c"></i><i class="d"></i></div><div class="mp-eq">委外 40%　＋　通道 40%　＋　直投 20%</div></div><table class="mp-table"><thead><tr><th>资产形态</th><th>规模</th><th>占比</th><th>收益率</th><th>收益金额</th><th>收益贡献</th><th>超额</th><th>最大回撤</th></tr></thead><tbody><tr><td class="mp-name"><i class="mp-dot" style="background:#1f5d9c"></i>委外</td><td>1,000.0亿</td><td>40.0%</td><td class="mp-pos">+0.37%</td><td class="mp-pos">+3.70亿</td><td><span class="mp-contrib">+0.15pp<span class="mp-mini"><i style="width:34%"></i></span></span></td><td class="mp-pos">+0.12pp</td><td>-1.29%</td></tr><tr><td class="mp-name"><i class="mp-dot" style="background:#d2a41e"></i>通道</td><td>1,000.0亿</td><td>40.0%</td><td class="mp-pos">+0.51%</td><td class="mp-pos">+5.10亿</td><td><span class="mp-contrib">+0.20pp<span class="mp-mini"><i style="width:46%"></i></span></span></td><td class="mp-pos">+0.18pp</td><td>-0.86%</td></tr><tr><td class="mp-name"><i class="mp-dot" style="background:#6559a9"></i>直投</td><td>500.0亿</td><td>20.0%</td><td class="mp-pos">+0.44%</td><td class="mp-pos">+2.20亿</td><td><span class="mp-contrib">+0.09pp<span class="mp-mini"><i style="width:20%"></i></span></span></td><td class="mp-pos">+0.10pp</td><td>-1.10%</td></tr></tbody></table></div></section><section class="mp-section mp-drill"><div class="mp-section-head"><h2>分类下钻分析</h2><span>选择资产形态，查看策略、责任主体与收益风险</span></div><div class="mp-scope-tabs"><button class="mp-scope active" data-mp-scope="outsource"><div class="mp-scope-top"><strong>委外</strong><b>1,000.0亿</b></div><small>40.0% · 108个组合 · 外部管理</small></button><button class="mp-scope" data-mp-scope="channel"><div class="mp-scope-top"><strong>通道</strong><b>1,000.0亿</b></div><small>40.0% · 108个组合 · 内部管理</small></button><button class="mp-scope" data-mp-scope="direct"><div class="mp-scope-top"><strong>直投</strong><b>500.0亿</b></div><small>20.0% · 56项资产 · 内部管理</small></button></div><div class="mp-detail-summary" id="mp-summary"></div><div class="mp-view-tabs"><button class="active" data-mp-view="strategy">策略分析</button><button data-mp-view="entity">管理人分析</button><button data-mp-view="return">收益风险</button></div><div class="mp-view"><div class="mp-panel"><h3 id="mp-left-title"></h3><div id="mp-left"></div></div><div class="mp-panel"><h3 id="mp-right-title"></h3><div id="mp-right"></div></div></div><div class="mp-footnote">演示数据仅用于说明页面结构；收益贡献＝资产规模权重 × 区间收益率。</div></section></div>'}
   function init(){var page=document.getElementById('portfolio-operations');if(!page)return;var dashboard=page.querySelector('#po-dashboard');if(!dashboard)return;var custom=document.createElement('div');custom.id='mp-custom-root';custom.innerHTML=template();dashboard.insertAdjacentElement('afterend',custom);var scope='outsource',view='strategy';
     function render(){var d=data[scope];document.getElementById('mp-summary').innerHTML='<div><small>'+d.name+'资产规模</small><b>'+d.amount+'亿元</b></div><div><small>区间收益率</small><b class="mp-pos">'+d.ret+'</b></div><div><small>超额收益率</small><b class="mp-pos">'+d.excess+'</b></div><div><small>最大回撤</small><b>'+d.draw+'</b></div>';var tabs=document.querySelectorAll('[data-mp-view]');tabs[1].textContent=d.view2;document.getElementById('mp-left-title').textContent=view==='strategy'?d.leftTitle:(view==='entity'?d.rightTitle:'风险收益指标');document.getElementById('mp-right-title').textContent=view==='strategy'?'收益贡献构成':(view==='entity'?'规模与收益对比':'收益与基准对比');if(view==='strategy'){document.getElementById('mp-left').innerHTML=bars(d.rows);document.getElementById('mp-right').innerHTML='<div class="mp-metric-list"><div class="mp-metric"><span>区间收益金额</span><b class="mp-pos">+'+(parseFloat(d.amount)*parseFloat(d.ret)/100).toFixed(2)+'亿元</b></div><div class="mp-metric"><span>收益贡献</span><b class="mp-pos">'+(parseFloat(d.amount)/2500*parseFloat(d.ret)).toFixed(2)+'pp</b></div><div class="mp-metric"><span>规模占比</span><b>'+(parseFloat(d.amount)/25).toFixed(1)+'%</b></div><div class="mp-metric"><span>覆盖对象</span><b>'+d.count+'</b></div></div>'}else if(view==='entity'){document.getElementById('mp-left').innerHTML=bars(d.entities);document.getElementById('mp-right').innerHTML='<div class="mp-metric-list"><div class="mp-metric"><span>责任主体</span><b>'+d.owner+'</b></div><div class="mp-metric"><span>区间收益</span><b class="mp-pos">'+d.ret+'</b></div><div class="mp-metric"><span>超额收益</span><b class="mp-pos">'+d.excess+'</b></div><div class="mp-metric"><span>覆盖资产</span><b>'+d.amount+'亿元</b></div></div>'}else{document.getElementById('mp-left').innerHTML='<div class="mp-metric-list"><div class="mp-metric"><span>区间收益率</span><b class="mp-pos">'+d.ret+'</b></div><div class="mp-metric"><span>超额收益率</span><b class="mp-pos">'+d.excess+'</b></div><div class="mp-metric"><span>最大回撤</span><b>'+d.draw+'</b></div><div class="mp-metric"><span>风险调整收益</span><b>0.42</b></div></div>';document.getElementById('mp-right').innerHTML=bars([['组合收益','100.0亿',d.ret],['业绩基准','74.0亿','+'+(parseFloat(d.ret)-parseFloat(d.excess)).toFixed(2)+'%'],['超额收益','28.0亿',d.excess]])}}
     document.querySelectorAll('[data-mp-scope]').forEach(function(btn){btn.addEventListener('click',function(){scope=btn.getAttribute('data-mp-scope');document.querySelectorAll('[data-mp-scope]').forEach(function(x){x.classList.toggle('active',x===btn)});view='strategy';document.querySelectorAll('[data-mp-view]').forEach(function(x,i){x.classList.toggle('active',i===0)});render()})});document.querySelectorAll('[data-mp-view]').forEach(function(btn){btn.addEventListener('click',function(){view=btn.getAttribute('data-mp-view');document.querySelectorAll('[data-mp-view]').forEach(function(x){x.classList.toggle('active',x===btn)});render()})});render();
@@ -8125,7 +8177,7 @@ if(document.getElementById('post')&&document.getElementById('post').classList.co
 (function(){
   function updateManagerPopulation(){
     var outsource=document.querySelector('[data-mp-scope="outsource"]');
-    if(outsource){var note=outsource.querySelector('small');if(note)note.textContent='40.0% · 108个组合 · 123家外部管理人'}
+    if(outsource){var note=outsource.querySelector('small');if(note)note.textContent='40.0% · 外部管理'}
     var active=document.querySelector('[data-mp-scope].active');
     if(!active||active.getAttribute('data-mp-scope')!=='outsource')return;
     document.querySelectorAll('.mp-view .mp-metric').forEach(function(card){var label=card.querySelector('span'),value=card.querySelector('b');if(label&&value&&label.textContent.trim()==='责任主体')value.textContent='123家外部管理人'});
@@ -8222,7 +8274,7 @@ if(document.getElementById('post')&&document.getElementById('post').classList.co
 </script>
 <script id="management-preview-section-names">
 (function(){
-  var names={'三类资产经营对比':'AUM结构与表现','分类下钻分析':'资产形态经营分析'};
+  var names={'三类资产经营对比':'AUM结构与表现','分类下钻分析':'AUM分类分析'};
   function rename(){var pageTitle=document.querySelector('#portfolio-operations h1');if(pageTitle)pageTitle.textContent='全量经营分析';document.querySelectorAll('#portfolio-operations .mp-section-head h2').forEach(function(h){var text=h.textContent.trim();if(names[text])h.textContent=names[text]})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',rename);else rename();
 })();
@@ -8330,7 +8382,7 @@ if(document.getElementById('post')&&document.getElementById('post').classList.co
     '3y':{label:'近3年',overall:['+421.00亿元','+16.84%','+3.26pp','-6.85%'],scope:{outsource:['+14.52%','+5.81pp','+2.84pp','-7.62%'],channel:['+18.91%','+7.56pp','+3.79pp','-5.74%'],direct:['+15.95%','+3.19pp','+2.96pp','-6.91%']}}
   },current='1m',scales={outsource:1000,channel:1000,direct:500};
   function setByLabel(root,map){if(!root)return;root.querySelectorAll('.mp-kpi,.mp-metric').forEach(function(card){var label=card.querySelector('.mp-label,span'),value=card.querySelector('.mp-value,b');if(label&&value&&map[label.textContent.trim()])value.textContent=map[label.textContent.trim()]})}
-  function apply(){var p=periods[current],active=document.querySelector('[data-mp-scope].active'),key=active?active.getAttribute('data-mp-scope'):'outsource',s=p.scope[key],scale=scales[key];setByLabel(document.querySelector('.mp-kpis'),{'区间收益金额':p.overall[0],'区间收益率':p.overall[1],'超额收益率':p.overall[2],'最大回撤':p.overall[3]});document.querySelectorAll('[data-mp-overview-scope]').forEach(function(card){var k=card.getAttribute('data-mp-overview-scope'),v=p.scope[k],bs=card.querySelectorAll('.mp-overview-card-metrics b');if(bs[0])bs[0].textContent=v[0];if(bs[1])bs[1].textContent=v[1]});var summary=document.getElementById('mp-summary');if(summary){var bs=summary.querySelectorAll('b');if(bs[1])bs[1].textContent=s[0];if(bs[2])bs[2].textContent=s[2];if(bs[3])bs[3].textContent=s[3]}var amount=(scale*parseFloat(s[0])/100).toFixed(2);setByLabel(document.querySelector('.mp-view'),{'区间收益金额':'+'+amount+'亿元','收益贡献':s[1],'区间收益率':s[0],'组合收益率':s[0],'超额收益率':s[2],'最大回撤':s[3],'业绩基准收益率':'+'+(parseFloat(s[0])-parseFloat(s[2])).toFixed(2)+'%'});var select=document.getElementById('mp-period-select');if(select&&select.value!==current)select.value=current}
+  function apply(){var p=periods[current],active=document.querySelector('[data-mp-scope].active'),key=active?active.getAttribute('data-mp-scope'):'outsource',s=p.scope[key],scale=scales[key];setByLabel(document.querySelector('.mp-kpis'),{'区间收益率':p.overall[1],'超额收益率':p.overall[2],'最大回撤':p.overall[3]});document.querySelectorAll('[data-mp-overview-scope]').forEach(function(card){var k=card.getAttribute('data-mp-overview-scope'),v=p.scope[k],bs=card.querySelectorAll('.mp-overview-card-metrics b');if(bs[0])bs[0].textContent=v[0];if(bs[1])bs[1].textContent=v[1]});var summary=document.getElementById('mp-summary');if(summary){var bs=summary.querySelectorAll('b');if(bs[1])bs[1].textContent=s[0];if(bs[2])bs[2].textContent=s[2];if(bs[3])bs[3].textContent=s[3]}var amount=(scale*parseFloat(s[0])/100).toFixed(2);setByLabel(document.querySelector('.mp-view'),{'区间收益金额':'+'+amount+'亿元','收益贡献':s[1],'区间收益率':s[0],'组合收益率':s[0],'超额收益率':s[2],'最大回撤':s[3],'业绩基准收益率':'+'+(parseFloat(s[0])-parseFloat(s[2])).toFixed(2)+'%'});var select=document.getElementById('mp-period-select');if(select&&select.value!==current)select.value=current}
   function build(){var host=document.querySelector('.mp-period');if(!host)return;host.innerHTML='<label for="mp-period-select">统计区间</label><select id="mp-period-select"><option value="1m">近1月</option><option value="3m">近3月</option><option value="6m">近6月</option><option value="1y">近1年</option><option value="3y">近3年</option></select><span class="mp-period-date">截至 2026-06-30</span>';host.querySelector('select').addEventListener('change',function(){current=this.value;apply()});document.querySelectorAll('[data-mp-scope],[data-mp-view]').forEach(function(x){x.addEventListener('click',function(){setTimeout(apply,70)})});apply()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();
 })();
@@ -8441,6 +8493,1462 @@ if(document.getElementById('post')&&document.getElementById('post').classList.co
   #portfolio-operations .mp-period{margin-top:0;width:auto}
 }
 </style>
+<style id="management-aum-performance-merge-style">
+/* 将整体经营表现并入全量资产规模右侧，避免与下方资产形态页签重复 */
+#portfolio-operations .mp-overview-layout{
+  grid-template-columns:minmax(250px,300px) minmax(0,1fr);
+  align-items:stretch;
+  gap:16px;
+}
+#portfolio-operations .mp-overall-performance{
+  min-width:0;
+  padding-left:2px;
+}
+#portfolio-operations .mp-overall-performance-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 0 8px;
+}
+#portfolio-operations .mp-overall-performance-head strong{
+  color:#173b64;
+  font-size:13px;
+}
+#portfolio-operations .mp-overall-performance-head span{
+  color:#7d8fa4;
+  font-size:10px;
+}
+#portfolio-operations .mp-overall-performance .mp-kpis{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin:0;
+  padding:0;
+}
+#portfolio-operations .mp-overall-performance .mp-kpi{
+  min-height:88px;
+  padding:10px 12px;
+  border-top-width:2px;
+  box-shadow:none;
+}
+#portfolio-operations .mp-overall-performance .mp-value{
+  margin-top:6px;
+  font-size:20px;
+}
+#portfolio-operations .mp-overall-performance .mp-note{
+  margin-top:6px;
+  font-size:10px;
+}
+#portfolio-operations .mp-performance-block{display:none!important}
+#portfolio-operations>.mp-head,
+#portfolio-operations .mp-shell>.mp-head{display:none!important}
+#portfolio-operations .mp-section-head .mp-period{
+  margin:0;
+  min-height:34px;
+  padding:2px 8px;
+  border-color:#d3e0ed;
+  box-shadow:none;
+}
+#portfolio-operations .mp-section-head .mp-period select{height:27px}
+@media(max-width:1100px){
+  #portfolio-operations .mp-overview-layout{grid-template-columns:1fr}
+  #portfolio-operations .mp-overall-performance{padding-top:2px}
+  #portfolio-operations .mp-overall-performance .mp-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+  #portfolio-operations .mp-overall-performance .mp-kpis{grid-template-columns:1fr}
+}
+</style>
+<script id="management-aum-performance-merge-script">
+(function(){
+  function merge(){
+    var section=Array.from(document.querySelectorAll('#portfolio-operations .mp-section')).find(function(x){
+      var h=x.querySelector('.mp-section-head h2');
+      return h&&h.textContent.trim()==='AUM结构与表现';
+    });
+    var layout=section&&section.querySelector('.mp-overview-layout');
+    var total=layout&&layout.querySelector('.mp-overview-total');
+    var kpis=document.querySelector('#portfolio-operations .mp-performance-block .mp-kpis')||document.querySelector('#portfolio-operations .mp-kpis');
+    if(!layout||!total||!kpis)return false;
+    layout.querySelector('.mp-overview-cards')?.remove();
+    var performance=layout.querySelector('.mp-overall-performance');
+    if(!performance){
+      performance=document.createElement('div');
+      performance.className='mp-overall-performance';
+      performance.innerHTML='<div class="mp-overall-performance-head"><strong>整体经营表现</strong><span>全量资产按规模加权</span></div>';
+      total.insertAdjacentElement('afterend',performance);
+    }
+    if(kpis.parentElement!==performance)performance.appendChild(kpis);
+    var oldBlock=document.querySelector('#portfolio-operations .mp-performance-block');
+    if(oldBlock)oldBlock.remove();
+    var sectionHead=section.querySelector('.mp-section-head');
+    var hint=sectionHead&&sectionHead.querySelector(':scope > span');
+    var pageHead=document.querySelector('#portfolio-operations .mp-head');
+    var period=pageHead&&pageHead.querySelector('.mp-period');
+    if(hint)hint.remove();
+    if(sectionHead&&period&&period.parentElement!==sectionHead)sectionHead.appendChild(period);
+    if(pageHead)pageHead.remove();
+    return true;
+  }
+  function init(){
+    merge();
+    var root=document.getElementById('portfolio-operations')||document.body;
+    new MutationObserver(merge).observe(root,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<script id="management-remove-demo-footnote-script">
+(function(){
+  function remove(){document.querySelectorAll('#portfolio-operations .mp-footnote').forEach(function(note){note.remove()})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',remove);else remove();
+})();
+</script>
+<style id="management-scope-card-metrics-style">
+/* 规模、收益率和超额集中在资产分类卡片，隐藏重复摘要卡 */
+#portfolio-operations #mp-summary{display:none!important}
+#portfolio-operations .mp-scope-tabs{padding-bottom:13px}
+#portfolio-operations .mp-scope{padding:11px 13px 10px}
+#portfolio-operations .mp-scope-metrics{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:9px;
+  padding-top:8px;
+  border-top:1px solid #dfe8f1;
+}
+#portfolio-operations .mp-scope-metrics.has-benchmark-win{grid-template-columns:repeat(4,minmax(0,1fr))}
+#portfolio-operations .mp-scope-metric span{
+  display:block;
+  color:#71869c;
+  font-size:10px;
+}
+#portfolio-operations .mp-scope-metric b{
+  display:block;
+  margin-top:3px;
+  color:#c93429;
+  font-size:13px;
+}
+#portfolio-operations .mp-scope-metric.subject b{color:#173b64;font-size:14px;font-weight:700}
+#portfolio-operations .mp-scope.active .mp-scope-metrics{border-top-color:rgba(255,255,255,.24)}
+#portfolio-operations .mp-scope.active .mp-scope-metric span{color:rgba(255,255,255,.72)}
+#portfolio-operations .mp-scope.active .mp-scope-metric b{color:#fff}
+</style>
+<script id="management-scope-card-metrics-script">
+(function(){
+  var subjects={
+    outsource:{label:'涉及管理人',value:'123家',note:'40.0% · 外部管理'},
+    channel:{label:'通道产品',value:'108只',note:'40.0% · 内部管理'},
+    direct:{label:'资产项数',value:'56项',note:'20.0% · 内部管理'}
+  };
+  var periods={
+    '1m':{outsource:['+0.37%','+0.12pp'],channel:['+0.51%','+0.18pp'],direct:['+0.44%','+0.10pp']},
+    '3m':{outsource:['+1.08%','+0.31pp'],channel:['+1.52%','+0.47pp'],direct:['+1.39%','+0.32pp']},
+    '6m':{outsource:['+2.34%','+0.67pp'],channel:['+3.18%','+0.96pp'],direct:['+2.70%','+0.61pp']},
+    '1y':{outsource:['+4.86%','+1.19pp'],channel:['+6.42%','+1.67pp'],direct:['+5.66%','+1.31pp']},
+    '3y':{outsource:['+14.52%','+2.84pp'],channel:['+18.91%','+3.79pp'],direct:['+15.95%','+2.96pp']}
+  };
+  var excessKeys={'1m':'e1','3m':'e3','6m':'e6','1y':'e12','3y':'e36'};
+  function benchmarkWinRatio(bucket,period){
+    var source=typeof ASSETS!=='undefined'?ASSETS:(window.ASSETS||[]),key=excessKeys[period]||'e1';
+    var rows=source.filter(function(asset){return asset.bucket===bucket});
+    var beat=rows.filter(function(asset){return (+asset[key]||0)>0}).length;
+    return rows.length?beat/rows.length*100:0;
+  }
+  function render(){
+    var select=document.getElementById('mp-period-select');
+    var period=select?select.value:'1m',data=periods[period]||periods['1m'];
+    document.querySelectorAll('#portfolio-operations [data-mp-scope]').forEach(function(card){
+      var key=card.getAttribute('data-mp-scope'),values=data[key],subject=subjects[key];
+      if(!values||!subject)return;
+      var note=card.querySelector('small');if(note)note.textContent=subject.note;
+      var metrics=card.querySelector('.mp-scope-metrics');
+      if(!metrics){
+        metrics=document.createElement('div');
+        metrics.className='mp-scope-metrics';
+        metrics.innerHTML='<div class="mp-scope-metric subject"><span></span><b></b></div><div class="mp-scope-metric"><span>区间收益率</span><b></b></div><div class="mp-scope-metric"><span>超额收益率</span><b></b></div>';
+        card.appendChild(metrics);
+      }
+      var subjectEl=metrics.querySelector('.subject');
+      subjectEl.querySelector('span').textContent=subject.label;
+      subjectEl.querySelector('b').textContent=subject.value;
+      var valuesEl=metrics.querySelectorAll('b');
+      valuesEl[1].textContent=values[0];
+      valuesEl[2].textContent=values[1];
+      var benchmarkMetric=metrics.querySelector('[data-scope-benchmark-win]');
+      if(key==='outsource'||key==='channel'){
+        if(!benchmarkMetric){
+          benchmarkMetric=document.createElement('div');
+          benchmarkMetric.className='mp-scope-metric';
+          benchmarkMetric.setAttribute('data-scope-benchmark-win','');
+          benchmarkMetric.innerHTML='<span>跑赢基准产品占比</span><b></b>';
+          metrics.appendChild(benchmarkMetric);
+        }
+        benchmarkMetric.querySelector('b').textContent=benchmarkWinRatio(key,period).toFixed(1)+'%';
+        metrics.classList.add('has-benchmark-win');
+      }else{
+        if(benchmarkMetric)benchmarkMetric.remove();
+        metrics.classList.remove('has-benchmark-win');
+      }
+    });
+  }
+  function init(){
+    render();
+    var select=document.getElementById('mp-period-select');
+    if(select)select.addEventListener('change',render);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<style id="management-asset-class-analysis-style">
+#portfolio-operations .mp-asset-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#portfolio-operations .mp-asset-summary>div{padding:10px 12px;border:1px solid #dfe8f1;border-radius:7px;background:#f7fafd}
+#portfolio-operations .mp-asset-summary span{display:block;color:#7a8ea3;font-size:10px}
+#portfolio-operations .mp-asset-summary b{display:block;margin-top:4px;color:#173b64;font-size:16px}
+#portfolio-operations .mp-asset-table{width:100%;border-collapse:collapse;background:#fff;font-size:11px}
+#portfolio-operations .mp-asset-table th{padding:9px 10px;border-bottom:1px solid #dfe8f1;background:#f1f6fb;color:#617991;font-weight:500;text-align:right}
+#portfolio-operations .mp-asset-table td{padding:9px 10px;border-bottom:1px solid #edf2f6;color:#324e69;text-align:right}
+#portfolio-operations .mp-asset-table th:first-child,#portfolio-operations .mp-asset-table td:first-child{text-align:left}
+#portfolio-operations .mp-asset-table tbody tr:last-child td{border-bottom:0}
+#portfolio-operations .mp-asset-name{display:flex;align-items:center;gap:8px;font-weight:700;color:#23476d}
+#portfolio-operations .mp-asset-dot{width:8px;height:8px;border-radius:50%;background:#2f75bb}
+@media(max-width:800px){#portfolio-operations .mp-asset-summary{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="management-analysis-tabs-script">
+(function(){
+  var assets={
+    outsource:[['固收类',620,62.0,'+0.31%','+0.09pp','-0.72%'],['权益类',170,17.0,'+0.58%','+0.21pp','-1.86%'],['基金类',120,12.0,'+0.42%','+0.13pp','-1.04%'],['现金及同业',60,6.0,'+0.18%','+0.03pp','-0.12%'],['其他资产',30,3.0,'+0.26%','+0.05pp','-0.48%']],
+    channel:[['固收类',580,58.0,'+0.46%','+0.15pp','-0.61%'],['权益类',160,16.0,'+0.73%','+0.28pp','-1.42%'],['基金类',140,14.0,'+0.55%','+0.19pp','-0.93%'],['现金及同业',90,9.0,'+0.22%','+0.05pp','-0.10%'],['其他资产',30,3.0,'+0.34%','+0.08pp','-0.36%']],
+    direct:[['债券资产',285,57.0,'+0.39%','+0.08pp','-0.57%'],['权益资产',95,19.0,'+0.71%','+0.25pp','-1.44%'],['基金资产',70,14.0,'+0.45%','+0.12pp','-1.08%'],['现金及同业',35,7.0,'+0.18%','+0.03pp','-0.09%'],['其他资产',15,3.0,'+0.31%','+0.06pp','-0.42%']]
+  };
+  var colors=['#2f75bb','#b98524','#2b8a78','#7963b5','#6f8092'];
+  var directStrategies=[['利率策略',180,36.0,'+0.35%','+0.07pp','-0.42%'],['信用策略',105,21.0,'+0.43%','+0.10pp','-0.61%'],['权益策略',95,19.0,'+0.71%','+0.25pp','-1.44%'],['基金配置',70,14.0,'+0.45%','+0.12pp','-1.08%'],['流动性管理',35,7.0,'+0.18%','+0.03pp','-0.09%'],['其他策略',15,3.0,'+0.31%','+0.06pp','-0.42%']];
+  function labels(){
+    var tabs=document.querySelector('#portfolio-operations .mp-view-tabs');
+    if(!tabs)return;
+    var strategy=tabs.querySelector('[data-mp-view="strategy"]');
+    var asset=tabs.querySelector('[data-mp-view="return"]');
+    var entity=tabs.querySelector('[data-mp-view="entity"]');
+    var scope=document.querySelector('#portfolio-operations [data-mp-scope].active');
+    var key=scope&&scope.getAttribute('data-mp-scope');
+    if(strategy)strategy.textContent='策略分析';
+    if(asset){asset.textContent='大类资产分析';if(asset.nextElementSibling!==entity)tabs.insertBefore(asset,entity)}
+    if(entity)entity.textContent='责任主体分析';
+  }
+  function renderAssets(){
+    var active=document.querySelector('#portfolio-operations [data-mp-view].active');
+    if(!active||active.getAttribute('data-mp-view')!=='return')return;
+    var scope=document.querySelector('#portfolio-operations [data-mp-scope].active');
+    var key=scope&&scope.getAttribute('data-mp-scope'),rows=assets[key];
+    if(!rows)return;
+    var total=rows.reduce(function(sum,row){return sum+row[1]},0);
+    var best=rows.slice().sort(function(a,b){return parseFloat(b[3])-parseFloat(a[3])})[0];
+    var leftTitle=document.getElementById('mp-left-title'),rightTitle=document.getElementById('mp-right-title');
+    if(leftTitle)leftTitle.textContent='大类资产规模分布';
+    if(rightTitle)rightTitle.textContent='收益与风险概览';
+    var left=document.getElementById('mp-left'),right=document.getElementById('mp-right');
+    if(left)left.innerHTML='<div class="mp-bars">'+rows.map(function(row,i){return '<div class="mp-bar-row"><span>'+row[0]+'</span><span class="mp-track"><i style="width:'+row[2]+'%;background:'+colors[i]+'"></i></span><strong>'+row[1].toFixed(1)+'亿元</strong></div>'}).join('')+'</div>';
+    if(right)right.innerHTML='<div class="mp-asset-summary"><div><span>大类资产数量</span><b>'+rows.length+'类</b></div><div><span>覆盖资产规模</span><b>'+total.toFixed(1)+'亿元</b></div><div><span>收益领先类别</span><b>'+best[0]+'</b></div><div><span>领先类别收益率</span><b class="mp-pos">'+best[3]+'</b></div></div>';
+    document.querySelectorAll('#portfolio-operations .mp-deep-analysis,#portfolio-operations .mp-pager').forEach(function(x){x.remove()});
+    var host=document.querySelector('#portfolio-operations .mp-view');
+    if(!host)return;
+    var box=document.createElement('div');
+    box.className='mp-deep-analysis mp-asset-analysis';
+    box.innerHTML='<table class="mp-asset-table"><thead><tr><th>大类资产</th><th>规模（亿元）</th><th>规模占比</th><th>区间收益率</th><th>超额收益率</th><th>最大回撤</th></tr></thead><tbody>'+rows.map(function(row,i){return '<tr><td><span class="mp-asset-name"><i class="mp-asset-dot" style="background:'+colors[i]+'"></i>'+row[0]+'</span></td><td>'+row[1].toFixed(1)+'</td><td>'+row[2].toFixed(1)+'%</td><td class="mp-pos">'+row[3]+'</td><td class="mp-pos">'+row[4]+'</td><td>'+row[5]+'</td></tr>'}).join('')+'</tbody></table>';
+    host.insertAdjacentElement('afterend',box);
+  }
+  function renderDirectStrategy(){
+    var scope=document.querySelector('#portfolio-operations [data-mp-scope].active');
+    var active=document.querySelector('#portfolio-operations [data-mp-view].active');
+    if(!scope||scope.getAttribute('data-mp-scope')!=='direct'||!active||active.getAttribute('data-mp-view')!=='strategy')return;
+    var leftTitle=document.getElementById('mp-left-title'),rightTitle=document.getElementById('mp-right-title');
+    if(leftTitle)leftTitle.textContent='直投策略规模分布';
+    if(rightTitle)rightTitle.textContent='策略收益与风险概览';
+    var left=document.getElementById('mp-left'),right=document.getElementById('mp-right');
+    if(left)left.innerHTML='<div class="mp-bars">'+directStrategies.slice(0,5).map(function(row,i){return '<div class="mp-bar-row"><span>'+row[0]+'</span><span class="mp-track"><i style="width:'+row[2]+'%;background:'+colors[i%colors.length]+'"></i></span><strong>'+row[1].toFixed(1)+'亿元</strong></div>'}).join('')+'</div>';
+    if(right)right.innerHTML='<div class="mp-asset-summary"><div><span>策略数量</span><b>'+directStrategies.length+'类</b></div><div><span>覆盖资产规模</span><b>500.0亿元</b></div><div><span>收益领先策略</span><b>权益策略</b></div><div><span>领先策略收益率</span><b class="mp-pos">+0.71%</b></div></div>';
+    document.querySelectorAll('#portfolio-operations .mp-deep-analysis,#portfolio-operations .mp-pager').forEach(function(x){x.remove()});
+    var host=document.querySelector('#portfolio-operations .mp-view');
+    if(!host)return;
+    var box=document.createElement('div');box.className='mp-deep-analysis mp-direct-strategy-analysis';
+    box.innerHTML='<table class="mp-asset-table"><thead><tr><th>投资策略</th><th>规模（亿元）</th><th>规模占比</th><th>区间收益率</th><th>超额收益率</th><th>最大回撤</th></tr></thead><tbody>'+directStrategies.map(function(row,i){return '<tr><td><span class="mp-asset-name"><i class="mp-asset-dot" style="background:'+colors[i%colors.length]+'"></i>'+row[0]+'</span></td><td>'+row[1].toFixed(1)+'</td><td>'+row[2].toFixed(1)+'%</td><td class="mp-pos">'+row[3]+'</td><td class="mp-pos">'+row[4]+'</td><td>'+row[5]+'</td></tr>'}).join('')+'</tbody></table>';
+    host.insertAdjacentElement('afterend',box);
+  }
+  function activateAssetView(event){
+    var tab=event.target.closest&&event.target.closest('#portfolio-operations [data-mp-view="return"]');
+    if(!tab)return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    document.querySelectorAll('#portfolio-operations [data-mp-view]').forEach(function(button){button.classList.toggle('active',button===tab)});
+    labels();
+    renderAssets();
+  }
+  function refresh(){labels();setTimeout(function(){labels();renderAssets();renderDirectStrategy()},140)}
+  function init(){
+    labels();
+    document.addEventListener('click',activateAssetView,true);
+    document.querySelectorAll('#portfolio-operations [data-mp-scope],#portfolio-operations [data-mp-view]').forEach(function(x){x.addEventListener('click',refresh)});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<style id="management-compact-aum-gap-style">
+/* 压缩 AUM 总览与分类页签之间的纵向占位 */
+#portfolio-operations .mp-shell>.mp-section:first-of-type{margin-top:0}
+#portfolio-operations .mp-shell>.mp-section:first-of-type>.mp-section-head{padding:7px 15px}
+#portfolio-operations .mp-shell>.mp-section:first-of-type .mp-overview-layout{
+  gap:12px;
+  padding:9px 15px 10px;
+}
+#portfolio-operations .mp-shell>.mp-section:first-of-type .mp-overview-total{
+  padding-top:0;
+  padding-bottom:0;
+}
+#portfolio-operations .mp-shell>.mp-section:first-of-type .mp-overview-total-value{
+  margin:5px 0 4px;
+  font-size:25px;
+}
+#portfolio-operations .mp-shell>.mp-section:first-of-type .mp-overview-stack{
+  height:10px;
+  margin-top:4px;
+}
+#portfolio-operations .mp-shell>.mp-section:first-of-type .mp-overview-equation{margin-top:5px}
+#portfolio-operations .mp-overall-performance-head{margin-bottom:5px}
+#portfolio-operations .mp-overall-performance .mp-kpis{gap:6px}
+#portfolio-operations .mp-overall-performance .mp-kpi{
+  min-height:70px;
+  padding:7px 10px;
+}
+#portfolio-operations .mp-overall-performance .mp-value{
+  margin-top:4px;
+  font-size:18px;
+}
+#portfolio-operations .mp-overall-performance .mp-note{
+  margin-top:4px;
+  font-size:9px;
+  line-height:1.2;
+}
+#portfolio-operations .mp-drill{margin-top:6px}
+#portfolio-operations .mp-drill>.mp-section-head{padding:7px 15px}
+#portfolio-operations .mp-drill>.mp-scope-tabs{padding-top:8px}
+@media(max-width:1100px){
+  #portfolio-operations .mp-shell>.mp-section:first-of-type .mp-overview-layout{padding-top:10px}
+  #portfolio-operations .mp-overall-performance .mp-kpi{min-height:66px}
+}
+</style>
+<style id="business-analysis-navigation-style">
+.side .menu [data-page="strategy-analysis"]:before{background:#b88625}
+.side .menu [data-page="strategy-analysis"].active:before{background:#ffd36b;box-shadow:0 0 7px rgba(255,211,107,.75)}
+</style>
+<script id="business-analysis-navigation-script">
+(function(){
+  function setPageLabel(label){
+    if(typeof infos!=='undefined')infos['portfolio-operations']=['经营分析',label];
+    if(typeof state!=='undefined'){
+      state.workspacePageLabels=state.workspacePageLabels||{};
+      state.workspacePageLabels['portfolio-operations']=label;
+    }
+    var crumb=document.getElementById('crumb');
+    if(crumb)crumb.innerHTML='经营分析 <span>/</span> '+label;
+  }
+  function wrap(button,label){
+    if(!button||button.dataset.businessNavReady==='1')return;
+    var original=button.onclick;
+    button.onclick=function(event){
+      if(original)original.call(button,event);
+      button.textContent=label;
+      button.title=label;
+      setPageLabel(label);
+    };
+    button.dataset.businessNavReady='1';
+  }
+  function name(button,label,title){
+    if(button.textContent!==label)button.textContent=label;
+    button.title=title;
+  }
+  function install(){
+    var bank=document.querySelector('.side [data-po-view="bank"]');
+    var product=document.querySelector('.side [data-po-view="product"]');
+    var manager=document.querySelector('.side [data-po-view="manager"]');
+    var accounts=document.querySelector('.side [data-po-view="all"]');
+    if(!bank||!product||!manager||!accounts)return false;
+    name(bank,'经营总览','全量AUM、收益、超额与风险总览');wrap(bank,'经营总览');
+    name(product,'理财产品分析','按理财产品观察规模、持仓和投资模式');wrap(product,'理财产品分析');
+    name(accounts,'管理主体分析','按部门、外部管理人和投资经理观察资产管理主体');wrap(accounts,'管理主体分析');
+    name(manager,'投资策略分析','跨账户观察策略规模、收益贡献和风险');
+    if(manager.dataset.businessNavReady!=='1'){
+      manager.onclick=function(){
+        bank.click();
+        var strategyTab=document.querySelector('#portfolio-operations [data-mp-view="strategy"]');
+        if(strategyTab)strategyTab.click();
+        document.querySelectorAll('.side .po-nav-view').forEach(function(item){item.classList.toggle('active',item===manager)});
+        setPageLabel('投资策略分析');
+        var target=document.querySelector('#portfolio-operations .mp-drill');
+        if(target)setTimeout(function(){target.scrollIntoView({behavior:'auto',block:'start'})},0);
+      };
+      manager.dataset.businessNavReady='1';
+    }
+    var menu=bank.parentElement;
+    if(menu){
+      var desired=[bank,product,manager,accounts];
+      var current=Array.from(menu.children).filter(function(x){return desired.indexOf(x)>=0});
+      if(current.some(function(x,i){return x!==desired[i]})||current.length!==desired.length){
+        desired.forEach(function(x){menu.appendChild(x)});
+      }
+    }
+    return true;
+  }
+  function init(){
+    install();
+    var side=document.querySelector('aside.side');
+    if(side)new MutationObserver(function(){install()}).observe(side,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<style id="independent-strategy-analysis-style">
+#strategy-analysis{padding:12px 22px 28px;background:#f3f7fc;color:#17324d;font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif}
+#strategy-analysis .sa-main{display:block}
+.sa-shell{max-width:1480px;margin:0 auto}.sa-toolbar{display:flex;align-items:center;gap:12px;padding:9px 12px;border:1px solid #d5e1eb;border-radius:9px;background:#fff}.sa-toolbar-title{margin-right:auto}.sa-toolbar-title h1{margin:0;color:#12385e;font-size:18px}.sa-toolbar-title p{margin:3px 0 0;color:#75899e;font-size:10px}.sa-field{display:flex;align-items:center;gap:7px}.sa-field label{color:#6c8196;font-size:11px;white-space:nowrap}.sa-field select,.sa-field input{height:32px;padding:0 9px;border:1px solid #cbd9e6;border-radius:6px;background:#fff;color:#294a68;font:11px "Microsoft YaHei"}.sa-field input{width:155px}.sa-mode{display:flex;gap:3px;padding:3px;border:1px solid #d8e3ed;border-radius:7px;background:#f3f6f9}.sa-mode button{height:26px;padding:0 11px;border:0;border-radius:5px;background:transparent;color:#567087;font:600 11px "Microsoft YaHei";cursor:pointer}.sa-mode button.active{background:#174f84;color:#fff}.sa-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:9px}.sa-kpi{padding:10px 12px;border:1px solid #dce6ef;border-top:2px solid #2b70b8;border-radius:8px;background:#fff}.sa-kpi span{display:block;color:#71869b;font-size:10px}.sa-kpi b{display:block;margin-top:5px;color:#173b64;font-size:19px}.sa-kpi b.pos{color:#c93429}.sa-main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:10px;margin-top:10px}.sa-panel{border:1px solid #d7e2ec;border-radius:9px;background:#fff;overflow:hidden}.sa-panel-head{display:flex;align-items:center;justify-content:space-between;min-height:43px;padding:0 14px;border-bottom:1px solid #e3eaf1}.sa-panel-head h2{margin:0;color:#183f64;font-size:14px}.sa-panel-head span{color:#7c8fa2;font-size:10px}.sa-table-wrap{overflow:auto}.sa-table{width:100%;min-width:1050px;border-collapse:collapse}.sa-table th,.sa-table td{height:38px;padding:7px 9px;border-right:1px solid #e4eaf0;border-bottom:1px solid #e5ebf1;text-align:right;font-size:10.5px;white-space:nowrap}.sa-table th{background:#eef4f9;color:#527089;font-weight:700}.sa-table th:first-child,.sa-table td:first-child,.sa-table th:nth-child(2),.sa-table td:nth-child(2){text-align:left}.sa-table tbody tr:hover{background:#f4f8fc}.sa-strategy-link{border:0;background:transparent;color:#1268b2;font:700 11px "Microsoft YaHei";cursor:pointer}.sa-pos{color:#c93429}.sa-neg{color:#168064}.sa-side{display:grid;align-content:start;gap:10px}.sa-side-card{padding:13px 14px}.sa-side-card h3{margin:0 0 4px;color:#20486d;font-size:13px}.sa-side-card p{margin:0 0 10px;color:#7a8da1;font-size:10px}.sa-bar{display:grid;grid-template-columns:72px 1fr 58px;align-items:center;gap:7px;margin:9px 0;color:#567087;font-size:10px}.sa-track{height:7px;border-radius:5px;background:#edf2f7;overflow:hidden}.sa-track i{display:block;height:100%;border-radius:5px;background:#3479bf}.sa-bar b{text-align:right;color:#274b69}.sa-detail{margin-top:10px}.sa-detail[hidden]{display:none}.sa-detail-tabs{display:flex;gap:5px;padding:8px 12px;border-bottom:1px solid #e2e9f0;background:#f7f9fb}.sa-detail-tabs button{height:30px;padding:0 14px;border:1px solid #d4e0ea;border-radius:6px;background:#fff;color:#557087;font:600 11px "Microsoft YaHei";cursor:pointer}.sa-detail-tabs button.active{border-color:#1768b8;background:#1768b8;color:#fff}.sa-detail-body{padding:12px 14px}.sa-detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.sa-detail-card{padding:10px 11px;border:1px solid #e0e8f0;border-radius:7px;background:#f8fafc}.sa-detail-card span{display:block;color:#75899d;font-size:10px}.sa-detail-card b{display:block;margin-top:4px;color:#183f64;font-size:15px}.sa-detail-table{width:100%;margin-top:10px;border-collapse:collapse;font-size:10.5px}.sa-detail-table th,.sa-detail-table td{padding:8px 10px;border-bottom:1px solid #e6ecf2;text-align:right}.sa-detail-table th:first-child,.sa-detail-table td:first-child{text-align:left}.sa-detail-table th{color:#617b92;background:#f1f6fa}.sa-empty{padding:35px;text-align:center;color:#7f91a3;font-size:12px}@media(max-width:1100px){.sa-kpis{grid-template-columns:repeat(3,1fr)}.sa-main{grid-template-columns:1fr}.sa-side{grid-template-columns:1fr 1fr}}@media(max-width:700px){.sa-toolbar{align-items:flex-start;flex-wrap:wrap}.sa-toolbar-title{width:100%}.sa-kpis,.sa-detail-grid{grid-template-columns:repeat(2,1fr)}.sa-side{grid-template-columns:1fr}}
+</style>
+<script id="independent-strategy-analysis-script">
+(function(){
+  var rows=[
+    {group:'固收',name:'利率策略',products:18,accounts:42,total:420,outsource:120,channel:190,direct:110,ret:.43,bench:.31,draw:-.62,contrib:.07},
+    {group:'固收',name:'信用策略',products:21,accounts:51,total:385,outsource:145,channel:155,direct:85,ret:.47,bench:.34,draw:-.81,contrib:.07},
+    {group:'固收增强',name:'固收增强策略',products:15,accounts:37,total:310,outsource:130,channel:125,direct:55,ret:.55,bench:.38,draw:-1.05,contrib:.07},
+    {group:'现金',name:'现金管理策略',products:12,accounts:29,total:275,outsource:85,channel:150,direct:40,ret:.24,bench:.18,draw:-.12,contrib:.03},
+    {group:'权益',name:'权益主动策略',products:11,accounts:25,total:260,outsource:110,channel:85,direct:65,ret:.72,bench:.46,draw:-1.88,contrib:.08},
+    {group:'权益',name:'权益量化策略',products:9,accounts:22,total:215,outsource:75,channel:95,direct:45,ret:.64,bench:.43,draw:-1.42,contrib:.06},
+    {group:'多资产',name:'多资产配置策略',products:8,accounts:19,total:190,outsource:70,channel:80,direct:40,ret:.49,bench:.35,draw:-1.16,contrib:.04},
+    {group:'基金配置',name:'基金配置策略',products:10,accounts:24,total:170,outsource:90,channel:55,direct:25,ret:.44,bench:.32,draw:-.96,contrib:.03},
+    {group:'固收增强',name:'可转债增强策略',products:7,accounts:16,total:145,outsource:65,channel:55,direct:25,ret:.61,bench:.41,draw:-1.53,contrib:.04},
+    {group:'另类',name:'另类及其他策略',products:5,accounts:11,total:130,outsource:45,channel:35,direct:50,ret:.36,bench:.28,draw:-.74,contrib:.02}
+  ];
+  var state={mode:'total',period:'1m',group:'',q:'',selected:null,detail:'performance'};
+  var periodFactor={'1m':1,'3m':2.9,'6m':5.6,'1y':10.8};
+  var modeLabel={total:'全部',outsource:'委外',channel:'通道',direct:'直投'};
+  function scale(row){return row[state.mode]}
+  function ret(row){var adjust=state.mode==='outsource'?-0.04:state.mode==='channel'?.05:state.mode==='direct'?.02:0;return (row.ret+adjust)*periodFactor[state.period]}
+  function bench(row){return row.bench*periodFactor[state.period]}
+  function pct(v,d){return (v>=0?'+':'')+v.toFixed(d==null?2:d)+'%'}
+  function filtered(){return rows.filter(function(row){return (!state.group||row.group===state.group)&&(!state.q||row.name.indexOf(state.q)>=0)})}
+  function makePage(){
+    if(document.getElementById('strategy-analysis'))return;
+    var section=document.createElement('section');section.className='page';section.id='strategy-analysis';
+    section.innerHTML='<div class="sa-shell"><div class="sa-toolbar"><div class="sa-toolbar-title"><h1>投资策略分析</h1><p>从全公司策略全景出发，比较委外、通道和直投的规模、收益与风险</p></div><div class="sa-field"><label>统计区间</label><select id="sa-period"><option value="1m">近1月</option><option value="3m">近3月</option><option value="6m">近6月</option><option value="1y">近1年</option></select></div><div class="sa-field"><label>策略类别</label><select id="sa-group"><option value="">全部类别</option></select></div><div class="sa-field"><input id="sa-q" placeholder="搜索投资策略"></div><div class="sa-mode" role="group" aria-label="投资方式"><button class="active" data-sa-mode="total">全部</button><button data-sa-mode="outsource">委外</button><button data-sa-mode="channel">通道</button><button data-sa-mode="direct">直投</button></div></div><div class="sa-kpis" id="sa-kpis"></div><div class="sa-main"><section class="sa-panel"><div class="sa-panel-head"><h2>策略经营全景</h2><span id="sa-count"></span></div><div class="sa-table-wrap"><table class="sa-table"><thead><tr><th>策略类别</th><th>投资策略</th><th>产品数</th><th>账户数</th><th>管理规模（委外/通道/直投）</th><th>区间收益</th><th>基准收益</th><th>超额收益</th><th>最大回撤</th><th>收益贡献</th></tr></thead><tbody id="sa-body"></tbody></table><div class="sa-empty" id="sa-empty" hidden>当前条件下没有匹配的投资策略</div></div></section></div><section class="sa-panel sa-detail" id="sa-detail" hidden><div class="sa-panel-head"><h2 id="sa-detail-title"></h2><span>策略穿透</span></div><div class="sa-detail-tabs"><button class="active" data-sa-detail="performance">收益风险</button><button data-sa-detail="asset">大类资产</button><button data-sa-detail="account">产品账户</button><button data-sa-detail="owner">责任主体</button></div><div class="sa-detail-body" id="sa-detail-body"></div></section></div>';
+    document.querySelector('.content').appendChild(section);
+  }
+  function renderKpis(data){
+    var total=data.reduce(function(s,r){return s+scale(r)},0),weighted=total?data.reduce(function(s,r){return s+scale(r)*ret(r)},0)/total:0,benchmark=total?data.reduce(function(s,r){return s+scale(r)*bench(r)},0)/total:0,draw=data.length?Math.min.apply(null,data.map(function(r){return r.draw*Math.sqrt(periodFactor[state.period])})):0,products=data.reduce(function(s,r){return s+r.products},0),beatCount=data.filter(function(r){return ret(r)>bench(r)}).length,beatRatio=data.length?beatCount/data.length*100:0;
+    var items=[['策略覆盖规模',total.toLocaleString('zh-CN',{minimumFractionDigits:1,maximumFractionDigits:1})+'亿元',''],['策略数量',data.length+'项',''],['区间收益率',pct(weighted),'pos'],['超额收益率',pct(weighted-benchmark),'pos'],['跑赢基准策略占比',beatRatio.toFixed(1)+'%','']];
+    document.getElementById('sa-kpis').innerHTML=items.map(function(x){return '<div class="sa-kpi"><span>'+x[0]+'</span><b class="'+x[2]+'">'+x[1]+'</b></div>'}).join('');
+  }
+  function renderTable(data){
+    var body=document.getElementById('sa-body'),empty=document.getElementById('sa-empty');
+    var modeColors={outsource:'#1d5fbf',channel:'#d4a72c',direct:'#5c5aa8'};
+    body.innerHTML=data.map(function(r){var excess=ret(r)-bench(r);var stackHTML;var segs=[];
+      if(state.mode==='total'){segs=[['outsource',r.outsource],['channel',r.channel],['direct',r.direct]]}
+      else{segs=[[state.mode,r[state.mode]]]}
+      var barTotal=segs.reduce(function(s,x){return s+x[1]},0)||1;
+      var tip=state.mode==='total'?'委外 '+r.outsource.toFixed(1)+'亿 · 通道 '+r.channel.toFixed(1)+'亿 · 直投 '+r.direct.toFixed(1)+'亿':modeLabel[state.mode]+' '+r[state.mode].toFixed(1)+'亿';
+      stackHTML='<span class="sa-stack" title="'+tip+'">'+segs.map(function(x){return '<i style="width:'+(x[1]/barTotal*100).toFixed(1)+'%;background:'+modeColors[x[0]]+'"></i>'}).join('')+'</span>';
+      return '<tr><td>'+r.group+'</td><td><button class="sa-strategy-link" data-strategy="'+r.name+'">'+r.name+'</button></td><td>'+r.products+'</td><td>'+r.accounts+'</td><td><div class="sa-scale"><b>'+scale(r).toFixed(1)+'亿</b>'+stackHTML+'</div></td><td class="sa-pos">'+pct(ret(r))+'</td><td>'+pct(bench(r))+'</td><td class="'+(excess>=0?'sa-pos':'sa-neg')+'">'+pct(excess)+'</td><td>'+pct(r.draw*Math.sqrt(periodFactor[state.period]))+'</td><td class="sa-pos">+'+r.contrib.toFixed(2)+'pp</td></tr>'}).join('');
+    empty.hidden=data.length>0;document.getElementById('sa-count').textContent=modeLabel[state.mode]+'口径';
+    body.querySelectorAll('.sa-strategy-link').forEach(function(button){button.onclick=function(){state.selected=rows.find(function(r){return r.name===button.dataset.strategy});state.detail='performance';renderDetail();document.getElementById('sa-detail').scrollIntoView({behavior:'smooth',block:'start'})}});
+  }
+  function renderSide(data){
+    var sorted=data.slice().sort(function(a,b){return scale(b)-scale(a)}),max=Math.max.apply(null,sorted.map(scale).concat([1]));
+    document.getElementById('sa-scale-bars').innerHTML=sorted.slice(0,7).map(function(r){return '<div class="sa-bar"><span>'+r.name.replace('策略','')+'</span><span class="sa-track"><i style="width:'+(scale(r)/max*100).toFixed(1)+'%"></i></span><b>'+scale(r).toFixed(0)+'亿</b></div>'}).join('');
+    var best=data.slice().sort(function(a,b){return ret(b)-ret(a)})[0],worst=data.slice().sort(function(a,b){return a.draw-b.draw})[0],largest=sorted[0];
+    document.getElementById('sa-insights').innerHTML=data.length?'<div class="sa-bar"><span>规模最大</span><span>'+largest.name+'</span><b>'+scale(largest).toFixed(0)+'亿</b></div><div class="sa-bar"><span>收益领先</span><span>'+best.name+'</span><b class="sa-pos">'+pct(ret(best))+'</b></div><div class="sa-bar"><span>回撤关注</span><span>'+worst.name+'</span><b>'+pct(worst.draw*Math.sqrt(periodFactor[state.period]))+'</b></div>':'<div class="sa-empty">暂无数据</div>';
+  }
+  function renderDetail(){
+    var panel=document.getElementById('sa-detail'),r=state.selected;if(!r){panel.hidden=true;return}panel.hidden=false;document.getElementById('sa-detail-title').textContent=r.name;
+    document.querySelectorAll('[data-sa-detail]').forEach(function(b){b.classList.toggle('active',b.dataset.saDetail===state.detail)});
+    var excess=ret(r)-bench(r),body=document.getElementById('sa-detail-body');
+    if(state.detail==='performance')body.innerHTML='<div class="sa-detail-grid"><div class="sa-detail-card"><span>管理规模</span><b>'+scale(r).toFixed(1)+'亿元</b></div><div class="sa-detail-card"><span>区间收益率</span><b class="sa-pos">'+pct(ret(r))+'</b></div><div class="sa-detail-card"><span>超额收益率</span><b class="sa-pos">'+pct(excess)+'</b></div><div class="sa-detail-card"><span>最大回撤</span><b>'+pct(r.draw*Math.sqrt(periodFactor[state.period]))+'</b></div></div>';
+    else if(state.detail==='asset')body.innerHTML='<table class="sa-detail-table"><thead><tr><th>大类资产</th><th>配置比例</th><th>区间收益</th><th>收益贡献</th></tr></thead><tbody><tr><td>固定收益</td><td>56.0%</td><td class="sa-pos">+0.41%</td><td class="sa-pos">+0.23pp</td></tr><tr><td>权益资产</td><td>21.0%</td><td class="sa-pos">+0.68%</td><td class="sa-pos">+0.14pp</td></tr><tr><td>基金资产</td><td>15.0%</td><td class="sa-pos">+0.47%</td><td class="sa-pos">+0.07pp</td></tr><tr><td>现金及其他</td><td>8.0%</td><td>+0.16%</td><td>+0.01pp</td></tr></tbody></table>';
+    else if(state.detail==='account')body.innerHTML='<table class="sa-detail-table"><thead><tr><th>关联对象</th><th>数量</th><th>规模</th><th>占策略规模</th></tr></thead><tbody><tr><td>理财产品</td><td>'+r.products+'只</td><td>'+(r.total*.82).toFixed(1)+'亿元</td><td>82.0%</td></tr><tr><td>投资账户</td><td>'+r.accounts+'个</td><td>'+r.total.toFixed(1)+'亿元</td><td>100.0%</td></tr></tbody></table>';
+    else body.innerHTML='<table class="sa-detail-table"><thead><tr><th>责任主体</th><th>管理方式</th><th>管理规模</th><th>区间收益</th></tr></thead><tbody><tr><td>外部管理人合计</td><td>委外</td><td>'+r.outsource.toFixed(1)+'亿元</td><td class="sa-pos">'+pct(ret(r)-.04)+'</td></tr><tr><td>内部投资经理合计</td><td>通道</td><td>'+r.channel.toFixed(1)+'亿元</td><td class="sa-pos">'+pct(ret(r)+.05)+'</td></tr><tr><td>内部投资经理合计</td><td>直投</td><td>'+r.direct.toFixed(1)+'亿元</td><td class="sa-pos">'+pct(ret(r)+.02)+'</td></tr></tbody></table>';
+  }
+  function render(){if(window.MG_PERIOD&&window.MG_PERIOD.key)state.period=window.MG_PERIOD.key;var data=filtered();renderKpis(data);renderTable(data);if(state.selected)renderDetail()}
+  window.__mgSaRefresh=function(){var sel=document.getElementById('sa-period');if(sel)sel.value=(window.MG_PERIOD&&window.MG_PERIOD.key)||state.period;render()};
+  function bind(){
+    document.getElementById('sa-period').onchange=function(){state.period=this.value;render()};document.getElementById('sa-group').onchange=function(){state.group=this.value;render()};document.getElementById('sa-q').oninput=function(){state.q=this.value.trim();render()};
+    document.querySelectorAll('[data-sa-mode]').forEach(function(b){b.onclick=function(){state.mode=b.dataset.saMode;document.querySelectorAll('[data-sa-mode]').forEach(function(x){x.classList.toggle('active',x===b)});render()}});
+    document.querySelectorAll('[data-sa-detail]').forEach(function(b){b.onclick=function(){state.detail=b.dataset.saDetail;renderDetail()}});
+  }
+  function wireNavigation(){
+    var nav=document.querySelector('.side [data-page="strategy-analysis"],.side [data-po-view="manager"]');if(!nav)return false;nav.dataset.page='strategy-analysis';nav.onclick=function(){if(typeof infos!=='undefined')infos['strategy-analysis']=['经营分析','投资策略分析'];if(typeof page==='function')page('strategy-analysis');document.querySelectorAll('.side .po-nav-view').forEach(function(x){x.classList.toggle('active',x===nav)});var crumb=document.getElementById('crumb');if(crumb)crumb.innerHTML='经营分析 <span>/</span> 投资策略分析';window.scrollTo(0,0)};return true;
+  }
+  function init(){makePage();var group=document.getElementById('sa-group');Array.from(new Set(rows.map(function(r){return r.group}))).forEach(function(x){group.insertAdjacentHTML('beforeend','<option>'+x+'</option>')});bind();render();wireNavigation();var side=document.querySelector('aside.side');if(side)new MutationObserver(wireNavigation).observe(side,{childList:true,subtree:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<style id="special-account-analysis-tabs-style">
+#po-ledger .sp-tabsbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px;border:1px solid #cbdbe8;border-radius:10px;background:#e9f0f6}
+#po-ledger .sp-tab{height:38px;padding:0 24px;border:1px solid #c7d6e3;border-radius:7px;background:#fff;color:#365874;font:700 13px "Microsoft YaHei";cursor:pointer;box-shadow:0 1px 3px rgba(20,60,90,.05)}
+#po-ledger .sp-tab:hover{border-color:#77a5ca;background:#f5faff;color:#0d568e}
+#po-ledger .sp-tab.active{border-color:#174f84;background:#174f84;color:#fff;box-shadow:0 3px 9px rgba(23,79,132,.24)}
+#po-ledger .sp-tab:focus-visible{outline:2px solid #6ba5d1;outline-offset:2px}
+#po-ledger .sp-mode{display:flex;gap:3px;margin-left:auto;padding:3px;border-radius:7px;background:#fff}
+#po-ledger .sp-mode button{height:26px;padding:0 11px;border:0;border-radius:5px;background:transparent;color:#657d91;font:600 11px "Microsoft YaHei";cursor:pointer}
+#po-ledger .sp-mode button.active{background:#174f84;color:#fff}
+#po-ledger .sp-mode[hidden],#po-ledger .sp-mode button[hidden]{display:none!important}
+#po-ledger .sp-kpis{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;margin-bottom:12px}
+#po-ledger .sp-kpi{min-width:0;padding:10px 12px;border:1px solid #dbe5ee;border-top:3px solid #7fa6c8;border-radius:8px;background:#fff;box-shadow:0 1px 3px rgba(20,60,90,.04)}
+#po-ledger .sp-kpi.total{border-top-color:#174f84}#po-ledger .sp-kpi.outsource{border-top-color:#1d5fbf}#po-ledger .sp-kpi.channel{border-top-color:#d4a72c}#po-ledger .sp-kpi.direct{border-top-color:#5c5aa8}
+#po-ledger .sp-kpi span{display:block;color:#71869a;font-size:10.5px;white-space:nowrap}
+#po-ledger .sp-kpi b{display:block;margin-top:5px;color:#173f61;font:700 18px Arial,"Microsoft YaHei";white-space:nowrap}
+#po-ledger .sp-kpi small{margin-left:2px;color:#8295a6;font:400 10px "Microsoft YaHei"}
+#po-ledger .sp-analysis-panel{border:1px solid #d2dee8;border-radius:10px;background:#fff;overflow:hidden}
+#po-ledger .sp-analysis-panel[hidden]{display:none}
+#po-ledger .sp-analysis-note{padding:10px 15px;border-bottom:1px solid #e3eaf0;background:#f7fafd;color:#61788d;font-size:11px}
+#po-ledger .sp-analysis-note b{color:#174f84}
+#po-ledger .sp-analysis-table{width:100%;border-collapse:collapse}
+#po-ledger .sp-analysis-table th,#po-ledger .sp-analysis-table td{height:42px;padding:7px 12px;border-bottom:1px solid #edf1f5;text-align:right;font-size:12px;white-space:nowrap}
+#po-ledger .sp-analysis-table th{background:#eaf1f7;color:#35506b;font-weight:700}
+#po-ledger .sp-analysis-table th:first-child,#po-ledger .sp-analysis-table td:first-child,#po-ledger .sp-analysis-table.owner th:nth-child(2),#po-ledger .sp-analysis-table.owner td:nth-child(2){text-align:left}
+#po-ledger .sp-analysis-table tbody tr:hover{background:#f3f8fc}
+#po-ledger .sp-up{color:#c0392b}.sp-down{color:#2e8b57}
+@media(max-width:1250px){#po-ledger .sp-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:850px){#po-ledger .sp-tabsbar{align-items:flex-start;flex-wrap:wrap}#po-ledger .sp-mode{width:100%;margin-left:0;overflow:auto}#po-ledger .sp-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<script id="special-account-analysis-tabs-script">
+(function(){
+ 'use strict';
+ var state={tab:'overview',mode:''};
+ var labels={outsource:'委外',channel:'通道',direct:'直投'};
+ function assets(){var api=window.portfolioOperationsApi;return api&&api.getAssets?api.getAssets():[]}
+ function selected(){return assets().filter(function(a){return !state.mode||(state.mode==='investment'?(a.bucket==='channel'||a.bucket==='direct'):a.bucket===state.mode)})}
+ function sum(rows,key){return rows.reduce(function(s,r){return s+(+r[key]||0)},0)}
+ function weighted(rows,key){var total=sum(rows,'scale');return total?rows.reduce(function(s,r){return s+r.scale*(+r[key]||0)},0)/total:0}
+ function fmt(v,d){return Number(v||0).toLocaleString('zh-CN',{minimumFractionDigits:d,maximumFractionDigits:d})}
+ function rate(v){return (v>0?'+':'')+fmt(v,2)+'%'}
+ function cls(v){return v>=0?'sp-up':'sp-down'}
+ function renderKpis(){
+  var rows=assets(),buckets=['outsource','channel','direct'];
+  function count(list){var ids={};list.forEach(function(a){ids[a.carrierId]=1});return Object.keys(ids).length}
+  var items=[{label:'专户数量',value:count(rows),unit:'个',cls:'total'},{label:'专户规模',value:fmt(sum(rows,'scale'),1),unit:'亿元',cls:'total'}];
+  buckets.forEach(function(bucket){var list=rows.filter(function(a){return a.bucket===bucket}),name=labels[bucket];items.push({label:name+'数量',value:count(list),unit:'个',cls:bucket},{label:name+'规模',value:fmt(sum(list,'scale'),1),unit:'亿元',cls:bucket})});
+  var host=document.getElementById('sp-kpis');if(host)host.innerHTML=items.map(function(x){return '<div class="sp-kpi '+x.cls+'"><span>'+x.label+'</span><b>'+x.value+'<small>'+x.unit+'</small></b></div>'}).join('');
+ }
+ function aggregate(rows,keyFn){
+  var map={};rows.forEach(function(a){var meta=keyFn(a),key=meta.key;if(!map[key])map[key]={key:key,name:meta.name,type:meta.type||'',rows:[],carriers:{},strategies:{}};var g=map[key];g.rows.push(a);g.carriers[a.carrierId]=1;g.strategies[a.strategy]=1});
+  return Object.keys(map).map(function(k){var g=map[k];g.scale=sum(g.rows,'scale');g.ret=weighted(g.rows,'r1');g.ex=weighted(g.rows,'e1');g.dd=weighted(g.rows,'dd');g.carrierCount=Object.keys(g.carriers).length;g.strategyCount=Object.keys(g.strategies).length;return g}).sort(function(a,b){return b.scale-a.scale})
+ }
+ function subject(a){if(a.bucket==='outsource')return {type:'外部管理人',name:a.owner};if(a.bucket==='channel')return {type:'通道投资经理',name:a.manager};return {type:'内部投资经理',name:a.manager}}
+ function headerTitle(){if(state.tab==='strategy')return (state.mode?labels[state.mode]:'全量')+'专户策略分析';if(state.tab==='manager')return '委外管理人分析';return state.mode==='channel'?'通道投资经理分析':state.mode==='direct'?'直投投资经理分析':'全部投资经理分析'}
+ function render(){
+  var panel=document.getElementById('sp-analysis-panel');if(!panel||state.tab==='overview')return;
+  var rows=selected(),groups=state.tab==='strategy'?aggregate(rows,function(a){return {key:a.strategy,name:a.strategy}}):aggregate(rows,function(a){var s=subject(a);return {key:s.type+'|'+s.name,name:s.name,type:s.type}});
+  var title=headerTitle(),total=sum(rows,'scale'),avgRet=weighted(rows,'r1'),avgEx=weighted(rows,'e1');
+  var head=state.tab==='strategy'?'<tr><th>投资策略</th><th>专户数</th><th>管理规模（亿元）</th><th>区间收益率</th><th>超额收益率</th><th>最大回撤</th></tr>':'<tr><th>主体类型</th><th>责任主体</th><th>策略数</th><th>专户数</th><th>管理规模（亿元）</th><th>区间收益率</th><th>超额收益率</th><th>最大回撤</th></tr>';
+  var body=groups.map(function(g){return state.tab==='strategy'?'<tr><td>'+g.name+'</td><td>'+g.carrierCount+'</td><td>'+fmt(g.scale,1)+'</td><td class="'+cls(g.ret)+'">'+rate(g.ret)+'</td><td class="'+cls(g.ex)+'">'+rate(g.ex)+'</td><td>'+rate(g.dd)+'</td></tr>':'<tr><td>'+g.type+'</td><td>'+g.name+'</td><td>'+g.strategyCount+'</td><td>'+g.carrierCount+'</td><td>'+fmt(g.scale,1)+'</td><td class="'+cls(g.ret)+'">'+rate(g.ret)+'</td><td class="'+cls(g.ex)+'">'+rate(g.ex)+'</td><td>'+rate(g.dd)+'</td></tr>'}).join('');
+  panel.innerHTML='<div class="po-panel-head"><h3>'+title+'</h3><span>按当前责任口径汇总</span></div><div class="sp-analysis-note">共 <b>'+groups.length+'</b> 项，管理规模 <b>'+fmt(total,1)+' 亿元</b>，加权收益 <b class="'+cls(avgRet)+'">'+rate(avgRet)+'</b>，加权超额 <b class="'+cls(avgEx)+'">'+rate(avgEx)+'</b></div><div class="po-table-wrap"><table class="sp-analysis-table '+(state.tab!=='strategy'?'owner':'')+'"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>';
+ }
+ function selectTab(tab){
+  state.tab=tab;var ledger=document.getElementById('po-ledger'),original=ledger&&ledger.querySelector(':scope > .po-ledger-panel'),panel=document.getElementById('sp-analysis-panel');
+  document.querySelectorAll('#po-ledger .sp-tab').forEach(function(b){var on=b.dataset.spTab===tab;b.classList.toggle('active',on);b.setAttribute('aria-selected',on?'true':'false')});
+  if(original)original.style.display=tab==='overview'?'':'none';if(panel)panel.hidden=tab==='overview';configureModes(tab);render();
+ }
+ function configureModes(tab){
+  var group=document.querySelector('#po-ledger .sp-mode'),generalAll=document.querySelector('#po-ledger [data-sp-scope="general"]'),outsource=document.querySelector('#po-ledger [data-sp-mode="outsource"]'),investmentAll=document.querySelector('#po-ledger [data-sp-scope="investment"]');if(!group)return;
+  group.hidden=tab==='manager';if(generalAll)generalAll.hidden=tab==='investment';if(outsource)outsource.hidden=tab==='investment';if(investmentAll)investmentAll.hidden=tab!=='investment';
+  if(tab==='manager')selectMode('outsource');else if(tab==='investment')selectMode('investment');else selectMode('');
+ }
+ function selectMode(mode){
+  state.mode=mode;document.querySelectorAll('#po-ledger [data-sp-mode]').forEach(function(b){b.classList.toggle('active',b.dataset.spMode===mode)});
+  if(state.tab==='overview'){var filter=document.getElementById('po-bucket-filter');if(filter){filter.value=mode;filter.dispatchEvent(new Event('change',{bubbles:true}))}}else render();
+ }
+ function init(){
+  var ledger=document.getElementById('po-ledger');if(!ledger||document.getElementById('sp-tabsbar'))return false;
+  var bar=document.createElement('div');bar.id='sp-tabsbar';bar.className='sp-tabsbar';bar.innerHTML='<button class="sp-tab active" data-sp-tab="overview" role="tab" aria-selected="true">专户概览</button><button class="sp-tab" data-sp-tab="strategy" role="tab" aria-selected="false">策略分析</button><button class="sp-tab" data-sp-tab="manager" role="tab" aria-selected="false">委外管理人分析</button><button class="sp-tab" data-sp-tab="investment" role="tab" aria-selected="false">投资经理分析</button><div class="sp-mode" aria-label="投资方式"><button class="active" data-sp-mode="" data-sp-scope="general">全部</button><button data-sp-mode="investment" data-sp-scope="investment" hidden>全部投资经理</button><button data-sp-mode="outsource">委外</button><button data-sp-mode="channel">通道</button><button data-sp-mode="direct">直投</button></div>';
+  ledger.insertBefore(bar,ledger.firstChild);var kpis=document.createElement('div');kpis.id='sp-kpis';kpis.className='sp-kpis';bar.insertAdjacentElement('afterend',kpis);renderKpis();var panel=document.createElement('section');panel.id='sp-analysis-panel';panel.className='sp-analysis-panel';panel.hidden=true;ledger.appendChild(panel);
+  bar.querySelectorAll('[data-sp-tab]').forEach(function(b){b.onclick=function(){selectTab(b.dataset.spTab)}});bar.querySelectorAll('[data-sp-mode]').forEach(function(b){b.onclick=function(){selectMode(b.dataset.spMode)}});return true;
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<style id="management-overview-drilldown-style">
+#portfolio-operations .mg-mode-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:13px 0 12px}
+#portfolio-operations .mg-mode-card{position:relative;padding:15px 16px 14px;border:1px solid #dbe5ee;border-top:4px solid var(--mg-accent);border-radius:11px;background:#fff;box-shadow:0 2px 8px rgba(20,60,90,.06)}
+#portfolio-operations .mg-mode-card.active{border-color:var(--mg-accent);box-shadow:0 5px 16px rgba(20,60,90,.13)}
+#portfolio-operations .mg-mode-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+#portfolio-operations .mg-mode-head h3{margin:0;color:#173f61;font-size:17px}
+#portfolio-operations .mg-mode-head span{display:block;margin-top:3px;color:#7b90a3;font-size:10.5px}
+#portfolio-operations .mg-mode-head strong{color:#173f61;font:700 25px Arial,"Microsoft YaHei";white-space:nowrap}
+#portfolio-operations .mg-mode-head small{margin-left:2px;color:#8295a6;font:400 10px "Microsoft YaHei"}
+#portfolio-operations .mg-mode-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:13px}
+#portfolio-operations .mg-mode-kpis>div{padding:7px 8px;border:1px solid #e8eef4;border-radius:7px;background:#f8fafc;min-width:0}
+#portfolio-operations .mg-mode-kpis span{display:block;color:#71869a;font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#portfolio-operations .mg-mode-kpis b{display:block;margin-top:3px;color:#294963;font:700 13px Arial,"Microsoft YaHei";white-space:nowrap}
+#portfolio-operations .mg-mode-card>p{min-height:58px;margin:11px 0 10px;padding-top:9px;border-top:1px dashed #dfe7ee;color:#536b80;font-size:11px;line-height:1.7}
+#portfolio-operations .mg-expand{width:100%;height:31px;border:1px solid var(--mg-accent);border-radius:6px;background:#fff;color:var(--mg-accent);font:700 11px "Microsoft YaHei";cursor:pointer}
+#portfolio-operations .mg-mode-card.active .mg-expand,#portfolio-operations .mg-expand:hover{background:var(--mg-accent);color:#fff}
+#portfolio-operations .mg-expand-panel{margin-bottom:12px;border:1px solid #cbdbe8;border-radius:11px;background:#fff;overflow:hidden;box-shadow:0 4px 14px rgba(20,60,90,.08)}
+#portfolio-operations .mg-expand-head{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid #e1e9f0;background:#f7fafc}
+#portfolio-operations .mg-expand-head h3{margin:0;color:#173f61;font-size:15px}
+#portfolio-operations .mg-expand-head span{display:block;margin-top:3px;color:#7b90a3;font-size:10px}
+#portfolio-operations .mg-expand-head button{height:27px;padding:0 11px;border:1px solid #ccd9e4;border-radius:6px;background:#fff;color:#60798e;cursor:pointer}
+#portfolio-operations .mg-quick-tabs{display:flex;gap:5px;padding:9px 13px;border-bottom:1px solid #e6edf3}
+#portfolio-operations .mg-quick-tabs button{height:31px;padding:0 15px;border:1px solid #d5e0e9;border-radius:6px;background:#fff;color:#526c82;font:600 11px "Microsoft YaHei";cursor:pointer}
+#portfolio-operations .mg-quick-tabs button.active{border-color:#174f84;background:#174f84;color:#fff}
+#portfolio-operations .mg-expand-panel .pv2-tblwrap{margin:0;padding:0 13px}
+#portfolio-operations .mg-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:10px 14px;border-top:1px solid #e6edf3;background:#f8fafc}
+#portfolio-operations .mg-actions span{margin-right:auto;color:#71869a;font-size:10.5px}
+#portfolio-operations .mg-actions button{height:31px;padding:0 15px;border:1px solid #174f84;border-radius:6px;background:#174f84;color:#fff;font:700 11px "Microsoft YaHei";cursor:pointer}
+@media(max-width:1100px){#portfolio-operations .mg-mode-grid{grid-template-columns:1fr}#portfolio-operations .mg-mode-card>p{min-height:0}}
+@media(max-width:650px){#portfolio-operations .mg-mode-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}#portfolio-operations .mg-quick-tabs{overflow:auto}#portfolio-operations .mg-actions{align-items:flex-start;flex-direction:column}#portfolio-operations .mg-actions span{margin:0}}
+</style>
+<script id="management-strategy-summary-remove-script">
+(function(){
+  function sync(){
+    var active=document.querySelector('[data-mp-view].active'),box=document.querySelector('#mp-custom-root .mp-view');
+    if(!active||!box)return;
+    var hide=active.getAttribute('data-mp-view')==='strategy';
+    box.hidden=hide;
+    box.style.display=hide?'none':'';
+  }
+  function bind(){document.querySelectorAll('[data-mp-view],[data-mp-scope]').forEach(function(button){button.addEventListener('click',function(){setTimeout(sync,45)})});sync()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
+})();
+</script>
+<style id="business-four-page-simplification-style">
+.business-reconcile{display:flex;align-items:center;gap:14px;min-height:34px;padding:7px 12px;border:1px solid #cfe0ee;border-left:3px solid #174f84;border-radius:7px;background:#f5f9fc;color:#60788e;font-size:11px}
+.business-reconcile b{color:#173f61;font-size:12px}.business-reconcile .ok{color:#16805c;font-weight:700}
+#po-product .business-reconcile{margin-bottom:10px}#strategy-analysis .business-reconcile{margin:9px 0 0}
+#po-ledger>.po-ledger-panel,#po-ledger>#sp-kpis,#po-ledger>#sp-analysis-panel,#po-ledger>#sp-tabsbar{display:none!important}
+#po-ledger .mr-shell{display:grid;gap:10px}.mr-tabs{display:flex;gap:5px;padding:6px;border:1px solid #d6e1eb;border-radius:9px;background:#eef3f7}
+#po-ledger .mr-tab{height:34px;padding:0 22px;border:0;border-radius:6px;background:transparent;color:#5b7186;font:700 12px "Microsoft YaHei";cursor:pointer}
+#po-ledger .mr-tab.active{background:#174f84;color:#fff;box-shadow:0 2px 7px rgba(23,79,132,.22)}
+#po-ledger .mr-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+#po-ledger .mr-kpi{padding:11px 13px;border:1px solid #dce6ef;border-radius:8px;background:#fff}.mr-kpi span{display:block;color:#71869a;font-size:10px}.mr-kpi b{display:block;margin-top:4px;color:#173f61;font:700 18px Arial,"Microsoft YaHei"}.mr-kpi b.up{color:#c93429}
+#po-ledger .mr-panel,#po-ledger .mr-detail{border:1px solid #d2dee8;border-radius:9px;background:#fff;overflow:hidden}.mr-head{display:flex;align-items:center;justify-content:space-between;min-height:45px;padding:0 14px;border-bottom:1px solid #e3eaf0}.mr-head h3{margin:0;color:#183f60;font-size:14px}.mr-head span{color:#7a8ea1;font-size:10px}
+#po-ledger .mr-table{width:100%;border-collapse:collapse}.mr-table th,.mr-table td{height:41px;padding:7px 11px;border-bottom:1px solid #edf1f5;text-align:right;font-size:11px;white-space:nowrap}.mr-table th{background:#eaf1f7;color:#35506b}.mr-table th:first-child,.mr-table td:first-child{text-align:left}.mr-table tbody tr{cursor:pointer}.mr-table tbody tr:hover{background:#f2f8fd}.mr-table .up{color:#c93429}.mr-table .down{color:#16805c}
+#po-ledger .mr-detail[hidden]{display:none}.mr-detail-body{padding:0 14px 12px}.mr-detail-table{width:100%;border-collapse:collapse}.mr-detail-table th,.mr-detail-table td{padding:8px 9px;border-bottom:1px solid #edf1f5;text-align:right;font-size:10.5px}.mr-detail-table th:first-child,.mr-detail-table td:first-child{text-align:left}.mr-close{height:27px;padding:0 11px;border:1px solid #ccd9e4;border-radius:5px;background:#fff;color:#5f778c;cursor:pointer}
+@media(max-width:900px){#po-ledger .mr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.business-reconcile{align-items:flex-start;flex-direction:column;gap:3px}}
+</style>
+<script id="business-four-page-simplification-script">
+(function(){
+ 'use strict';
+ var state={tab:'dept',groups:[]};
+ var modeNames={outsource:'委外',channel:'通道',direct:'直投'};
+ function assets(){var api=window.portfolioOperationsApi;return api&&api.getAssets?api.getAssets():[]}
+ function sum(rows,key){return rows.reduce(function(total,row){return total+(+row[key]||0)},0)}
+ function weighted(rows,key){var total=sum(rows,'scale');return total?rows.reduce(function(value,row){return value+row.scale*(+row[key]||0)},0)/total:0}
+ function fmt(value,digits){return Number(value||0).toLocaleString('zh-CN',{minimumFractionDigits:digits,maximumFractionDigits:digits})}
+ function pct(value){return (value>=0?'+':'')+fmt(value,2)+'%'}
+ function unique(rows,key){var map={};rows.forEach(function(row){if(row[key])map[row[key]]=1});return Object.keys(map).length}
+ function installReconciles(){document.querySelectorAll('.business-reconcile').forEach(function(node){node.remove()})}
+ function rowsForTab(rows){if(state.tab==='external')return rows.filter(function(row){return row.bucket==='outsource'});if(state.tab==='investment')return rows.filter(function(row){return row.bucket==='channel'||row.bucket==='direct'});return rows}
+ function meta(row){
+  if(state.tab==='dept')return {key:row.dept||'未归属部门',name:row.dept||'未归属部门',type:'投资部门'};
+  if(state.tab==='external')return {key:row.owner||'未明确外部管理人',name:row.owner||'未明确外部管理人',type:'外部管理人'};
+  return {key:row.manager||'未明确投资经理',name:row.manager||'未明确投资经理',type:'投资经理'};
+ }
+ function aggregate(rows){var map={};rows.forEach(function(row){var m=meta(row);if(!map[m.key])map[m.key]={name:m.name,type:m.type,rows:[],carriers:{},strategies:{}};var group=map[m.key];group.rows.push(row);group.carriers[row.carrierId]=1;group.strategies[row.strategy]=1});return Object.keys(map).map(function(key){var g=map[key];g.scale=sum(g.rows,'scale');g.ret=weighted(g.rows,'r1');g.ex=weighted(g.rows,'e1');g.dd=weighted(g.rows,'dd');g.carrierCount=Object.keys(g.carriers).length;g.strategyCount=Object.keys(g.strategies).length;return g}).sort(function(a,b){return b.scale-a.scale})}
+ function title(){return state.tab==='dept'?'投资部门汇总':state.tab==='external'?'外部管理人汇总':'投资经理汇总'}
+ function renderDetail(group){var detail=document.querySelector('#po-ledger .mr-detail');if(!detail)return;detail.hidden=false;detail.querySelector('h3').textContent=group.name+' · 资产明细';detail.querySelector('.mr-detail-body').innerHTML='<table class="mr-detail-table"><thead><tr><th>产品 / 账户</th><th>管理方式</th><th>投资策略</th><th>规模（亿元）</th><th>区间收益率</th><th>超额收益率</th></tr></thead><tbody>'+group.rows.slice().sort(function(a,b){return b.scale-a.scale}).slice(0,12).map(function(row){return '<tr><td>'+row.carrierName+'</td><td>'+modeNames[row.bucket]+'</td><td>'+row.strategy+'</td><td>'+fmt(row.scale,1)+'</td><td>'+pct(row.r1)+'</td><td>'+pct(row.e1)+'</td></tr>'}).join('')+'</tbody></table>'}
+ function render(){var rows=rowsForTab(assets()),groups=aggregate(rows),total=sum(rows,'scale'),ret=weighted(rows,'r1'),ex=weighted(rows,'e1'),beat=rows.filter(function(row){return (+row.e1||0)>0}).length;state.groups=groups;var shell=document.querySelector('#po-ledger .mr-shell');if(!shell)return;shell.querySelectorAll('.mr-tab').forEach(function(button){button.classList.toggle('active',button.dataset.mrTab===state.tab)});shell.querySelector('.mr-kpis').innerHTML='<div class="mr-kpi"><span>覆盖规模</span><b class="mr-total">'+fmt(total,1)+'亿元</b></div><div class="mr-kpi"><span>'+(state.tab==='dept'?'部门数量':state.tab==='external'?'外部管理人数量':'投资经理数量')+'</span><b>'+groups.length+'个</b></div><div class="mr-kpi"><span>区间收益率</span><b class="up">'+pct(ret)+'</b></div><div class="mr-kpi"><span>超额收益率</span><b class="up">'+pct(ex)+'</b></div><div class="mr-kpi"><span>跑赢基准数量占比</span><b>'+beat+'/'+rows.length+'（'+fmt(rows.length?beat/rows.length*100:0,1)+'%）</b></div>';shell.querySelector('.mr-panel h3').textContent=title();shell.querySelector('.mr-panel .mr-head span').textContent='点击汇总行查看资产明细';shell.querySelector('.mr-table thead').innerHTML='<tr><th>'+(state.tab==='dept'?'投资部门':state.tab==='external'?'外部管理人':'投资经理')+'</th><th>产品 / 账户数</th><th>策略数</th><th>管理规模（亿元）</th><th>规模占比</th><th>区间收益率</th><th>超额收益率</th><th>最大回撤</th></tr>';shell.querySelector('.mr-table tbody').innerHTML=groups.map(function(group,index){return '<tr data-mr-index="'+index+'"><td><b>'+group.name+'</b></td><td>'+group.carrierCount+'</td><td>'+group.strategyCount+'</td><td>'+fmt(group.scale,1)+'</td><td>'+fmt(total?group.scale/total*100:0,1)+'%</td><td class="'+(group.ret>=0?'up':'down')+'">'+pct(group.ret)+'</td><td class="'+(group.ex>=0?'up':'down')+'">'+pct(group.ex)+'</td><td>'+pct(group.dd)+'</td></tr>'}).join('');shell.querySelector('.mr-detail').hidden=true;shell.querySelectorAll('[data-mr-index]').forEach(function(row){row.onclick=function(){renderDetail(groups[+row.dataset.mrIndex])}});var oldSummary=shell.querySelector('.mr-summary');if(oldSummary)oldSummary.remove();}
+ function buildResponsibility(){var ledger=document.getElementById('po-ledger');if(!ledger)return;ledger.querySelectorAll('#sp-tabsbar,#sp-kpis,#sp-analysis-panel').forEach(function(node){node.remove()});if(ledger.querySelector('.mr-shell'))return;var shell=document.createElement('div');shell.className='mr-shell';shell.innerHTML='<div class="mr-toolbar"><div class="mr-tabs" role="tablist"><button class="mr-tab active" data-mr-tab="dept" role="tab">部门</button><button class="mr-tab" data-mr-tab="external" role="tab">外部管理人</button><button class="mr-tab" data-mr-tab="investment" role="tab">投资经理</button></div><label class="mr-period"><span>统计区间</span><select id="mr-period"></select></label></div><div class="mr-kpis"></div><section class="mr-panel"><div class="mr-head"><h3></h3><span></span></div><div class="po-table-wrap"><table class="mr-table"><thead></thead><tbody></tbody></table></div></section><section class="mr-detail" hidden><div class="mr-head"><h3></h3><button class="mr-close" type="button">收起</button></div><div class="mr-detail-body"></div></section>';ledger.prepend(shell);shell.querySelectorAll('[data-mr-tab]').forEach(function(button){button.onclick=function(){state.tab=button.dataset.mrTab;render()}});shell.querySelector('.mr-close').onclick=function(){shell.querySelector('.mr-detail').hidden=true};render()}
+ function renameProductTable(){var title=document.querySelector('#po-product .po-panel-head h3');if(title&&title.textContent.trim()==='理财产品列表')title.textContent='理财产品经营明细'}
+ window.__mgMrRefresh=function(){if(document.querySelector('#po-ledger .mr-shell'))render()};
+ function init(){installReconciles();buildResponsibility();renameProductTable();var accountNav=document.querySelector('.side [data-po-view="all"]');if(accountNav){accountNav.textContent='管理主体分析';accountNav.title='按部门、外部管理人和投资经理观察资产管理主体'}var observer=new MutationObserver(function(){installReconciles();renameProductTable()});observer.observe(document.body,{childList:true,subtree:true})}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<style id="management-tabs-detail-only-style">
+/* 顶部资产分类卡已展示规模、对象数量和收益指标；下方Tab仅保留结构与明细。 */
+#portfolio-operations .mp-drill>.mp-view{display:none!important}
+#portfolio-operations .mp-drill>.mp-deep-analysis{margin-top:12px}
+</style>
+<style id="management-remove-strategy-contribution-style">
+#portfolio-operations .mp-deep-grid.mp-deep-grid-single{grid-template-columns:minmax(0,1fr)!important}
+</style>
+<script id="management-remove-strategy-contribution-script">
+(function(){
+  function removeContribution(){
+    document.querySelectorAll('#portfolio-operations .mp-deep-analysis h4').forEach(function(title){
+      if(title.textContent.indexOf('策略贡献拆解')<0)return;
+      var card=title.closest('.mp-deep-card'),grid=card&&card.parentElement;
+      if(grid)grid.classList.add('mp-deep-grid-single');
+      if(card)card.remove();
+    });
+  }
+  function init(){
+    var root=document.querySelector('#portfolio-operations .mp-drill');
+    if(!root)return;
+    new MutationObserver(removeContribution).observe(root,{childList:true,subtree:true});
+    root.addEventListener('click',function(){setTimeout(removeContribution,0)});
+    removeContribution();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<style id="management-simple-overview-analysis-style">
+#portfolio-operations .mp-drill>.mp-view-tabs,
+#portfolio-operations .mp-drill>.mp-view,
+#portfolio-operations .mp-drill>.mp-deep-analysis,
+#portfolio-operations .mp-drill>.mp-pager{display:none!important}
+#portfolio-operations #mp-simple-analysis{margin:10px 15px 15px;border:1px solid #d7e2ec;border-radius:9px;background:#fff;overflow:hidden}
+#portfolio-operations .mp-simple-toolbar{display:flex;align-items:center;gap:6px;min-height:46px;padding:7px 12px;border-bottom:1px solid #e4ebf1;background:#f8fafc}
+#portfolio-operations .mp-simple-tabs{display:flex;gap:5px}
+#portfolio-operations .mp-simple-tabs button,#portfolio-operations .mp-simple-scope button{height:30px;padding:0 14px;border:1px solid #d5e0e9;border-radius:6px;background:#fff;color:#526c82;font:600 11px "Microsoft YaHei";cursor:pointer}
+#portfolio-operations .mp-simple-tabs button.active,#portfolio-operations .mp-simple-scope button.active{border-color:#174f84;background:#174f84;color:#fff}
+#portfolio-operations .mp-simple-scope{display:flex;align-items:center;gap:4px;margin-left:auto}
+#portfolio-operations .mp-simple-scope>span{margin-right:3px;color:#71869a;font-size:10.5px}
+#portfolio-operations .mp-simple-table-wrap{overflow:auto}
+#portfolio-operations .mp-simple-table{width:100%;border-collapse:collapse;min-width:920px}
+#portfolio-operations .mp-simple-table th,#portfolio-operations .mp-simple-table td{height:41px;padding:7px 10px;border-bottom:1px solid #edf1f5;text-align:right;font-size:11px;white-space:nowrap}
+#portfolio-operations .mp-simple-table th{background:#eaf1f7;color:#35506b;font-weight:700}
+#portfolio-operations .mp-simple-table th:first-child,#portfolio-operations .mp-simple-table td:first-child{text-align:left}
+#portfolio-operations .mp-simple-table tbody tr:hover{background:#f3f8fc}
+#portfolio-operations .mp-simple-table td.pos{color:#c93429}
+#portfolio-operations .mp-simple-table td.neg{color:#16805c}
+#portfolio-operations .mp-simple-total td{background:#f5f9fc;color:#173f61;font-weight:700}
+@media(max-width:850px){#portfolio-operations .mp-simple-toolbar{align-items:flex-start;flex-direction:column}.mp-simple-scope{margin-left:0!important;flex-wrap:wrap}}
+</style>
+<script id="management-simple-overview-analysis-script">
+(function(){
+  var state={view:'strategy',scope:'all'};
+  var scopeNames={all:'全部',outsource:'委外',channel:'通道',direct:'直投'};
+  var scopeTotals={all:2500,outsource:1000,channel:1000,direct:500};
+  var strategies=[
+    {name:'利率策略',total:420,outsource:160,channel:180,direct:80,ret:.43,ex:.12,dd:-.62},
+    {name:'信用策略',total:385,outsource:150,channel:160,direct:75,ret:.47,ex:.13,dd:-.81},
+    {name:'固收增强策略',total:310,outsource:130,channel:140,direct:40,ret:.55,ex:.17,dd:-1.05},
+    {name:'现金管理策略',total:275,outsource:100,channel:130,direct:45,ret:.24,ex:.06,dd:-.12},
+    {name:'权益主动策略',total:260,outsource:110,channel:100,direct:50,ret:.72,ex:.26,dd:-1.88},
+    {name:'权益量化策略',total:215,outsource:90,channel:90,direct:35,ret:.64,ex:.21,dd:-1.42},
+    {name:'多资产配置策略',total:190,outsource:80,channel:80,direct:30,ret:.49,ex:.14,dd:-1.16},
+    {name:'基金配置策略',total:145,outsource:70,channel:50,direct:25,ret:.44,ex:.12,dd:-.96},
+    {name:'可转债增强策略',total:150,outsource:60,channel:40,direct:50,ret:.61,ex:.20,dd:-1.53},
+    {name:'另类及其他策略',total:150,outsource:50,channel:30,direct:70,ret:.36,ex:.08,dd:-.74}
+  ];
+  var assets=[
+    {name:'固定收益类',total:1485,outsource:620,channel:580,direct:285,ret:.39,ex:.11,dd:-.72},
+    {name:'权益类',total:425,outsource:170,channel:160,direct:95,ret:.66,ex:.24,dd:-1.68},
+    {name:'基金类',total:330,outsource:120,channel:140,direct:70,ret:.48,ex:.15,dd:-1.02},
+    {name:'现金及同业',total:185,outsource:60,channel:90,direct:35,ret:.20,ex:.04,dd:-.11},
+    {name:'其他资产',total:75,outsource:30,channel:30,direct:15,ret:.30,ex:.06,dd:-.42}
+  ];
+  var subjects=[
+    {name:'博时基金',type:'外部管理人',count:'18个',mode:'委外',scope:'outsource',total:260,ret:.42,ex:.16,dd:-1.06},
+    {name:'华夏基金',type:'外部管理人',count:'16个',mode:'委外',scope:'outsource',total:220,ret:.39,ex:.14,dd:-1.18},
+    {name:'中信证券资管',type:'外部管理人',count:'15个',mode:'委外',scope:'outsource',total:195,ret:.35,ex:.10,dd:-1.31},
+    {name:'银华基金',type:'外部管理人',count:'13个',mode:'委外',scope:'outsource',total:175,ret:.36,ex:.11,dd:-1.24},
+    {name:'鹏扬基金',type:'外部管理人',count:'11个',mode:'委外',scope:'outsource',total:150,ret:.31,ex:.07,dd:-1.42},
+    {name:'李明',type:'投资经理',count:'9个',mode:'通道',scope:'channel',total:150,ret:.58,ex:.23,dd:-.72},
+    {name:'王璐',type:'投资经理',count:'8个',mode:'通道',scope:'channel',total:140,ret:.55,ex:.20,dd:-.78},
+    {name:'赵晨',type:'投资经理',count:'8个',mode:'通道',scope:'channel',total:135,ret:.53,ex:.19,dd:-.81},
+    {name:'陈思',type:'投资经理',count:'7个',mode:'通道',scope:'channel',total:130,ret:.52,ex:.18,dd:-.84},
+    {name:'周宁',type:'投资经理',count:'7个',mode:'通道',scope:'channel',total:125,ret:.50,ex:.17,dd:-.88},
+    {name:'吴昊',type:'投资经理',count:'6个',mode:'通道',scope:'channel',total:120,ret:.49,ex:.16,dd:-.91},
+    {name:'徐可',type:'投资经理',count:'6个',mode:'通道',scope:'channel',total:105,ret:.47,ex:.14,dd:-.95},
+    {name:'林悦',type:'投资经理',count:'5个',mode:'通道',scope:'channel',total:95,ret:.45,ex:.12,dd:-1.02},
+    {name:'张伟',type:'投资经理',count:'6个',mode:'直投',scope:'direct',total:80,ret:.51,ex:.15,dd:-.91},
+    {name:'刘洋',type:'投资经理',count:'5个',mode:'直投',scope:'direct',total:72,ret:.48,ex:.13,dd:-.98},
+    {name:'孙悦',type:'投资经理',count:'5个',mode:'直投',scope:'direct',total:68,ret:.47,ex:.12,dd:-1.03},
+    {name:'何涛',type:'投资经理',count:'4个',mode:'直投',scope:'direct',total:64,ret:.45,ex:.11,dd:-1.08},
+    {name:'林佳',type:'投资经理',count:'4个',mode:'直投',scope:'direct',total:60,ret:.43,ex:.09,dd:-1.12},
+    {name:'高远',type:'投资经理',count:'4个',mode:'直投',scope:'direct',total:56,ret:.42,ex:.08,dd:-1.16},
+    {name:'许安',type:'投资经理',count:'3个',mode:'直投',scope:'direct',total:52,ret:.40,ex:.06,dd:-1.21},
+    {name:'唐欣',type:'投资经理',count:'3个',mode:'直投',scope:'direct',total:48,ret:.38,ex:.05,dd:-1.27}
+  ];
+  function money(value){return Number(value||0).toLocaleString('zh-CN',{minimumFractionDigits:1,maximumFractionDigits:1})}
+  function pct(value){return (value>=0?'+':'')+Number(value||0).toFixed(2)+'%'}
+  function currentScale(row){return state.scope==='all'?row.total:row[state.scope]}
+  function adjusted(row,key){var value=row[key],offset=state.scope==='outsource'?-0.04:state.scope==='channel'?.05:state.scope==='direct'?.02:0;return value+(key==='ret'?offset:offset*.6)}
+  function benchmarkWin(row){
+    var seed=Array.from(row.name||'').reduce(function(total,char){return total+char.charCodeAt(0)},0);
+    var scopeOffset=state.scope==='outsource'?-3:state.scope==='channel'?4:state.scope==='direct'?1:0;
+    return Math.max(0,Math.min(100,50+(+row.ex||0)*120+(seed%9-4)+scopeOffset));
+  }
+  function rows(){if(state.view==='strategy')return strategies;if(state.view==='asset')return assets;return state.scope==='all'?subjects:subjects.filter(function(row){return row.scope===state.scope})}
+  function analysisTable(){
+    var data=rows().slice();
+    data.sort(function(a,b){return state.view==='subject'?b.total-a.total:currentScale(b)-currentScale(a)});
+    var total=scopeTotals[state.scope],head='',body='',cols=0,moreRow='';
+    var compact=state.view!=='asset';
+    var display=compact?data.slice(0,5):data;
+    if(state.view==='subject'){
+      var allSubjects=state.scope==='all',subjectTitle=state.scope==='outsource'?'外部管理人':state.scope==='channel'||state.scope==='direct'?'投资经理':'管理主体';
+      cols=allSubjects?10:9;
+      head='<tr><th>'+subjectTitle+'</th>'+(allSubjects?'<th>主体类型</th>':'')+'<th>覆盖产品 / 账户数</th><th>管理方式</th><th>管理规模（亿元）</th><th>规模占比</th><th>区间收益率</th><th>超额收益率</th><th>跑赢基准产品占比</th><th>最大回撤</th></tr>';
+      body=display.map(function(row){return '<tr><td><b>'+row.name+'</b></td>'+(allSubjects?'<td>'+row.type+'</td>':'')+'<td>'+row.count+'</td><td>'+row.mode+'</td><td>'+money(row.total)+'</td><td>'+money(row.total/total*100)+'%</td><td class="pos">'+pct(row.ret)+'</td><td class="pos">'+pct(row.ex)+'</td><td>'+money(benchmarkWin(row))+'%</td><td>'+pct(row.dd)+'</td></tr>'}).join('');
+    }else if(state.scope==='all'){
+      cols=10;
+      head='<tr><th>'+(state.view==='strategy'?'投资策略':'大类资产')+'</th><th>总规模（亿元）</th><th>委外</th><th>通道</th><th>直投</th><th>规模占比</th><th>区间收益率</th><th>超额收益率</th><th>跑赢基准产品占比</th><th>最大回撤</th></tr>';
+      body=display.map(function(row){return '<tr><td><b>'+row.name+'</b></td><td>'+money(row.total)+'</td><td>'+money(row.outsource)+'</td><td>'+money(row.channel)+'</td><td>'+money(row.direct)+'</td><td>'+money(row.total/total*100)+'%</td><td class="pos">'+pct(row.ret)+'</td><td class="pos">'+pct(row.ex)+'</td><td>'+money(benchmarkWin(row))+'%</td><td>'+pct(row.dd)+'</td></tr>'}).join('');
+    }else{
+      cols=7;
+      head='<tr><th>'+(state.view==='strategy'?'投资策略':'大类资产')+'</th><th>管理规模（亿元）</th><th>当前范围占比</th><th>区间收益率</th><th>超额收益率</th><th>跑赢基准产品占比</th><th>最大回撤</th></tr>';
+      body=display.map(function(row){var scale=currentScale(row);return '<tr><td><b>'+row.name+'</b></td><td>'+money(scale)+'</td><td>'+money(scale/total*100)+'%</td><td class="pos">'+pct(adjusted(row,'ret'))+'</td><td class="pos">'+pct(adjusted(row,'ex'))+'</td><td>'+money(benchmarkWin(row))+'%</td><td>'+pct(row.dd)+'</td></tr>'}).join('');
+    }
+    if(compact&&data.length>display.length){
+      var unitWord=state.view==='strategy'?'项策略':'个主体';
+      moreRow='<tr class="mp-simple-more"><td colspan="'+cols+'"><span>Top5 · 共 '+data.length+' '+unitWord+'</span><button type="button" data-simple-more="'+state.view+'">查看完整分析 →</button></td></tr>';
+    }
+    return '<table class="mp-simple-table"><thead>'+head+'</thead><tbody>'+body+moreRow+'</tbody></table>';
+  }
+  function render(){
+    var root=document.getElementById('mp-simple-analysis');if(!root)return;
+    root.querySelectorAll('[data-simple-view]').forEach(function(button){button.classList.toggle('active',button.dataset.simpleView===state.view)});
+    root.querySelectorAll('[data-simple-scope]').forEach(function(button){button.classList.toggle('active',button.dataset.simpleScope===state.scope)});
+    root.querySelector('.mp-simple-table-wrap').innerHTML=analysisTable();
+    root.querySelectorAll('[data-simple-more]').forEach(function(button){button.onclick=function(){var target=button.dataset.simpleMore==='strategy'?document.querySelector('.side [data-po-view="manager"]'):document.querySelector('.side [data-po-view="all"]');if(target)target.click()}});
+    document.querySelectorAll('#portfolio-operations [data-mp-scope]').forEach(function(card){card.classList.toggle('active',card.dataset.mpScope===state.scope)});
+  }
+  function build(){
+    var drill=document.querySelector('#portfolio-operations .mp-drill'),cards=drill&&drill.querySelector('.mp-scope-tabs');if(!drill||!cards||document.getElementById('mp-simple-analysis'))return;
+    var head=drill.querySelector('.mp-section-head');if(head){var h=head.querySelector('h2'),hint=head.querySelector('span');if(h)h.textContent='经营结构分析';if(hint)hint.textContent='按策略、资产和管理主体查看全量AUM结构'}
+    var root=document.createElement('div');root.id='mp-simple-analysis';root.innerHTML='<div class="mp-simple-toolbar"><div class="mp-simple-tabs"><button class="active" data-simple-view="strategy">策略分析</button><button data-simple-view="asset">大类资产分析</button><button data-simple-view="subject">管理主体分析</button></div><div class="mp-simple-scope"><span>当前范围：</span><button class="active" data-simple-scope="all">全部</button><button data-simple-scope="outsource">委外</button><button data-simple-scope="channel">通道</button><button data-simple-scope="direct">直投</button></div></div><div class="mp-simple-table-wrap"></div>';
+    cards.insertAdjacentElement('afterend',root);
+    root.querySelectorAll('[data-simple-view]').forEach(function(button){button.onclick=function(){state.view=button.dataset.simpleView;render()}});
+    root.querySelectorAll('[data-simple-scope]').forEach(function(button){button.onclick=function(){state.scope=button.dataset.simpleScope;render()}});
+    document.querySelectorAll('#portfolio-operations [data-mp-scope]').forEach(function(card){card.addEventListener('click',function(){state.scope=card.dataset.mpScope;render()})});
+    state.scope='all';render();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();
+})();
+</script>
+<style id="management-scope-card-inactive-colors">
+#portfolio-operations .mp-scope:not(.active)[data-mp-scope="outsource"]{background:#eef5fd;border-color:#aac6e4;color:#285d91;box-shadow:inset 0 3px 0 #5d91c5}
+#portfolio-operations .mp-scope:not(.active)[data-mp-scope="channel"]{background:#fff8e7;border-color:#e3ca83;color:#80661b;box-shadow:inset 0 3px 0 #d2a41e}
+#portfolio-operations .mp-scope:not(.active)[data-mp-scope="direct"]{background:#f4f1fb;border-color:#c5bbe0;color:#584b91;box-shadow:inset 0 3px 0 #7568b4}
+#portfolio-operations .mp-scope:not(.active)[data-mp-scope="outsource"] .mp-scope-metric.subject b{color:#285d91}
+#portfolio-operations .mp-scope:not(.active)[data-mp-scope="channel"] .mp-scope-metric.subject b{color:#80661b}
+#portfolio-operations .mp-scope:not(.active)[data-mp-scope="direct"] .mp-scope-metric.subject b{color:#584b91}
+#portfolio-operations .mp-scope:not(.active)[data-mp-scope]:hover{filter:saturate(1.08);box-shadow:inset 0 3px 0 currentColor,0 4px 12px rgba(28,61,96,.09)}
+</style>
+<script id="management-aum-terminology-script">
+(function(){
+  function sync(){
+    var overview=document.querySelector('#portfolio-operations .mp-overview-total-label');
+    if(overview&&overview.textContent!=='产品规模（AUM）')overview.textContent='产品规模（AUM）';
+    document.querySelectorAll('#portfolio-operations th').forEach(function(th){
+      var text=th.textContent.trim();
+      if(text==='产品规模（亿元）')th.textContent='产品规模（AUM，亿元）';
+      else if(text==='产品AUM')th.textContent='产品规模（AUM）';
+      else if(text==='占产品AUM')th.textContent='占产品规模（AUM）';
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();
+  document.addEventListener('click',function(event){if(event.target.closest('[data-po-view],[data-mr-tab]'))setTimeout(sync,30)});
+  var host=document.getElementById('portfolio-operations');
+  if(host)new MutationObserver(sync).observe(host,{childList:true,subtree:true});
+})();
+</script>
+<style id="management-subject-kpi-polish-style">
+#po-ledger .mr-kpis{gap:10px}
+#po-ledger .mr-kpi{display:flex;min-width:0;min-height:86px;padding:13px 16px;flex-direction:column;justify-content:center;border:1px solid #d7e3ed;border-top:3px solid #4d86b6;border-radius:10px;background:linear-gradient(155deg,#fff 0%,#f9fbfd 100%);box-shadow:0 3px 10px rgba(33,70,104,.055)}
+#po-ledger .mr-kpi:nth-child(2){border-top-color:#7c9bb4}
+#po-ledger .mr-kpi:nth-child(3),#po-ledger .mr-kpi:nth-child(4){border-top-color:#cf625e}
+#po-ledger .mr-kpi:nth-child(5){border-top-color:#c49b35}
+#po-ledger .mr-kpi>span{display:block;overflow:hidden;color:#627b92;font:500 12px/1.35 "Microsoft YaHei",sans-serif;letter-spacing:0;text-overflow:ellipsis;white-space:nowrap}
+#po-ledger .mr-kpi>b,#po-ledger .mr-kpi>b.up,#po-ledger .mr-kpi>b.down{display:block;min-height:1.1em;margin-top:7px;flex:0 0 auto;color:#123b5c;font-family:Arial,"Microsoft YaHei",sans-serif!important;font-size:22px!important;font-weight:700!important;line-height:1.1!important;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
+#po-ledger .mr-kpi>b.up{color:#c93429!important}
+#po-ledger .mr-kpi>b.down{color:#16805c!important}
+#po-ledger .mr-kpi:nth-child(5)>b{font-size:20px!important;letter-spacing:-.02em}
+@media(max-width:1180px){#po-ledger .mr-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){#po-ledger .mr-kpis{grid-template-columns:1fr 1fr}#po-ledger .mr-kpi:nth-child(5){grid-column:1/-1}}
+</style>
 <!-- MANAGEMENT_PREVIEW_END -->
+<style id="mp-subject-ui-style">
+/* ===== 管理主体分析 UI 优化 ===== */
+/* 工具栏：页签彩色圆点 */
+.mp-simple-tabs button{position:relative;padding-left:24px!important}
+.mp-simple-tabs button:before{content:"";position:absolute;left:12px;top:50%;width:7px;height:7px;border-radius:50%;transform:translateY(-50%);background:#9fb3c6;transition:background .15s}
+.mp-simple-tabs button[data-simple-view="strategy"]:before{background:#b7791f}
+.mp-simple-tabs button[data-simple-view="asset"]:before{background:#2f73d7}
+.mp-simple-tabs button[data-simple-view="subject"]:before{background:#237f74}
+.mp-simple-tabs button.active{background:#174f84!important;border-color:#174f84!important;color:#fff!important}
+.mp-simple-tabs button.active:before{background:#fff!important;opacity:.9}
+/* 范围：连体分段控件 */
+.mp-simple-scope{background:#e8eef5;border:1px solid #d3dfe9;border-radius:8px;padding:3px;gap:0!important}
+.mp-simple-scope>span{margin:0 6px 0 8px!important;font-size:10.5px;color:#6b8098;white-space:nowrap}
+.mp-simple-scope button{border:0!important;border-radius:6px!important;background:transparent!important;color:#526c82!important;height:26px!important;padding:0 13px!important;font-size:11px!important}
+.mp-simple-scope button:hover{color:#174f84!important;background:#dde8f2!important}
+.mp-simple-scope button.active{background:#174f84!important;color:#fff!important;box-shadow:0 1px 4px rgba(23,79,132,.28)}
+/* 汇总条 */
+.mp-subject-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 12px}
+.mp-subject-summary>div{position:relative;padding:11px 14px;border:1px solid #dfe8f1;border-radius:9px;background:linear-gradient(145deg,#fbfdff,#f4f8fc);overflow:hidden}
+.mp-subject-summary>div:after{content:"";position:absolute;right:-18px;bottom:-24px;width:64px;height:64px;border:12px solid rgba(47,115,215,.06);border-radius:50%}
+.mp-subject-summary small{display:block;color:#7d8fa4;font-size:10px}
+.mp-subject-summary b{display:block;margin-top:4px;color:#173b64;font:700 17px Arial,"Microsoft YaHei";font-variant-numeric:tabular-nums;white-space:nowrap}
+.mp-subject-summary b i{font-style:normal;font-size:11px;color:#8496aa;font-weight:400;margin-left:4px}
+.mp-subject-summary .hi b{color:#0e7a55}
+/* 主体行：头像圈 + 类型徽章 */
+.mp-simple-table td.subj-cell{white-space:nowrap}
+.mp-subj-avatar{display:inline-grid;place-items:center;width:26px;height:26px;margin-right:9px;border-radius:50%;background:#e8f1fa;color:#2f6db1;font:700 12px "Microsoft YaHei";vertical-align:middle}
+.mp-subj-avatar.pm{background:#e6f5ef;color:#1d7a56}
+.mp-subj-type{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:11px;font-size:10px;font-weight:600;white-space:nowrap}
+.mp-subj-type.ext{background:#e8f1fa;color:#2b6cb0}
+.mp-subj-type.pm{background:#e6f5ef;color:#1d7a56}
+/* 占比条 */
+.mp-share-track{position:relative;display:block;min-width:86px;height:8px;margin-top:5px;border-radius:5px;background:#edf2f7;overflow:hidden}
+.mp-share-track i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#2f73d7,#41b3d3)}
+.mp-share-cell b{font-variant-numeric:tabular-nums}
+/* 规模第一行标记 */
+.mp-simple-table tr.mp-top1{background:linear-gradient(90deg,#fffaf0,#fffdf6)}
+.mp-simple-table tr.mp-top1 td:first-child{position:relative}
+.mp-simple-table tr.mp-top1 .mp-top1-tag{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:9px;background:#b7791f;color:#fff;font-size:9px;font-weight:700;vertical-align:middle}
+@media(max-width:1180px){.mp-subject-summary{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.mp-subject-summary{grid-template-columns:1fr 1fr;gap:7px}.mp-subject-summary b{font-size:14px}}
+/* ===== 管理报告 KPI 卡片：2026-11-18 三页统一规则 ===== */
+/* 顶条统一中性灰蓝（涨跌语义由数值红绿色承担，顶条不再按位置区分类别） */
+#po-ledger .mr-kpi{border-top-width:3px;border-top-color:#a8bccd!important;background:linear-gradient(155deg,#fff 0%,#f9fbfd 100%)}
+#po-ledger .mr-kpi:nth-child(1),#po-ledger .mr-kpi:nth-child(2),#po-ledger .mr-kpi:nth-child(3),#po-ledger .mr-kpi:nth-child(4){border-top-color:#a8bccd!important}
+#po-ledger .mr-kpi:nth-child(5){border-top-color:#a8bccd!important}
+/* 数值统一字号；第5张含斜杠复合值，保留例外 */
+#po-ledger .mr-kpi>b{font-size:23px!important;letter-spacing:-.015em}
+#po-ledger .mr-kpi:nth-child(3)>b,#po-ledger .mr-kpi:nth-child(4)>b{font-size:23px!important;letter-spacing:0}
+#po-ledger .mr-kpi:nth-child(5)>b{font-size:19px!important;letter-spacing:-.03em}
+/* 卡片等高对齐：标签与数值垂直居中，避免长短标签造成高度参差 */
+#po-ledger .mr-kpi{min-height:88px;justify-content:center;gap:0}
+#po-ledger .mr-kpi>span{font-size:11.5px;color:#6b8095;letter-spacing:.01em}
+/* 收益类数值的着色保持红涨绿跌，但降低饱和度避免与顶条冲突 */
+#po-ledger .mr-kpi>b.up{color:#c0392b!important}
+#po-ledger .mr-kpi>b.down{color:#1a7a58!important}
+/* ===== 关键修复：收益数值被脚本包了一层 <span data-fc>，该 span 继承了 10px 小字，导致视觉上明显小于同行其他数值 ===== */
+#po-ledger .mr-kpi>b>span,
+#po-ledger .mr-kpi>b>span[data-fc]{
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  font-family:inherit!important;
+  letter-spacing:inherit!important;
+  line-height:inherit!important;
+  color:inherit!important;
+}
+/* 全局兜底：所有 KPI 卡内的数值包裹 span 一律继承父级字号，避免出现"同排大小不一" */
+[class*="kpi"]>b>span[data-fc],
+[class*="kpi"] strong>span[data-fc],
+[class*="kpi"] .val>span[data-fc],
+[class*="metric"]>b>span[data-fc],
+[class*="metric"] strong>span[data-fc]{
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  font-family:inherit!important;
+  letter-spacing:inherit!important;
+  line-height:inherit!important;
+  color:inherit!important;
+}
+/* 同排数值统一为同一字号，收益类不再单独放大 */
+#po-ledger .mr-kpi:nth-child(3)>b,
+#po-ledger .mr-kpi:nth-child(4)>b{font-size:23px!important;letter-spacing:-.015em}
+/* ===== 根本修复：脚本给收益数值套了 <span data-fc>，其字号继承自过小的父级，导致同排视觉大小不一。统一提升为卡片主数值字号 ===== */
+.mp-kpi b>span[data-fc],.mp-kpi strong>span[data-fc],.mp-kpi .mp-value>span[data-fc],
+#po-ledger .mr-kpi b>span[data-fc],
+.po-kpi b>span[data-fc],.po-kpi strong>span[data-fc],
+.im-kpi b>span[data-fc],.si-kpi b>span[data-fc],
+.spv-summary-kpi strong>span[data-fc],
+[class*="-kpi"] b>span[data-fc],[class*="-kpi"] strong>span[data-fc]{
+  font-size:var(--kpi-fc-size,1em)!important;
+  font-weight:700!important;
+  font-family:Arial,"Microsoft YaHei",sans-serif!important;
+  letter-spacing:-.01em!important;
+  line-height:1.1!important;
+}
+/* 各 KPI 容器声明主数值字号，包裹层直接继承，保证同排完全一致 */
+.mp-kpi,.po-kpi,.im-kpi,.si-kpi,.spv-summary-kpi{--kpi-fc-size:inherit}
+#po-ledger .mr-kpi{--kpi-fc-size:23px}
+#po-ledger .mr-kpi:nth-child(3),#po-ledger .mr-kpi:nth-child(4){--kpi-fc-size:23px}
+</style>
+<script id="mp-subject-ui-script">
+/* 管理主体分析：表格 UI 增强（徽章 / 占比条 / 汇总条 / 规模领先标记） */
+(function(){
+  var SEL='#portfolio-operations #mp-simple-analysis';
+  function num(v){var n=parseFloat(String(v).replace(/[,%\s]/g,''));return isNaN(n)?0:n}
+  function isSubjectActive(){
+    var b=document.querySelector(SEL+' [data-simple-view="subject"]');
+    return b&&b.classList.contains('active');
+  }
+  function enhance(){
+    var wrap=document.querySelector(SEL+' .mp-simple-table-wrap');
+    if(!wrap||!isSubjectActive())return;
+    var table=wrap.querySelector('.mp-simple-table');
+    if(!table)return;
+    var rows=Array.prototype.slice.call(table.querySelectorAll('tbody tr'));
+    if(!rows.length)return;
+    /* 幂等：每次重渲染都是全新 DOM，直接重建；若已存在则先清理标记类 */
+    var maxShare=0,cells=[];
+    rows.forEach(function(tr){
+      var tds=tr.children;
+      var nameTd=tds[0];
+      if(!nameTd)return;
+      tr.classList.remove('mp-top1');
+      /* 取纯名称：优先 <b> 文本，避免重复插入头像导致首字叠加 */
+      var nameEl=nameTd.querySelector('b');
+      var name=(nameEl?nameEl.textContent:nameTd.textContent).replace(/规模领先/g,'').trim();
+      if(!name)return;
+      /* 主体类型：全部范围下第2列为类型；否则按管理方式推断 */
+      var typeName=(tds[1]&&tds[1].textContent.trim())||'';
+      if(typeName!=='外部管理人'&&typeName!=='投资经理'){
+        var mode=(tds[2]?tds[2].textContent:'');
+        typeName=mode.indexOf('委外')>-1?'外部管理人':'投资经理';
+      }
+      var isExt=typeName==='外部管理人';
+      /* 头像圈 + 徽章（整格重写，保证不重复） */
+      nameTd.classList.add('subj-cell');
+      nameTd.innerHTML='<span class="mp-subj-avatar'+(isExt?'':' pm')+'">'+name.charAt(0)+'</span><b>'+name+'</b>';
+      var typeTd=(tds[1]&&(tds[1].textContent.trim()==='外部管理人'||tds[1].textContent.trim()==='投资经理'))?tds[1]:null;
+      if(typeTd)typeTd.innerHTML='<span class="mp-subj-type'+(isExt?' ext':' pm')+'">'+typeName+'</span>';
+      /* 占比条：定位"规模占比"列 */
+      var ths=table.querySelectorAll('thead th');
+      var shareIdx=-1;
+      for(var k=0;k<ths.length;k++){if(ths[k].textContent.indexOf('占比')>-1){shareIdx=k;break}}
+      if(shareIdx>-1&&tds[shareIdx]){
+        var td=tds[shareIdx];
+        var val=num(td.textContent);
+        cells.push({td:td,val:val});
+        if(val>maxShare)maxShare=val;
+      }
+    });
+    cells.forEach(function(c){
+      if(c.td.querySelector('.mp-share-track'))return;
+      var pct=Math.max(4,Math.round(c.val/Math.max(maxShare,1)*100));
+      var div=document.createElement('b');
+      div.className='mp-share-cell';
+      div.innerHTML=c.td.innerHTML+'<span class="mp-share-track"><i style="width:'+pct+'%"></i></span>';
+      c.td.innerHTML='';
+      c.td.appendChild(div);
+    });
+    /* 规模第一行标记：找"管理规模"列最大值 */
+    var ths=table.querySelectorAll('thead th'),scaleIdx=-1;
+    for(var k=0;k<ths.length;k++){if(ths[k].textContent.indexOf('管理规模')>-1){scaleIdx=k;break}}
+    if(scaleIdx>-1){
+      var best=-1,bestV=-1;
+      rows.forEach(function(tr,i){var v=num(tr.children[scaleIdx]?tr.children[scaleIdx].textContent:'0');if(v>bestV){bestV=v;best=i}});
+      if(best>-1&&!rows[best].classList.contains('mp-top1')){
+        rows[best].classList.add('mp-top1');
+        var nameCell=rows[best].querySelector('td.subj-cell');
+        if(nameCell&&!nameCell.querySelector('.mp-top1-tag')){
+          var tag=document.createElement('span');
+          tag.className='mp-top1-tag';tag.textContent='规模领先';
+          nameCell.appendChild(tag);
+        }
+      }
+    }
+    /* 汇总条 */
+    if(!wrap.querySelector('.mp-subject-summary')&&rows.length){
+      var sum=0,bestRet=-1e9,bestName='',retSum=0,retN=0;
+      var retIdx=-1,exIdx=-1;
+      for(var k=0;k<ths.length;k++){
+        var t=ths[k].textContent;
+        if(t.indexOf('区间收益率')>-1)retIdx=k;
+        if(t.indexOf('超额收益率')>-1)exIdx=k;
+        if(scaleIdx>-1&&k===scaleIdx){}else if(t.indexOf('管理规模')>-1)scaleIdx=k;
+      }
+      rows.forEach(function(tr){
+        if(scaleIdx>-1&&tr.children[scaleIdx])sum+=num(tr.children[scaleIdx].textContent);
+        if(retIdx>-1&&tr.children[retIdx]){var r=num(tr.children[retIdx].textContent);if(r>bestRet){bestRet=r;var nc=tr.querySelector('td.subj-cell b');bestName=nc?nc.textContent:''}}
+        if(exIdx>-1&&tr.children[exIdx]){retSum+=num(tr.children[exIdx].textContent);retN++}
+      });
+      var bar=document.createElement('div');
+      bar.className='mp-subject-summary';
+      bar.innerHTML='<div><small>主体数量</small><b>'+rows.length+'<i>个</i></b></div>'
+        +'<div><small>合计管理规模</small><b>'+sum.toFixed(0)+'<i>亿元</i></b></div>'
+        +'<div><small>区间收益最高</small><b>'+bestName+'<i>+'+bestRet.toFixed(2)+'%</i></b></div>'
+        +'<div class="hi"><small>平均超额收益</small><b>+'+(retN?retSum/retN:0).toFixed(2)+'<i>pp</i></b></div>';
+      wrap.insertBefore(bar,table);
+    }
+  }
+  var mo=new MutationObserver(function(){try{enhance()}catch(e){}});
+  function start(){
+    var root=document.querySelector(SEL);
+    if(!root){setTimeout(start,400);return}
+    mo.observe(root,{childList:true,subtree:true});
+    enhance();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+<script id="po-detail-polish-script">
+/* ===== 经营分析模块细节收敛：红绿统一 / 千分位 / 加载淡入 ===== */
+(function(){
+  var RED='#c0392b', GREEN='#1a7a58';
+
+  /* 1) 红绿统一：批量替换 HTML/CSS 源码中的旧色值（一次性，写入文件层面已由编辑完成；此处兜底覆盖 CSS 变量） */
+  var css=document.createElement('style');
+  css.id='po-color-unify';
+  css.textContent=
+    /* 全局红涨绿跌语义色收敛 */
+    '#portfolio-operations .pos,#portfolio-operations .up{color:'+RED+'!important}'+
+    '#portfolio-operations .neg,#portfolio-operations .down{color:'+GREEN+'!important}'+
+    '#portfolio-operations [style*="#c93429"]{color:'+RED+'!important}'+
+    '#portfolio-operations [style*="#df3037"]{color:'+RED+'!important}'+
+    '#portfolio-operations [style*="#078765"],#portfolio-operations [style*="#16805c"],'+
+    '#portfolio-operations [style*="#2e8b57"],#portfolio-operations [style*="#148555"]{color:'+GREEN+'!important}';
+  document.head.appendChild(css);
+
+  /* 2) 千分位：对渲染出的表格/汇总/KPI 中的纯数值文本统一格式化（保留原有 % 和单位） */
+  function fmt(txt){
+    return txt.replace(/(^|[^\d.])(\d{1,3}(?:\d{3})+(?:\.\d+)?|\d{4,}(?:\.\d+)?)(?=$|[^\d.])/g,
+      function(m,p,num,off,str){
+        var neg='',n=num;
+        if(str[off-1]==='-')neg='-';
+        var parts=n.split('.');
+        parts[0]=parts[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');
+        return p+neg+parts.join('.');
+      });
+  }
+  function polishNumbers(root){
+    var walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false);
+    var nodes=[];
+    while(walker.nextNode())nodes.push(walker.currentNode);
+    nodes.forEach(function(n){
+      var t=n.nodeValue;
+      if(!t||t.length>40)return;
+      if(!/\d{4,}/.test(t))return;
+      var parent=n.parentElement;
+      if(!parent||parent.tagName==='SCRIPT'||parent.tagName==='STYLE')return;
+      if(parent.dataset.fmtDone)return;
+      var nt=fmt(t);
+      if(nt!==t){n.nodeValue=nt;parent.dataset.fmtDone='1'}
+    });
+  }
+
+  /* 3) 页签切换淡入：给表格/内容容器加轻量入场动画 */
+  var fade=document.createElement('style');
+  fade.textContent=
+    '@keyframes poFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}'+
+    '#portfolio-operations .mp-simple-table-wrap,#portfolio-operations .mp-drill,'+
+    '#portfolio-operations .chart-panel,#portfolio-operations .panel{animation:poFadeIn .18s ease-out}';
+  document.head.appendChild(fade);
+
+  /* 观察 portfolio-operations 区域重渲染，统一执行千分位处理 */
+  function start(){
+    var po=document.getElementById('portfolio-operations');
+    if(!po){setTimeout(start,400);return}
+    polishNumbers(po);
+    var mo=new MutationObserver(function(){
+      requestAnimationFrame(function(){try{polishNumbers(po)}catch(e){}});
+    });
+    mo.observe(po,{childList:true,subtree:true,characterData:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+
+<style id="mp-overall-kpi-widen-style">
+/* ===== 整体经营表现：删字段后 3 卡等宽拉宽 + 头部对齐 ===== */
+#portfolio-operations .mp-overall-performance{
+  min-width:0;display:flex;flex-direction:column;padding-left:16px!important;
+}
+/* 头部：标题与右侧胶囊同基线，与左侧主数值顶部对齐 */
+#portfolio-operations .mp-overall-performance-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:0 0 10px!important;min-height:22px;
+}
+#portfolio-operations .mp-overall-performance-head strong{
+  display:flex;align-items:center;gap:7px;
+  color:#173b64;font-size:13px!important;font-weight:700;letter-spacing:.03em;
+}
+#portfolio-operations .mp-overall-performance-head strong:before{
+  content:"";width:3px;height:13px;border-radius:2px;
+  background:linear-gradient(180deg,#2f73d7,#41b3d3);
+}
+#portfolio-operations .mp-overall-performance-head span{
+  color:#8ea1b5;font-size:10px!important;white-space:nowrap;letter-spacing:.02em;
+}
+/* 3 卡等宽铺满 */
+#portfolio-operations .mp-overall-performance .mp-kpis{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:12px!important;margin:0!important;padding:0!important;
+  flex:1;display:grid;
+}
+#portfolio-operations .mp-overall-performance .mp-kpi{
+  min-height:0!important;height:100%!important;
+  padding:16px 18px!important;border-radius:10px!important;
+  border:1px solid #e2eaf3!important;border-top-width:3px!important;
+  display:flex!important;flex-direction:column;justify-content:center;
+  background:linear-gradient(160deg,#fff 0%,#fbfdff 100%);
+  box-shadow:0 1px 2px rgba(23,59,100,.04);
+  transition:box-shadow .16s,transform .16s;
+}
+#portfolio-operations .mp-overall-performance .mp-kpi:hover{
+  box-shadow:0 6px 18px rgba(23,59,100,.11);transform:translateY(-1px);
+}
+#portfolio-operations .mp-overall-performance .mp-kpi .mp-label{
+  font-size:11.5px!important;color:#5c7289!important;letter-spacing:.03em;font-weight:500;
+}
+#portfolio-operations .mp-overall-performance .mp-value{
+  margin-top:7px!important;font-size:28px!important;font-weight:700!important;
+  letter-spacing:-.02em;line-height:1.06;font-variant-numeric:tabular-nums;
+}
+#portfolio-operations .mp-overall-performance .mp-unit{
+  font-size:12.5px!important;font-weight:500!important;margin-left:3px;opacity:.85;
+}
+#portfolio-operations .mp-overall-performance .mp-note{
+  margin-top:8px!important;font-size:10px!important;color:#93a5b8;line-height:1.35;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+/* 左侧「全量资产规模」与右侧等高，底部对齐 */
+#portfolio-operations .mp-overview-total{
+  display:flex!important;flex-direction:column;justify-content:center;
+  padding:10px 18px 10px 4px!important;
+}
+#portfolio-operations .mp-overview-total-value{font-size:32px!important;letter-spacing:-.02em}
+@media(max-width:1280px){
+  #portfolio-operations .mp-overall-performance .mp-value{font-size:25px!important}
+  #portfolio-operations .mp-overall-performance .mp-kpi{padding:14px 15px!important}
+  #portfolio-operations .mp-overall-performance .mp-kpis{gap:9px!important}
+}
+@media(max-width:1100px){
+  #portfolio-operations .mp-overall-performance .mp-kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  #portfolio-operations .mp-overall-performance .mp-value{font-size:21px!important}
+  #portfolio-operations .mp-overall-performance .mp-note{font-size:9.5px!important}
+}
+@media(max-width:860px){
+  #portfolio-operations .mp-overall-performance .mp-kpis{grid-template-columns:1fr!important}
+  #portfolio-operations .mp-overall-performance .mp-kpi{min-height:78px!important}
+}
+</style>
+
+<style id="mp-aum-compact-style">
+/* ===== AUM结构与表现：整体压扁一档 ===== */
+#portfolio-operations .mp-shell>.mp-section:first-of-type .mp-overview-layout{padding:6px 15px 7px!important;gap:14px!important}
+#portfolio-operations .mp-shell>.mp-section:first-of-type .mp-section-head{padding:8px 15px!important}
+/* 左侧 AUM 卡 */
+#portfolio-operations .mp-overview-total{padding:4px 18px 4px 4px!important}
+#portfolio-operations .mp-overview-total-label{font-size:10.5px!important}
+#portfolio-operations .mp-overview-total-value{font-size:26px!important;line-height:1.1!important}
+#portfolio-operations .mp-overview-total .mp-overview-equation{margin-top:3px!important;font-size:9.5px!important}
+/* 右侧 3 卡 */
+#portfolio-operations .mp-overall-performance-head{margin-bottom:6px!important}
+#portfolio-operations .mp-overall-performance .mp-kpis{gap:10px!important}
+#portfolio-operations .mp-overall-performance .mp-kpi{padding:11px 15px!important}
+#portfolio-operations .mp-overall-performance .mp-value{font-size:22px!important;margin-top:4px!important}
+#portfolio-operations .mp-overall-performance .mp-unit{font-size:11px!important}
+#portfolio-operations .mp-overall-performance .mp-note{margin-top:4px!important;font-size:9.5px!important}
+#portfolio-operations .mp-overall-performance .mp-kpi .mp-label{font-size:11px!important}
+@media(max-width:1280px){
+  #portfolio-operations .mp-overall-performance .mp-value{font-size:19px!important}
+  #portfolio-operations .mp-overall-performance .mp-kpi{padding:10px 13px!important}
+}
+</style>
+
+<style id="po-three-pages-unify-style">
+/* ===== 理财产品分析 / 投资策略分析 / 管理主体分析 三页细节统一 ===== */
+
+/* 0) 红涨绿跌扩展到全站（投资策略分析页在 #strategy-analysis 容器，此前只覆盖了 portfolio-operations） */
+#strategy-analysis .sa-pos,.sa-pos{color:#c0392b!important}
+#strategy-analysis .sa-neg,.sa-neg{color:#1a7a58!important}
+#strategy-analysis [style*="#c93429"],#strategy-analysis [style*="#df3037"]{color:#c0392b!important}
+#strategy-analysis [style*="#16805c"],#strategy-analysis [style*="#2e8b57"],
+#strategy-analysis [style*="#078765"],#strategy-analysis [style*="#148555"]{color:#1a7a58!important}
+
+/* 1) 理财产品分析 pv2-kpi：左色条改语义色 + hover 反馈 */
+#portfolio-operations .pv2-kpi{transition:box-shadow .15s,transform .15s}
+#portfolio-operations .pv2-kpi:hover{box-shadow:0 5px 16px rgba(23,59,100,.10);transform:translateY(-1px)}
+/* 7 张卡按指标类别着色：1-2 规模深蓝 / 3-4 数量灰蓝 / 5-6 收益暖金 / 7 结果青绿 */
+
+
+
+
+#portfolio-operations .pv2-kpi span{font-size:11.5px;letter-spacing:.02em}
+#portfolio-operations .pv2-kpi strong{font-size:23px}
+#portfolio-operations .pv2-kpi strong small{font-size:11.5px}
+#portfolio-operations .pv2-kpi em{font-size:10.5px;color:#93a5b8}
+
+/* 2) pv2 分段控件与 mp-simple-scope 统一：激活深蓝底白字 */
+#portfolio-operations .pv2-seg button.active{background:#174f84!important;color:#fff!important;box-shadow:0 1px 4px rgba(23,79,132,.28)!important;font-weight:600}
+#portfolio-operations .pv2-seg button:hover:not(.active){color:#174f84}
+
+/* 3) 投资策略分析 sa-kpi：2026-11-18 与产品页/主体页统一（灰蓝顶条 + 23px） */
+#strategy-analysis .sa-kpi{border-top-width:3px;border-radius:10px;transition:box-shadow .15s,transform .15s;background:linear-gradient(155deg,#fff 0%,#f9fbfd 100%)}
+#strategy-analysis .sa-kpi:hover{box-shadow:0 5px 16px rgba(23,59,100,.10);transform:translateY(-1px)}
+#strategy-analysis .sa-kpi span{font-size:11px;color:#5c7289;letter-spacing:.02em}
+#strategy-analysis .sa-kpi b{font-size:23px!important;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+/* 顶条统一中性灰蓝（涨跌语义由数值颜色承担） */
+#strategy-analysis .sa-kpi,#strategy-analysis .sa-kpi:nth-child(3),#strategy-analysis .sa-kpi:nth-child(4),#strategy-analysis .sa-kpi:nth-child(5){border-top-color:#a8bccd}
+
+/* 4) 投资策略分析 工具栏与表格 */
+#strategy-analysis .sa-toolbar-title h1{font-size:16px}
+#strategy-analysis .sa-toolbar-title p{font-size:10.5px}
+#strategy-analysis .sa-table th{background:#eef4f9;color:#527089;font-size:11px}
+#strategy-analysis .sa-table td{font-size:11px}
+#strategy-analysis .sa-table tbody tr:hover{background:#f4f8fc}
+#strategy-analysis .sa-panel-head h2{font-size:13.5px;letter-spacing:.02em}
+
+/* 5) 管理主体分析（已优化）仅补齐 hover 一致性 */
+#portfolio-operations .mp-overall-performance .mp-kpi{transition:box-shadow .16s,transform .16s}
+</style>
+<style id="mg-review-20261118-style">
+/* 2026-11-18 管理视角优化：堆叠条 / Top5跳转行 / 超额小结行 / 策略表减宽 */
+#strategy-analysis .sa-table{min-width:860px}
+#strategy-analysis .sa-scale{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+#strategy-analysis .sa-scale b{font-weight:600;color:#1d4368}
+#strategy-analysis .sa-stack{display:inline-flex;width:78px;height:5px;border-radius:3px;overflow:hidden;background:#e8edf2;cursor:help}
+#strategy-analysis .sa-stack i{height:100%;flex:0 0 auto}
+#portfolio-operations .mp-simple-table .mp-simple-more td{padding:9px 10px;background:#f8fbfe;text-align:center}
+#portfolio-operations .mp-simple-more span{color:#71869a;font-size:10.5px;margin-right:10px}
+#portfolio-operations .mp-simple-more button{border:0;background:none;color:#174f84;font:600 11px "Microsoft YaHei";cursor:pointer;padding:2px 4px}
+#portfolio-operations .mp-simple-more button:hover{text-decoration:underline}
+#po-ledger .mr-toolbar{display:flex;align-items:center;gap:10px}
+#po-ledger .mr-period{margin-left:auto;display:flex;align-items:center;gap:7px;color:#6c8196;font:600 11px "Microsoft YaHei";white-space:nowrap}
+#po-ledger .mr-period select{height:32px;padding:0 8px;border:1px solid #cbd9e6;border-radius:6px;background:#fff;color:#294a68;font:600 11px "Microsoft YaHei";cursor:pointer}
+</style>
+<style id="mg-kpi-unify-20261118-style">
+/* ===== 三页顶部KPI卡统一（2026-11-18）：渐变白 + 轻阴影 + hover上浮 + 数值23px + 3px灰蓝顶条，涨跌语义由数值颜色表达 ===== */
+/* 产品页 po-kpi：补顶条 / 圆角 / 字号 / hover */
+#portfolio-operations .po-product .po-kpi{border:1px solid #d7e3ed;border-top:3px solid #a8bccd;border-radius:10px;background:linear-gradient(155deg,#fff 0%,#f9fbfd 100%);box-shadow:0 3px 10px rgba(33,70,104,.055);transition:box-shadow .16s,transform .16s}
+#portfolio-operations .po-product .po-kpi:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(33,70,104,.12)}
+#portfolio-operations .po-product .po-kpi strong{font:700 23px Arial,"Microsoft YaHei";font-variant-numeric:tabular-nums}
+/* 策略页 sa-kpi：补渐变 / 阴影 / 高度 / hover / 字号；第5张复合值降级防换行（与主体页同规则） */
+#strategy-analysis .sa-kpi{border:1px solid #d7e3ed;border-top:3px solid #a8bccd;border-radius:10px;background:linear-gradient(155deg,#fff 0%,#f9fbfd 100%);box-shadow:0 3px 10px rgba(33,70,104,.055);min-height:88px;transition:box-shadow .16s,transform .16s}
+#strategy-analysis .sa-kpi:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(33,70,104,.12)}
+#strategy-analysis .sa-kpi b{font-size:23px;white-space:nowrap}
+#strategy-analysis .sa-kpi:nth-child(5) b{font-size:19px!important}
+/* 主体页 mr-kpi：多彩顶条统一为灰蓝，补 hover 动效 */
+#po-ledger .mr-kpi,#po-ledger .mr-kpi:nth-child(2),#po-ledger .mr-kpi:nth-child(3),#po-ledger .mr-kpi:nth-child(4),#po-ledger .mr-kpi:nth-child(5){border-top-color:#a8bccd}
+#po-ledger .mr-kpi{transition:box-shadow .16s,transform .16s}
+#po-ledger .mr-kpi:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(33,70,104,.12)}
+</style>
+<script id="mg-shared-period-script">
+/* ===== 经营分析三页共享统计区间：切换任一下拉，全局状态 + 数据 + 三页联动刷新 ===== */
+(function(){
+  window.MG_PERIOD={key:'1m',factor:1,ddFactor:1};
+  window.MG_PERIOD_OPTIONS=[['1m','近1月',1],['3m','近3月',2.9],['6m','近6月',5.6],['1y','近1年',10.8]];
+  var IDS=['pp-period','mr-period','sa-period'];
+  function fill(sel){
+    if(!sel)return;
+    if(sel.getAttribute('data-mg-ready')==='1'){if(sel.value!==window.MG_PERIOD.key)sel.value=window.MG_PERIOD.key;return}
+    sel.innerHTML=window.MG_PERIOD_OPTIONS.map(function(o){return '<option value="'+o[0]+'">'+o[1]+'</option>'}).join('');
+    sel.value=window.MG_PERIOD.key;
+    sel.onchange=function(){apply(sel.value)};
+    sel.setAttribute('data-mg-ready','1');
+  }
+  function apply(key){
+    var opt=null;
+    for(var i=0;i<window.MG_PERIOD_OPTIONS.length;i++)if(window.MG_PERIOD_OPTIONS[i][0]===key)opt=window.MG_PERIOD_OPTIONS[i];
+    if(!opt)opt=window.MG_PERIOD_OPTIONS[0];
+    window.MG_PERIOD.key=opt[0];window.MG_PERIOD.factor=opt[2];window.MG_PERIOD.ddFactor=Math.sqrt(opt[2]);
+    if(window.__mgScaleAssets)window.__mgScaleAssets(window.MG_PERIOD.factor,window.MG_PERIOD.ddFactor);
+    if(window.__mgScalePP)window.__mgScalePP(window.MG_PERIOD.factor,window.MG_PERIOD.ddFactor);
+    IDS.forEach(function(id){fill(document.getElementById(id))});
+    if(window.__mgPPRefresh)try{window.__mgPPRefresh()}catch(e){}
+    if(window.__mgMrRefresh)try{window.__mgMrRefresh()}catch(e){}
+    if(window.__mgSaRefresh)try{window.__mgSaRefresh()}catch(e){}
+  }
+  function bindAll(){IDS.forEach(function(id){fill(document.getElementById(id))})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindAll);else bindAll();
+  new MutationObserver(bindAll).observe(document.body,{childList:true,subtree:true});
+  /* 切菜单进入各页时按当前区间刷新，避免旧区间残留 */
+  document.addEventListener('click',function(event){
+    var button=event.target.closest&&event.target.closest('.po-nav-view');
+    if(!button)return;
+    var view=button.getAttribute('data-po-view');
+    setTimeout(function(){
+      if(view==='product'&&window.__mgPPRefresh)try{window.__mgPPRefresh()}catch(e){}
+      if(view==='all'&&window.__mgMrRefresh)try{window.__mgMrRefresh()}catch(e){}
+      if(view==='manager'&&window.__mgSaRefresh)try{window.__mgSaRefresh()}catch(e){}
+    },80);
+  });
+})();
+</script>
+<style id="mg-im-unify-20261118-style">
+/* ===== 管理报告模块样式统一（委外账户 + 股票持仓），对齐 mg-kpi-unify-20261118 规范 ===== */
+/* —— 顶部工具栏：统一白底 + 统一边框 —— */
+#investment-manager-analysis .im-toolbar{background:#fff;border:1px solid #d5e1eb;border-radius:10px}
+#stock-investment .si-filter{border:1px solid #d5e1eb!important;background:#fff!important;border-radius:10px!important}
+#stock-investment .si-field select,#stock-investment .si-field input{border-color:#ccd9e5!important;background:#fff!important;color:#284963!important}
+/* —— 激活页签：金色 → 统一蓝 #174f84 —— */
+#investment-manager-analysis #im-view-account .im-strategy-tab[aria-selected="true"]{border-color:#174f84!important;background:#174f84!important;color:#fff!important;box-shadow:0 2px 7px rgba(23,79,132,.22)!important}
+#investment-manager-analysis #im-view-account .im-strategy-tab:focus-visible{outline-color:#174f84}
+#investment-manager-analysis #im-view-fund .im-fund-type-tab[aria-selected="true"]{border-color:#174f84!important;background:#174f84!important;color:#fff!important;box-shadow:0 2px 7px rgba(23,79,132,.22)!important}
+#investment-manager-analysis #im-view-fund .im-fund-type-tab{border-color:#d5e1eb;background:#f6f9fc;color:#3b5e78}
+#investment-manager-analysis #im-view-fund .im-fund-type-tab:focus-visible{outline-color:#174f84}
+#investment-manager-analysis .im-tabs .im-tab.active{background:#174f84}
+#stock-investment .si-tab.active{background:#174f84;border-color:#174f84;color:#fff}
+/* —— KPI 摘要卡：统一 3px 顶条 + 渐变 + 88px —— */
+#investment-manager-analysis .im-summary-item{border:1px solid #d7e3ed!important;border-top:3px solid #a8bccd!important;border-left:none!important;border-radius:10px!important;background:linear-gradient(155deg,#fff 0%,#f9fbfd 100%)!important;box-shadow:0 3px 10px rgba(33,70,104,.055)!important;min-height:88px!important;transition:transform .18s ease,box-shadow .18s ease}
+#investment-manager-analysis .im-summary-item:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(33,70,104,.09)}
+#investment-manager-analysis .im-summary-item .im-summary-label{font-size:10px;color:#72869a}
+#investment-manager-analysis .im-summary-item .im-summary-value{font-size:23px!important;font-weight:700}
+/* —— 股票 KPI 卡：同规范 —— */
+#stock-investment .si-kpi{border:1px solid #d7e3ed!important;border-top:3px solid #a8bccd!important;border-radius:10px!important;background:linear-gradient(155deg,#fff 0%,#f9fbfd 100%)!important;box-shadow:0 3px 10px rgba(33,70,104,.055)!important;min-height:88px!important;transition:transform .18s ease,box-shadow .18s ease}
+#stock-investment .si-kpi:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(33,70,104,.09)}
+#stock-investment .si-kpi .si-kpi-value{font-size:23px!important;font-weight:700}
+/* —— 红涨绿跌语义色统一 —— */
+#investment-manager-analysis .im-positive{color:#c0392b!important}
+#investment-manager-analysis .im-negative{color:#1a7a58!important}
+#investment-manager-analysis .im-inline-value.im-positive{color:#c0392b!important}
+#investment-manager-analysis .im-inline-value.im-negative{color:#1a7a58!important}
+#im-view-account .im-inline-value.im-positive{color:#c0392b!important}
+#im-view-account .im-inline-value.im-negative{color:#1a7a58!important}
+#im-view-fund .im-inline-value.im-positive{color:#c0392b!important}
+#im-view-fund .im-inline-value.im-negative{color:#1a7a58!important}
+#stock-investment .si-up{color:#c0392b!important}
+#stock-investment .si-down{color:#1a7a58!important}
+/* —— 贡献行：金/绿/红多色左边条 → 统一灰蓝 —— */
+#stock-investment .si-contrib-row{border-left:3px solid #a8bccd!important;background:#fff!important}
+</style>
+<style id="mg-benchmark-win-ratio-20261120-style">
+#po-ledger .mr-kpi>small{display:block;margin-top:4px;color:#8294a6;font:400 10px/1.35 "Microsoft YaHei",sans-serif;white-space:nowrap}
+</style>
+<script id="mg-benchmark-win-ratio-20261120-script">
+(function(){
+  function sync(){
+    var card=document.querySelector('#po-ledger .mr-kpi:nth-child(5)');
+    if(!card)return;
+    var label=card.querySelector('span'),value=card.querySelector('b'),note=card.querySelector('small');
+    var match=value&&value.textContent.match(/(\d+)\s*\/\s*(\d+)[（(](\d+(?:\.\d+)?)%[）)]/);
+    if(label&&label.textContent!=='跑赢基准资产占比')label.textContent='跑赢基准资产占比';
+    if(match){
+      value.textContent=match[3]+'%';
+      if(!note){note=document.createElement('small');card.appendChild(note)}
+      note.textContent=match[1]+' / '+match[2]+'项资产';
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();
+  document.addEventListener('click',function(event){if(event.target.closest('[data-po-view="all"],[data-mr-tab]'))setTimeout(sync,80)});
+  var host=document.getElementById('po-ledger');
+  if(host)new MutationObserver(sync).observe(host,{childList:true,subtree:true});
+})();
+</script>
+<style id="mg-overview-benchmark-win-20261120-style">
+#portfolio-operations .mp-overall-performance .mp-kpis{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+#portfolio-operations .mp-overall-performance .mp-kpi[data-overview-benchmark-win]{border-top-color:#c49b35!important}
+@media(max-width:1100px){#portfolio-operations .mp-overall-performance .mp-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:860px){#portfolio-operations .mp-overall-performance .mp-kpis{grid-template-columns:1fr!important}}
+</style>
+<script id="mg-overview-benchmark-win-20261120-script">
+(function(){
+  function sync(){
+    var host=document.querySelector('#portfolio-operations .mp-overall-performance .mp-kpis');
+    var products=window.PP&&Array.isArray(window.PP.products)?window.PP.products:[];
+    if(!host||!products.length)return false;
+    var beat=products.filter(function(product){return (+product.ex||0)>0}).length;
+    var ratio=products.length?beat/products.length*100:0;
+    var card=host.querySelector('[data-overview-benchmark-win]');
+    if(!card){
+      card=document.createElement('div');
+      card.className='mp-kpi';
+      card.setAttribute('data-overview-benchmark-win','');
+      card.innerHTML='<div class="mp-label">跑赢基准产品占比</div><div class="mp-value"></div><div class="mp-note"></div>';
+    }
+    card.querySelector('.mp-value').innerHTML=ratio.toFixed(1)+'<span class="mp-unit">%</span>';
+    card.querySelector('.mp-note').textContent=beat+' / '+products.length+'只产品跑赢基准';
+    var excess=Array.from(host.querySelectorAll(':scope > .mp-kpi')).find(function(item){
+      var label=item.querySelector('.mp-label');return label&&label.textContent.trim()==='超额收益率';
+    });
+    if(excess&&excess.nextElementSibling!==card)excess.insertAdjacentElement('afterend',card);
+    else if(!card.parentElement)host.appendChild(card);
+    return true;
+  }
+  function init(){
+    if(sync())return;
+    var tries=0,timer=setInterval(function(){tries++;if(sync()||tries>=40)clearInterval(timer)},100);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+  document.addEventListener('change',function(event){if(event.target&&event.target.id==='mp-period-select')setTimeout(sync,30)});
+})();
+</script>
+<style id="mg-overview-fluid-width-20261120-style">
+/* 经营总览随主内容区伸展，外层页面边距继续负责留白 */
+#portfolio-operations .mp-shell{width:100%;max-width:none}
+</style>
 </body></html>
 
